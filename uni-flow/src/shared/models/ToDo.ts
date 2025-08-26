@@ -1,5 +1,5 @@
 import { Schema, model, models } from "mongoose";
-import { ToDoStatus } from "@/entities/enum";
+import { ToDoStatus } from "@/entities/enums";
 
 const ToDoSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true },

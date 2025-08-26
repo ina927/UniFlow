@@ -1,5 +1,5 @@
 import { Schema, model, models } from "mongoose";
-import { Role, UserStatus } from "@/entities";
+import { Role, UserStatus } from "@/entities/users/enums";
 
 const UserSchema = new Schema({ 
   name: { type: String, required: true },
