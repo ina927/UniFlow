@@ -1,0 +1,10 @@
+.tutorBox {
+    width: 100%;
+    margin: 0;
+    padding: 12px;
+    background-color: var(--components-fill);
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
