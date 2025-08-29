@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 // React import
 
 export default function studyPlanner(){
@@ -8,7 +10,7 @@ export default function studyPlanner(){
         <div className="title" style={{display: "flex", flexDirection: "row"}}>
             <h1 style={{fontSize: "2rem", fontWeight: "bold"}}>User's Study Planner</h1>
             <button style={{float: "right", marginLeft: "35vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw"}}>Select Filter</button>
-            <button style={{float: "right", marginLeft: "2vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw"}}>Calendar View</button>
+            <Link href="../calendar" style={{float: "right", marginLeft: "2vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw", paddingTop:"0.8vw"}}>Calendar View</Link>
         </div>
         <br />
         <h3>Last updated: DD/MM/YYYY</h3>
