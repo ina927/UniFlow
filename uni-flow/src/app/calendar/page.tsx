@@ -131,13 +131,13 @@ export default function studyPlanner(){
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogContent>
                 <br />
-                {/* <DialogHeader>
-                    <DialogTitle>
+                <DialogHeader>
+                    <DialogTitle style={{marginLeft: "1vw"}}>
                         Add New Task
                     </DialogTitle>
-                </DialogHeader> */}
+                </DialogHeader>
                 <form className="space-x-5 mb-4" onSubmit={handleAddEvent} style={{display: "flex",flexDirection: "column"}}>
-                    <input type="text" placeholder="NEW TASK" value={newEventTitle} onChange={(event) => setNewEventTitle(event.target.value)} required style={{borderBottom: "solid 3px gray", fontWeight: "bold", fontSize: "1.5rem"}} className="p-3 text-lg"/>
+                    <input type="text" placeholder="NEW TASK" value={newEventTitle} onChange={(event) => setNewEventTitle(event.target.value)} required style={{borderBottom: "solid 3px gray", fontWeight: "bold", fontSize: "1.5rem", marginLeft:"0.7vw", opacity: 0.6, width: "97%"}} className="p-1 text-lg"/>
 
                     <textarea placeholder="Description(optional) (150 characters max)" className="p-3" style={{height: "10vh", wordWrap: "break-word", textWrap: "balance"}} maxLength={150}/>
                     <div className="due-date" style={{display: "flex", flexDirection: "row"}}>
