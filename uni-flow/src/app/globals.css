@@ -151,5 +151,32 @@ body {
   font-weight: 700;
 }
 
+/* ===== Color utility classes (mapped to CSS variables) ===== */
 
-/* Colors From Figma */
+/* Text colors */
+.text-primary      { color: var(--text-primary); }
+.text-secondary    { color: var(--text-secondary); }
+.text-tertiary     { color: var(--text-tertiary); }
+.text-light        { color: var(--text-light); }
+
+/* Background colors */
+.bg-components-fill   { background-color: var(--components-fill); }
+.bg-primary-light     { background-color: var(--primary-light); }
+.bg-primary-dark      { background-color: var(--primary-dark); }
+.bg-button-active-light  { background-color: var(--button-active-light); }
+.bg-button-active-dark   { background-color: var(--button-active-dark); }
+.bg-button-deactive-light { background-color: var(--button-deactive-light); }
+.bg-button-deactive-dark  { background-color: var(--button-deactive-dark); }
+.bg-button-hover-light    { background-color: var(--button-hover-light); }
+.bg-button-hover-dark     { background-color: var(--button-hover-dark); }
+
+/* Border colors */
+.border-components-fill   { border-color: var(--components-fill); }
+.border-primary-light     { border-color: var(--primary-light); }
+.border-primary-dark      { border-color: var(--primary-dark); }
+.border-button-active-light  { border-color: var(--button-active-light); }
+.border-button-active-dark   { border-color: var(--button-active-dark); }
+.border-button-deactive-light { border-color: var(--button-deactive-light); }
+.border-button-deactive-dark  { border-color: var(--button-deactive-dark); }
+.border-button-hover-light    { border-color: var(--button-hover-light); }
+.border-button-hover-dark     { border-color: var(--button-hover-dark); }
