@@ -1,8 +1,30 @@
 @import "tailwindcss";
+@import "pretendard/dist/web/static/pretendard.css";
+
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Font */
+  --font-pretendard: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-inter: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+
+  /* Color */
+  --components-fill: #F0EFEF;
+  --text-primary: #242426;
+  --text-secondary: #6C6C70;
+  --text-tertiary: #949494;
+  --text-light: #D9D9D9;
+  --primary-light: #25437C;
+  --primary-dark: #606ACB;
+  --button-active-light: #25437C;
+  --button-active-dark: #606ACB;
+  --button-deactive-light: #6B7280;
+  --button-deactive-dark: #C4C9D0;
+  --button-hover-light: #16294F;
+  --button-hover-dark: #4A54B0;
+
 }
 
 @theme inline {
@@ -24,3 +46,101 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Text Styles From Figma */
+.text-large-title {
+  font-family: var(--font-pretendard);
+  font-weight: 400;        
+  font-size: 32px;        
+  line-height: 39px;       
+  letter-spacing: 0.36px;  
+}
+
+.text-large-title-bold {
+  font-family: var(--font-pretendard);
+  font-weight: 700;        
+  font-size: 32px;        
+  line-height: 39px;       
+  letter-spacing: 0.36px;  
+}
+
+.text-title1 {
+  font-family: var(--font-pretendard);
+  font-weight: 400;        
+  font-size: 26px;        
+  line-height: 32px;       
+  letter-spacing: 1.25%;  
+}
+
+.text-title1-bold {
+  font-family: var(--font-pretendard);
+  font-weight: 700;        
+  font-size: 26px;        
+  line-height: 32px;       
+  letter-spacing: 1.25%;  
+}
+
+.text-title2 {
+  font-family: var(--font-pretendard);
+  font-weight: 400;        
+  font-size: 20px;        
+  line-height: 25px;       
+  letter-spacing: 1.25%;  
+}
+
+.text-title2-bold {
+  font-family: var(--font-pretendard);
+  font-weight: 700;        
+  font-size: 20px;        
+  line-height: 25px;       
+  letter-spacing: 1.25%;  
+}
+
+.text-title3 {
+  font-family: var(--font-inter);
+  font-weight: 400;        
+  font-size: 16px;        
+  line-height: 21px;       
+}
+
+.text-title3-bold {
+  font-family: var(--font-inter);
+  font-weight: 700;        
+  font-size: 16px;        
+  line-height: 21px;       
+}
+
+.text-body1 {
+  font-family: var(--font-inter);
+  font-size: 14px;
+  line-height: auto;
+  font-weight: 400;
+}
+
+.text-body1-semibold {
+  font-family: var(--font-inter);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.text-body1-bold {
+  font-family: var(--font-inter);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.text-caption1 {
+  font-family: var(--font-inter);
+  font-size: 12px;
+  line-height: auto;
+  font-weight: 400;
+}
+
+.text-caption1-bold {
+  font-family: var(--font-inter);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+/* Colors From Figma */
