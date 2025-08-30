@@ -1,6 +1,6 @@
-import SubjectHeader from "@/widgets/assessments/SubjectHeader.tsx";
-import TutorInfoCard from "@/widgets/assessments/TutorInfoCard.tsx";
-import { SchemaTypes } from "mongoose";
+import SubjectHeader from "@/widgets/assessments/SubjectHeader";
+import TutorInfoCard from "@/widgets/assessments/TutorInfoCard";
+import AssessmentControls from "@/widgets/assessments/AssessmentControls";
 import styles from "./page.module.css";
 
 export default function AssessmentsPage(){ 
@@ -18,7 +18,8 @@ export default function AssessmentsPage(){
         <div className={styles.container}>
             <div className={styles.left}> 
                 <SubjectHeader {...exampleSubject}/>
-                {/* AssessmentControls, AssessmentTable */} 
+                <AssessmentControls/>
+                {/* AssessmentTable */} 
             </div>
             <div className={styles.right}> 
                 <TutorInfoCard {...exampleTutorInfo} />
