@@ -1,5 +1,9 @@
 .subjectInfoGroup{ 
-    width: 614px; 
-    height: 75px; 
+    width: flex; 
+    height: 85px; 
     flex-shrink: 0;
- }
+}
+
+.subjectInfoGroup p{ 
+    margin-top: 8px; 
+}

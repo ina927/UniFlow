@@ -13,7 +13,7 @@ export default function SubjectHeader (props: SubjectHeaderProps){
     
     return ( 
         <header className={styles.subjectInfoGroup}> 
-            <h1 className="text-title1-bold text-primary"> 
+            <h1 className="text-large-title-bold text-primary"> 
                 {subjectName} [{subjectCode}] 
             </h1> 
             <p className="text-title3 text-tertiary"> 
