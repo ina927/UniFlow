@@ -1,10 +1,11 @@
 .tutorBox {
     width: 100%;
     margin: 0;
-    padding: 12px;
+    padding: 20px;
     background-color: var(--components-fill);
-    border-radius: 30px;
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
     gap: 4px;
+    filter: drop-shadow(0 10px 60px rgba(226, 236, 249, 0.50));
 }
