@@ -9,5 +9,6 @@ export interface Assessment {
   dueDate?: string;          
   maxScore: number;           
   score?: number | null;     
+  gradedDate?: string;        
   description?: string;
 }

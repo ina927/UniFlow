@@ -1,4 +1,5 @@
 export interface EnterScoreDto {
   assessmentId: string;
-  score: number | null;       
+  score: number;       
+  gradedDate?: string;
 }
