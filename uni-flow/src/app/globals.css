@@ -1,4 +1,6 @@
 @import "tailwindcss";
+
+@plugin "tailwindcss-animate";
 @import "pretendard/dist/web/static/pretendard.css";
 @import "tw-animate-css";
 
@@ -195,7 +197,7 @@
 }
 
 /* ===== Color utility classes (mapped to CSS variables) ===== */
-
+.primary-light           { color: var(--primary-light); }
 /* Text colors */
 .text-primary      { color: var(--text-primary); }
 .text-secondary    { color: var(--text-secondary); }
