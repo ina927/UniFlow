@@ -20,6 +20,16 @@ steps:
       npm run build
     displayName: 'Install and Build'
 
+  - task: CmdLine@2
+    inputs:
+      script: |
+       npm install @fullcalendar/core \ @fullcalendar/daygrid \ @fullcalendar/timegrid \ @fullcalendar/list
+       npm install --save @fullcalendar/core @fullcalendar/react @fullcalendar/daygrid
+       npx shadcn@latest add dialog
+       npm install --save @fullcalendar/timegrid @fullcalendar/interaction
+    displayName: 'Calendar and form component download'
+
+  - task: NodeTool@0
   - script: |
       npm run test --if-present
     displayName: 'Run tests'
