@@ -9,7 +9,7 @@ import {
     DialogTitle,
     DialogTrigger,
   } from "@/components/ui/dialog"
-import { DateSelectArg, EventApi} from "@fullcalendar/core/index.js";
+import { DateSelectArg, EventApi } from "@fullcalendar/core/index.js";
 import Link from "next/link";
 
 // React import
