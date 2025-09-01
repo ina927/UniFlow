@@ -12,14 +12,12 @@ import {
   } from "@/components/ui/dialog"
 import { DateSelectArg, EventApi, EventClickArg, formatDate } from "@fullcalendar/core/index.js";
 import FullCalendar from "@fullcalendar/react";
-import { DayGridView } from "@fullcalendar/daygrid/internal.js";
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from "@fullcalendar/interaction";
 import Link from "next/link";
-import { DialogPortal } from "@radix-ui/react-dialog";
 
-export default function studyPlanner(){
+export default function Calendar(){
 
     // for event control
     const [currentEvents, setCurrentEvents] = useState<EventApi[]>([]);

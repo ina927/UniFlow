@@ -9,13 +9,12 @@ import {
     DialogTitle,
     DialogTrigger,
   } from "@/components/ui/dialog"
-import { DateSelectArg, EventApi, EventClickArg, formatDate } from "@fullcalendar/core/index.js";
+import { DateSelectArg, EventApi} from "@fullcalendar/core/index.js";
 import Link from "next/link";
-import { DialogPortal } from "@radix-ui/react-dialog";
 
 // React import
 
-export default function studyPlanner(){
+export default function StudyPlanner(){
 
     const [currentEvents, setCurrentEvents] = useState<EventApi[]>([]);
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
