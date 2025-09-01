@@ -21,6 +21,7 @@ stages:
             inputs:
               versionSpec: '20.x'
             displayName: 'Install Node.js'
+            workingDirectory: uni-flow
 
           - script: |
               cd uni-flow
@@ -45,12 +46,14 @@ stages:
                 npm install --save @fullcalendar/core @fullcalendar/react @fullcalendar/daygrid
                 npm install --save @fullcalendar/timegrid @fullcalendar/interaction
             displayName: 'Calendar component download'
+            workingDirectory: uni-flow
           
           - task: CmdLine@2
             inputs:
               script: |
                 npx shadcn@latest add dialog
             displayName: 'Form component download'
+            workingDirectory: uni-flow
       
   - stage: Test
     displayName: "Run Tests"
@@ -64,8 +67,10 @@ stages:
             inputs:
               versionSpec: '20.x'
             displayName: 'Install Node.js'
+            workingDirectory: uni-flow
           
           - script: |
               cd uni-flow
               npm run test --if-present
             displayName: 'Run tests'
+            workingDirectory: uni-flow
