@@ -6,30 +6,43 @@
 trigger:
 - dev
 
-pool:
-  vmImage: ubuntu-latest
+stages:
+  - stage: Build
+    displayName: "React.js build"
+    pool:
+      vmImage: ubuntu-latest
 
-steps:
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '20.x'
-    displayName: 'Install Node.js'
+    steps:
+      - task: NodeTool@0
+        inputs:
+          versionSpec: '20.x'
+        displayName: 'Install Node.js'
 
-  - script: |
-      npm ci
-      npm run build
-    displayName: 'Install and Build'
-
-  - task: CmdLine@2
-    inputs:
-      script: |
-       npm install @fullcalendar/core \ @fullcalendar/daygrid \ @fullcalendar/timegrid \ @fullcalendar/list
-       npm install --save @fullcalendar/core @fullcalendar/react @fullcalendar/daygrid
-       npx shadcn@latest add dialog
-       npm install --save @fullcalendar/timegrid @fullcalendar/interaction
-    displayName: 'Calendar and form component download'
-
-  - task: NodeTool@0
-  - script: |
-      npm run test --if-present
-    displayName: 'Run tests'
+      - script: |
+          npm ci
+          npm run build
+        displayName: 'Install and Build'
+    
+  - stage: Build
+    displayName: "Component download"
+    steps:
+      - task: CmdLine@2
+        inputs:
+          script: |
+          npm install @fullcalendar/core \ @fullcalendar/daygrid \ @fullcalendar/timegrid \ @fullcalendar/list
+          npm install --save @fullcalendar/core @fullcalendar/react @fullcalendar/daygrid
+          npm install --save @fullcalendar/timegrid @fullcalendar/interaction
+        displayName: 'Calendar component download'
+      
+      - task: CmdLine@2
+        inputs:
+          scripts: |
+          npx shadcn@latest add dialog
+        displayName: 'Form component download'
+      
+  - stage: Test
+    steps:
+      - task: NodeTool@0
+      - script: |
+          npm run test --if-present
+        displayName: 'Run tests'
