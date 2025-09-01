@@ -1,0 +1,35 @@
+# Node.js with React
+# Build a Node.js project that uses React.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- dev
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '20.x'
+    displayName: 'Install Node.js'
+
+  - script: |
+      npm ci
+      npm run build
+    displayName: 'Install and Build'
+
+  - task: CmdLine@2
+    inputs:
+      script: |
+       npm install @fullcalendar/core \ @fullcalendar/daygrid \ @fullcalendar/timegrid \ @fullcalendar/list
+       npm install --save @fullcalendar/core @fullcalendar/react @fullcalendar/daygrid
+       npx shadcn@latest add dialog
+       npm install --save @fullcalendar/timegrid @fullcalendar/interaction
+    displayName: 'Calendar and form component download'
+
+  - task: NodeTool@0
+  - script: |
+      npm run test --if-present
+    displayName: 'Run tests'
