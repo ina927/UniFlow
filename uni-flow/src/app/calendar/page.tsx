@@ -17,6 +17,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from "@fullcalendar/interaction";
 import Link from "next/link";
 
+
 export default function Calendar(){
 
     // for event control
