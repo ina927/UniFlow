@@ -25,6 +25,7 @@ stages:
           - script: |
               cd uni-flow
               npm install
+              npm install
               npm run build
             displayName: 'Install and Build'
             workingDirectory: uni-flow
