@@ -1,8 +1,8 @@
 import clsx from 'clsx';
 import Link from 'next/link';
 import Image from 'next/image';
-import { LOGO, SETTINGS } from '@/shared/consts/images';
 
+import { LOGO, SETTINGS } from '@/shared/consts/images';
 import { HeaderTitle } from '@/features/common';
 
 interface HeaderProps {
@@ -15,6 +15,7 @@ export const Header = (props: HeaderProps) => {
       <div className="flex items-center mr-[8px]">
         <Link href="/">
           <Image 
+            className="dark:filter dark:invert"
             src={LOGO.src}
             alt={LOGO.alt}
             width={68}
@@ -26,7 +27,13 @@ export const Header = (props: HeaderProps) => {
         <HeaderTitle />
         <div className="flex items-center mr-[8px]">
           <Link href="/settings">
-            <Image src={SETTINGS.src} alt={SETTINGS.alt} width={24} height={24} />
+            <Image 
+              className="dark:filter dark:invert"
+              src={SETTINGS.src}
+              alt={SETTINGS.alt}
+              width={24}
+              height={24}
+            />
           </Link>
         </div>
       </div>
