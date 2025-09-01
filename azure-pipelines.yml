@@ -7,48 +7,54 @@ stages:
     pool:
       vmImage: ubuntu-latest
 
-    steps:
-      - task: NodeTool@0
-        inputs:
-          versionSpec: '20.x'
-        displayName: 'Install Node.js'
+    jobs:
+      - job: Build
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '20.x'
+            displayName: 'Install Node.js'
 
-      - script: |
-          npm ci
-          npm run build
-        displayName: 'Install and Build'
+          - script: |
+              npm ci
+              npm run build
+            displayName: 'Install and Build'
     
   - stage: DownloadComponents
     displayName: "Component download"
     pool:
       vmImage: ubuntu-latest
 
-    steps:
-      - task: CmdLine@2
-        inputs:
-          script: |
-            npm install @fullcalendar/core @fullcalendar/daygrid @fullcalendar/timegrid @fullcalendar/list
-            npm install --save @fullcalendar/core @fullcalendar/react @fullcalendar/daygrid
-            npm install --save @fullcalendar/timegrid @fullcalendar/interaction
-        displayName: 'Calendar component download'
-      
-      - task: CmdLine@2
-        inputs:
-          script: |
-            npx shadcn@latest add dialog
-        displayName: 'Form component download'
+    jobs:
+      - job: Download
+        steps:
+          - task: CmdLine@2
+            inputs:
+              script: |
+                npm install @fullcalendar/core @fullcalendar/daygrid @fullcalendar/timegrid @fullcalendar/list
+                npm install --save @fullcalendar/core @fullcalendar/react @fullcalendar/daygrid
+                npm install --save @fullcalendar/timegrid @fullcalendar/interaction
+            displayName: 'Calendar component download'
+          
+          - task: CmdLine@2
+            inputs:
+              script: |
+                npx shadcn@latest add dialog
+            displayName: 'Form component download'
       
   - stage: Test
     displayName: "Run Tests"
     pool:
       vmImage: ubuntu-latest
 
-    steps:
-      - task: NodeTool@0
-        inputs:
-          versionSpec: '20.x'
-        displayName: 'Install Node.js'
-      
-      - script: |
-          npm run test --if-present
-        displayName: 'Run tests'
+    jobs:
+      - job: RunTests
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '20.x'
+            displayName: 'Install Node.js'
+          
+          - script: |
+              npm run test --if-present
+            displayName: 'Run tests'
