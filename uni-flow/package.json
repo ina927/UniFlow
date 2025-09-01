@@ -12,6 +12,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "clsx": "^2.1.1",
     "dotenv": "^17.2.1",
     "mongoose": "^8.18.0",
     "next": "15.4.6",
