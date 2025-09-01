@@ -12,8 +12,8 @@ import {
   } from "@/components/ui/dialog"
 import { DateSelectArg, EventApi, EventClickArg, formatDate } from "@fullcalendar/core/index.js";
 import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import Link from "next/link";
 
@@ -82,7 +82,7 @@ export default function Calendar(){
     return (
     <div className="studyPlanner" style={{marginTop: "3rem", marginLeft: "6rem", overflow: "hidden"}}>
         <div className="title" style={{display: "flex", flexDirection: "row", width: "100vw"}}>
-            <h1 style={{fontSize: "2rem", fontWeight: "bold"}}>User's Study Planner</h1>
+            <h1 style={{fontSize: "2rem", fontWeight: "bold"}}>User&#39;s Study Planner</h1>
             <button style={{float: "right", marginLeft: "50vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw"}}>Select Filter</button>
             <Link href="../planner" style={{float: "right", marginLeft: "2vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw", paddingTop:"0.8vw"}}>List View</Link>
         </div>
