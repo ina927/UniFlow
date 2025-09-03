@@ -7,3 +7,4 @@ note/*
 # VSCode
 .vscode
 .vscode/*
+.env.local
