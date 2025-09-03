@@ -21,7 +21,7 @@ export async function GET(_req: NextRequest) {
     console.error("Error fetching users:", e);
     return NextResponse.json("Internal Server Error", { status: 500 });
   }
-});
+}
 
 // POST /api/user – create user
 export async function POST(req: NextRequest) {
