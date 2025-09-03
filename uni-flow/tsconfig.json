@@ -23,6 +23,6 @@
       "@test/*": ["./__tests__/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/api/academic-sessions/[id]/route.ts.ignore", "src/app/api/academic-sessions/route.ts.ignore"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/api/academic-sessions/[id]/route.ts", "src/appsrc/app/api/academic-sessions/route.ts
   "exclude": ["node_modules"]
 }
