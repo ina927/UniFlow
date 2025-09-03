@@ -1,26 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withDB } from "@/shared";
 import { getUsers, createUser } from "@/entities";
 import { CreateUserDto } from "@/entities/users/dto/create-user.dto";
 
-export const GET = withDB(async (req: NextRequest) => {
+// Collection route: /api/user
+// Note: No 2nd "context" argument for collection routes.
+export async function GET(_req: NextRequest) {
   try {
     const users = await getUsers();
-    
-    return {
-      status: 200,
-      data: users,
-    };
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    return {
-      status: 500,
-      data: "Internal Server Error",
-    };
+    return NextResponse.json(users, { status: 200 });
+  } catch (e) {
+    console.error("Error fetching users:", e);
+    return NextResponse.json("Internal Server Error", { status: 500 });
   }
-});
+}
 
-export const POST = withDB(async (req: NextRequest) => {
+export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const user = await createUser({
@@ -29,23 +23,14 @@ export const POST = withDB(async (req: NextRequest) => {
       dob: new Date(body.dob),
     } as CreateUserDto);
 
-    return {
-      status: 201,
-      data: user,
-    };
-  } catch (error) {
-    console.error('Error creating user:', error);
-    
-    if (error instanceof Error && error.name === 'DuplicateEmailError') {
-      return {
-        status: 409,
-        data: error.message,
-      };
+    return NextResponse.json(user, { status: 201 });
+  } catch (e: unknown) {
+    console.error("Error creating user:", e);
+
+    if (typeof e === "object" && e !== null && (e as any).name === "DuplicateEmailError") {
+      return NextResponse.json((e as any).message ?? "Duplicate email", { status: 409 });
     }
-    
-    return {
-      status: 500,
-      data: "Internal Server Error",
-    };
+
+    return NextResponse.json("Internal Server Error", { status: 500 });
   }
-});
+}
