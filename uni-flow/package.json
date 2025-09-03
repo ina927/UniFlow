@@ -88,6 +88,9 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.28.3",
+    "@babel/preset-react": "^7.27.1",
+    "@babel/preset-typescript": "^7.27.1",
     "@eslint/eslintrc": "^3",
     "@playwright/test": "^1.55.0",
     "@tailwindcss/postcss": "^4",
@@ -118,6 +121,7 @@
     "prisma": "^6.15.0",
     "jest-environment-jsdom": "^29.7.0",
     "prisma": "^6.15.0",
+    "jest-environment-jsdom": "^29.7.0",
     "tailwindcss": "^4",
     "ts-jest": "^29.4.1",
     "ts-node": "^10.9.2",
