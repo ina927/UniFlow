@@ -8,4 +8,3 @@ note/*
 .vscode
 .vscode/*
 .env.local
-package-lock.json
