@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 
+// ✅ Correct signature
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
-  const { id } = params;
+  const { id } = context.params;
 
-  // Temporary stub so the build succeeds
-  return NextResponse.json({ message: `Academic session ${id} placeholder` });
+  // Placeholder logic just to make build pass
+  return NextResponse.json({ message: `Academic session ${id}` });
 }
