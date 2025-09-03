@@ -22,6 +22,6 @@
       "@test/*": ["./__tests__/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/api/user/[id]/route.ts.ignore", "src/app/api/todos/route.ts.ignore", "src/app/api/todos/[id]/route.ts.ignore", "src/app/api/timer-sessions/route.ts.ignore", "src/app/api/timer-sessions/[id]/route.ts.ignore", "src/app/api/terms/route.ts.ignore", "src/app/api/terms/[id]/route.ts.ignore", "src/app/api/subjects/route.ts.ignore", "src/app/api/subjects/[id]/route.ts.ignore", "src/app/api/instructors/route.ts.ignore", "src/app/api/instructors/[id]/route.ts.ignore", "src/app/api/assessments/route.ts.ignore", "src/app/api/assessments/[id]/route.ts.ignore", "src/app/api/academic-sessions/route.ts.ignore", "src/app/api/academic-sessions/[id]/route.ts.ignore"],
   "exclude": ["node_modules"]
 }
