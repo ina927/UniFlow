@@ -1,0 +1,32 @@
+name: F101.$(Date:yyyyMMdd).$(Rev:r)
+
+trigger:
+  branches:
+    include:
+      - features/F101-user_authentication
+  paths:
+    include:
+      - 'uni-flow/**'
+      
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  WORKDIR: 'uni-flow'
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '20.x'
+    displayName: 'Use Node.js 20'
+
+  - script: |
+      npm ci
+    workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+    displayName: 'Install deps (npm ci)'
+
+  - script: |
+      export NEXT_TELEMETRY_DISABLED=1
+      npm run build
+    workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+    displayName: 'Build Next.js'
