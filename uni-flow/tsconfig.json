@@ -14,15 +14,14 @@
     "jsx": "preserve",
     "incremental": true,
     "plugins": [
-      {
-        "name": "next"
-      }
+      { "name": "next" }
     ],
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "@test/*": ["./__tests__/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/api/academic-sessions/[id]/route.ts", "src/appsrc/app/api/academic-sessions/route.ts
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }
