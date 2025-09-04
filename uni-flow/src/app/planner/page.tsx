@@ -12,15 +12,23 @@ import {
 import { DateSelectArg, EventApi } from "@fullcalendar/core/index.js";
 import Link from "next/link";
 
+// database import
+import Axios from "axios";
+import { ToDoStatus } from "@/entities/enums";
+
 // React import
 
 export default function StudyPlanner(){
 
-    const [currentEvents, setCurrentEvents] = useState<EventApi[]>([]);
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-    const [newEventTitle, setNewEventTitle] = useState<string>("");
-    const [selectedDate, setSelectedDate] = useState<DateSelectArg | null>(null);
 
+    // for database control (tags in form is to opt for the subject id)
+    const [endDate, setEndDate] = useState<Date | null>(null);
+    const [newEventTitle, setNewEventTitle] = useState<string>("");
+    const [content, setContent] = useState<string>("");
+    const [taskStatus, setTaskStatus] = useState<string>("");
+    
+    
     const handleAddButton = () => {
         setIsDialogOpen(true);
     }
@@ -30,24 +38,23 @@ export default function StudyPlanner(){
         setNewEventTitle("");
     };
 
-    const handleAddEvent = (e: React.FormEvent) => {
+    const handleAddEvent = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (newEventTitle && selectedDate){
-            const calendarApi = selectedDate.view.calendar;
-            calendarApi.unselect();
-        
-
-        const newEvent = {
-            id: `${selectedDate?.start.toISOString()}-${newEventTitle}`,
+        // this is for the database
+        const newToDo = {
+            userId: '68ad41c7486238ade8bb2f2d',
+            subjectId: null,
+            assessmentId: null,
             title: newEventTitle,
-            start: selectedDate?.start,
-            end: selectedDate?.end,
-            allDat: selectedDate?.allDay,
-        };
+            content: content,
+            startDate: Date.now(),
+            endDate: endDate,
+            taskStatus: ToDoStatus.PENDING
+        }
 
-        calendarApi.addEvent(newEvent);
+        const response = await Axios.post('/api/todos', {newToDo})
         handleCloseDialog();
-    }};
+    };
 
     return (
     <div className="studyPlanner" style={{marginTop: "3rem", marginLeft: "6rem"}}>
@@ -265,7 +272,7 @@ export default function StudyPlanner(){
                         <input type="text" name="deadline" /> {/*placeholder for now*/}
                     </div>
                     <hr style={{width: "93%", marginLeft: "1vw", height: "1px", background: "black", opacity: 0.8}}/>
-                    <div className="to-do-table" style={{paddingTop: "1vh", display: "flex", flexDirection: "column"}}>
+                    {/* <div className="to-do-table" style={{paddingTop: "1vh", display: "flex", flexDirection: "column"}}>
                     <label style={{marginLeft:"0.9vw", fontSize: "1.2rem", fontWeight: "bold"}}>To-do</label>
                         <ul style={{marginLeft:"1vw", opacity: 0.6}}>
                             <li>
@@ -278,7 +285,7 @@ export default function StudyPlanner(){
                         <input type="button" value="+" className="bg-green-500 text-white p-3 mt-5 rounded-md" style={{marginLeft: "1vw", marginTop: "1vh", background: "var(--background-prime)"}} />
                     </div>
                     <br />
-                    <hr style={{width: "93%", marginLeft: "1vw", height: "1px", background: "black", opacity: 0.8}}/>
+                    <hr style={{width: "93%", marginLeft: "1vw", height: "1px", background: "black", opacity: 0.8}}/> */}
                     <button className="text-white p-3 mt-5 rounded-md" style={{width: "92%", color: "var(--background-prime)", background: "(var(--foreground)", border: "solid 1px var(--background-prime)", marginLeft: "1vw"}} type="submit">Save</button>
                 </form>
             </DialogContent>
