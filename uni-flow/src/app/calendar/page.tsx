@@ -33,14 +33,36 @@ export default function Calendar(){
     const [content, setContent] = useState<string>("");
     // const [taskStatus, setTaskStatus] = useState<string>("");
 
+    // data dummy for now
+    const userId = '68ad41c7486238ade8bb2f2d'
+
     // click handler
     useEffect(() => {
-        if (typeof window !== "undefined"){
-            const savedEvents = localStorage.getItem("events");
-            if (savedEvents){
-                setCurrentEvents(JSON.parse(savedEvents));
+        const fetchToDo = async() => {
+            const response = await fetch('http://localhost:3000/api/todos', {
+                headers: {
+                    userId: userId,
+                }
+            });
+ 
+            const fetchEvents =  await response.json();
+            for (let i = 0; i < fetchEvents.length; i++){
+                setSelectedDate(fetchEvents[i].startDate)
+                const calendarApi = selectedDate?.view.calendar
+                calendarApi?.unselect()
+                const newEvent = {
+                    id: `${i}`,
+                    title: fetchEvents[i].title,
+                    start: fetchEvents[i].startDate,
+                    end: fetchEvents[i].endDate,
+                    allDat: selectedDate?.allDay,
+                };
+                calendarApi?.addEvent(newEvent)
             }
+            // setCurrentEvents(savedEvents);
+            // console.log("Events: ", savedEvents);
         }
+        fetchToDo();
     }, []); //open json file
 
     useEffect(() => {
@@ -87,7 +109,7 @@ export default function Calendar(){
         // this is for the database
         
         const newToDo = {
-            userId: '68ad41c7486238ade8bb2f2d',
+            userId: userId,
             subjectId: null,
             assessmentId: null,
             title: newEventTitle,
@@ -144,7 +166,6 @@ export default function Calendar(){
             <div className="w-9/12 mt-8" style={{width: "65vw"}}>
                 <FullCalendar height={"75vh"} plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]} headerToolbar={{left: "prev,next today", center: "title", right: "dayGridMonth, timeGridWeek, timeGridDay"}} initialView="dayGridMonth" selectable={true} editable={true} selectMirror={true} dayMaxEvents={true} select={handleDateClick}
                 eventClick={handleEventClick}
-                
                 eventsSet={(events) => setCurrentEvents(events)}
                 initialEvents={typeof window !== "undefined" ? JSON.parse(localStorage.getItem("events") || "[]") : []}
                 />
