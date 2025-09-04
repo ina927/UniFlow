@@ -1,18 +1,18 @@
 import { NextRequest } from "next/server";
+
+import { createAcademicCourse, getAcademicCourses } from "@/entities/academics";
 import { withDB } from "@/shared";
-import { getSubjects, createSubject } from "@/entities/academics/services";
 
 export const GET = withDB(async (req: NextRequest) => {
   try {
-    const termId = req.nextUrl.searchParams.get('termId');
-    const subjects = await getSubjects(termId as string);
+    const academicCourses = await getAcademicCourses();
     
     return {
       status: 200,
-      data: subjects,
+      data: academicCourses,
     };
   } catch (error) {
-    console.error('Error fetching subjects:', error);
+    console.error('Error fetching academic courses:', error);
     return {
       status: 500,
       data: "Internal Server Error",
@@ -23,14 +23,14 @@ export const GET = withDB(async (req: NextRequest) => {
 export const POST = withDB(async (req: NextRequest) => {
   try {
     const body = await req.json();
-    const subject = await createSubject(body);
+    const academicCourse = await createAcademicCourse(body);
 
     return {
       status: 201,
-      data: subject,
+      data: academicCourse,
     };
   } catch (error) {
-    console.error('Error creating subject:', error);
+    console.error('Error creating academic course:', error);
     return {
       status: 500,
       data: "Internal Server Error",
