@@ -6,6 +6,7 @@ import SubjectHeader from "@/widgets/assessments/SubjectHeader";
 import TutorInfoCard from "@/widgets/assessments/TutorInfoCard";
 import AssessmentControls from "@/widgets/assessments/AssessmentControls";
 import AssessmentTable from "@/widgets/assessments/AssessmentTable";
+import AddAssessmentModal from "@/widgets/assessments/AddAssessmentModal";
 import styles from "./page.module.css";
 
 import { Assessment, AssessmentType } from "@/entities/assessments";
@@ -99,20 +100,23 @@ export default function AssessmentsPage(){
         },
     ];
     const handleEnterScore = (id: string) => {
-        //moal open logic
+        //modal open logic
     };
+    const [openAdd, setOpenAdd] = useState(false);
     
     return ( 
         <div className={styles.container}>
             <div className={styles.left}> 
                 <SubjectHeader {...exampleSubject}/>
-                <AssessmentControls/>
+                <AssessmentControls onAddAssessment={() => setOpenAdd(true)} />
                 <AssessmentTable items={items} mode={mode} onEnterScore={handleEnterScore} />
             </div>
             <div className={styles.right}> 
                 <TutorInfoCard {...exampleTutorInfo} />
                 {/* GradeSummary */} 
             </div> 
+            <AddAssessmentModal open={openAdd} onOpenChange={setOpenAdd} />
+
         </div>
     ); 
 }
