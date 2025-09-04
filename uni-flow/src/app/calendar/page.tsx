@@ -5,10 +5,8 @@ import {useEffect, useState} from "react";
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
   } from "@/components/ui/dialog"
 import { DateSelectArg, EventApi, EventClickArg, formatDate } from "@fullcalendar/core/index.js";
 import FullCalendar from "@fullcalendar/react";
@@ -33,7 +31,7 @@ export default function Calendar(){
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [newEventTitle, setNewEventTitle] = useState<string>("");
     const [content, setContent] = useState<string>("");
-    const [taskStatus, setTaskStatus] = useState<string>("");
+    // const [taskStatus, setTaskStatus] = useState<string>("");
 
     // click handler
     useEffect(() => {
@@ -101,6 +99,7 @@ export default function Calendar(){
 
         calendarApi.addEvent(newEvent);
         const response = await Axios.post('/api/todos', {newToDo})
+        console.log(response)
         handleCloseDialog();
     }};
 
