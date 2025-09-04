@@ -1,15 +1,12 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
   } from "@/components/ui/dialog"
-import { DateSelectArg, EventApi } from "@fullcalendar/core/index.js";
 import Link from "next/link";
 
 // database import
@@ -260,20 +257,26 @@ export default function StudyPlanner(){
                     </DialogTitle>
                 </DialogHeader>
                 <form className="space-x-5 mb-4" onSubmit={handleAddEvent} style={{display: "flex",flexDirection: "column"}}>
-                <input type="text" placeholder="NEW TASK" value={newEventTitle} onChange={(event) => setNewEventTitle(event.target.value)} required style={{borderBottom: "solid 3px gray", fontWeight: "bold", fontSize: "1.5rem", marginLeft:"0.7vw", opacity: 0.6, width: "97%"}} className="p-1 text-lg"/>
+                    <input type="text" placeholder="NEW TASK" value={newEventTitle} onChange={(event) => setNewEventTitle(event.target.value)} required style={{borderBottom: "solid 3px gray", fontWeight: "bold", fontSize: "1.5rem", marginLeft:"0.7vw", opacity: 0.6, width: "97%"}} className="p-1 text-lg"/>
 
-                    <textarea placeholder="Description(optional) (150 characters max)" className="p-3" style={{height: "10vh", wordWrap: "break-word", textWrap: "balance"}} maxLength={150}/>
+                    <textarea placeholder="Description(optional) (150 characters max)" className="p-3" style={{height: "10vh", wordWrap: "break-word", textWrap: "balance"}} maxLength={150} onChange={(e) => {
+                        setContent(e.target.value)
+                    }}/>
                     <div className="due-date" style={{display: "flex", flexDirection: "row"}}>
                         <label style={{marginLeft: "0.9vw", paddingRight: "1.5vw"}}>Due Date: </label>
-                        <input type="date" name="deadline" required/>
+                        <input type="date" name="deadline" required onChange={(e) => {
+                            const date = e.target.value;
+                            const newDate = new Date(date)
+                            setEndDate(newDate)
+                        }}/>
                     </div>
                     <div className="tags" style={{display: "flex", flexDirection: "row"}}>
                         <label style={{marginLeft: "0.9vw", paddingRight: "1.5vw"}}>Tags: </label>
                         <input type="text" name="deadline" /> {/*placeholder for now*/}
                     </div>
                     <hr style={{width: "93%", marginLeft: "1vw", height: "1px", background: "black", opacity: 0.8}}/>
-                    {/* <div className="to-do-table" style={{paddingTop: "1vh", display: "flex", flexDirection: "column"}}>
-                    <label style={{marginLeft:"0.9vw", fontSize: "1.2rem", fontWeight: "bold"}}>To-do</label>
+                    {/* <div className="to-do-table" style={{paddingTop: "1vh", display: "flex", flexDirection: "column"}}> */}
+                    {/* <label style={{marginLeft:"0.9vw", fontSize: "1.2rem", fontWeight: "bold"}}>To-do</label>
                         <ul style={{marginLeft:"1vw", opacity: 0.6}}>
                             <li>
                                 <input type="checkbox" /> 
@@ -283,10 +286,10 @@ export default function StudyPlanner(){
                         <br />
                         <textarea name="to-do" placeholder="New to-do..." style={{marginLeft:"1vw", opacity: 0.6, width: "97%", borderBottom: "solid 3px gray"}}></textarea>
                         <input type="button" value="+" className="bg-green-500 text-white p-3 mt-5 rounded-md" style={{marginLeft: "1vw", marginTop: "1vh", background: "var(--background-prime)"}} />
-                    </div>
-                    <br />
+                    </div> */}
+                    {/* <br />
                     <hr style={{width: "93%", marginLeft: "1vw", height: "1px", background: "black", opacity: 0.8}}/> */}
-                    <button className="text-white p-3 mt-5 rounded-md" style={{width: "92%", color: "var(--background-prime)", background: "(var(--foreground)", border: "solid 1px var(--background-prime)", marginLeft: "1vw"}} type="submit">Save</button>
+                    <button className="text-white p-3 mt-5 rounded-md" style={{width: "92%", color: "var(--foreground)", background: "(var(--background-prime)", border: "solid 1px var(--background-prime)", marginLeft: "1vw"}} type="submit">Save</button>
                 </form>
             </DialogContent>
         </Dialog>
