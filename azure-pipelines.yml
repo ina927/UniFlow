@@ -1,5 +1,12 @@
 trigger:
-- dev
+  branches: 
+    include: [ features/F108-calendar ]
+  paths:
+    include:
+      - 'uni-flow/**'
+
+variables:
+  WORKDIR: 'uni-flow'
 
 stages:
   - stage: BuildReact
