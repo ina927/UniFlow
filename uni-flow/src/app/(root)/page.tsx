@@ -1,7 +1,16 @@
+"use client";
+
+import { redirect } from "next/navigation";
+import { useState } from "react";
+
 export default function Home() {
+  const [user, setUser] = useState<string>("");
+
+  if (user) {
+    redirect("/academic");
+  }
+
   return (
-    <div>
-      <h1>Home</h1>
-    </div>
+    <div>Home</div>
   );
 }
