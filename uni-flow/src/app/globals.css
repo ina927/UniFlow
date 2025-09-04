@@ -3,6 +3,9 @@
 @plugin "tailwindcss-animate";
 @import "pretendard/dist/web/static/pretendard.css";
 @import "tw-animate-css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @custom-variant dark (&:is(.dark *));
 
@@ -40,8 +43,8 @@
   --secondary-foreground: oklch(0.205 0 0); */
   --muted: #F0EFEF;
   --muted-foreground: #242426;
-  --accent: #25437C;
-  --accent-foreground: #ffffff;
+  --accent: #F0EFEF;
+  --accent-foreground: oklch(0.145 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);

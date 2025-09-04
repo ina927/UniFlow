@@ -6,7 +6,11 @@ import styles from "./AssessmentControls.module.css"
 import AssessmentModeToggle from "@/features/assessments/AssessmentModeToggle";
 import RequiredMarkToggle from "@/features/assessments/RequiredMarkToggle";
 
-export default function AssessmentControls() {
+type Props = {
+  onAddAssessment?: () => void;
+};
+
+export default function AssessmentControls({ onAddAssessment }: Props) {
     const [mode, setMode] = useState<"view" | "whatif">("view");
     const [showRequiredMarks, setShowRequiredMarks] = useState(false);
 
@@ -19,7 +23,8 @@ export default function AssessmentControls() {
                 <RequiredMarkToggle
                     checked={showRequiredMarks}
                     onToggle={() => setShowRequiredMarks(!showRequiredMarks)}/>
-                <Button className={styles.addButton}> + Add Assessment</Button>
+                <Button className={styles.addButton} onClick={onAddAssessment}>
+                    + Add Assessment</Button>
             </div>
         </div>
     );
