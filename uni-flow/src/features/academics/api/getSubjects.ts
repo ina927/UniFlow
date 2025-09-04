@@ -1,5 +1,5 @@
 import { SUBJECTS_URL } from "../const";
 
-export const getSubjects = async (selectedCourse: string) => {
-    return await fetch(`${SUBJECTS_URL}?courseId=${selectedCourse}`).then(res => res.json());
+export const getSubjects = async (termId: string) => {
+    return await fetch(`${SUBJECTS_URL}?termId=${termId}`).then(res => res.json());
 };
