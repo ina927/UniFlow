@@ -46,21 +46,24 @@ export default function Calendar(){
             });
  
             const fetchEvents =  await response.json();
+            let savedEvents: EventApi[] = [];
             for (let i = 0; i < fetchEvents.length; i++){
                 setSelectedDate(fetchEvents[i].startDate)
                 const calendarApi = selectedDate?.view.calendar
                 calendarApi?.unselect()
-                const newEvent = {
+                const event = calendarApi?.addEvent({
                     id: `${i}`,
                     title: fetchEvents[i].title,
                     start: fetchEvents[i].startDate,
                     end: fetchEvents[i].endDate,
                     allDat: selectedDate?.allDay,
-                };
-                calendarApi?.addEvent(newEvent)
+                });
+                if (event){
+                    savedEvents.push(event);
+                }
             }
-            // setCurrentEvents(savedEvents);
-            // console.log("Events: ", savedEvents);
+            setCurrentEvents(savedEvents);
+            console.log("Events: ", savedEvents);
         }
         fetchToDo();
     }, []); //open json file
