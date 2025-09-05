@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { withDB } from "@/shared";
 import { getUsers, createUser } from "@/entities";
 import { CreateUserDto } from "@/entities/users/dto/create-user.dto";

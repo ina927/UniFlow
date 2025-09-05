@@ -1,8 +1,6 @@
-import { User } from "@/shared/models";
-import { connectDB } from "@/shared/lib/mongoose";
+import { prisma } from '@/shared/lib/prisma';
 
 export const getUsers = async () => {
-  await connectDB();
-  const users = await User.find();
+  const users = await prisma.user.findMany();
   return users;
 };
