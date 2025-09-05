@@ -44,9 +44,8 @@ model User {
   version   Int        @default(1)
   
   // Relations
-  subjects  Subject[] @relation("UserSubjects")
-  assessments Assessment[]
-  todoItems ToDo[]
+  academicCourses AcademicCourse[]
+  todos ToDo[]
   timerSessions TimerSession[]
 }
 
@@ -54,7 +53,6 @@ model Instructor {
   id        String   @id @default(uuid())
   name      String
   email     String?
-  phone     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   version   Int      @default(1)
@@ -66,21 +64,22 @@ model Instructor {
 
 model AcademicCourse {
   id        String   @id @default(uuid())
-  title     String
-  startDate DateTime
-  endDate   DateTime
+  degree     String
+  credits     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   version   Int      @default(1)
   
   // Relations
+  userId  String
+  user    User @relation(fields: [userId], references: [id])
   terms Term[]
 }
 
 model Term {
   id                String   @id @default(uuid())
   title             String?
-  currentAcademicYear Int?
+  academicYear      Int?
   startDate         DateTime?
   endDate           DateTime?
   createdAt         DateTime @default(now())
@@ -105,61 +104,60 @@ model Subject {
   version      Int      @default(1)
   
   // Relations
-  termId       String
-  term         Term     @relation(fields: [termId], references: [id])
+  termId        String
+  term          Term     @relation(fields: [termId], references: [id])
   coordinatorId String?
-  coordinator  Instructor? @relation("CoordinatedSubjects", fields: [coordinatorId], references: [id])
+  coordinator   Instructor? @relation("CoordinatedSubjects", fields: [coordinatorId], references: [id])
   labTutorId    String?
-  labTutor     Instructor? @relation("LabTutorSubjects", fields: [labTutorId], references: [id])
-  assessments  Assessment[]
-  todoItems    ToDo[]
-  users        User[]   @relation("UserSubjects")
-  timerSessions TimerSession[]
+  labTutor      Instructor? @relation("LabTutorSubjects", fields: [labTutorId], references: [id])
+  assessments   Assessment[]
+  todos         ToDo[]
 }
 
 model Assessment {
   id          String   @id @default(uuid())
   title       String
+  type        String
   description String?
   dueDate     DateTime
   weight      Float
-  grade       Float?
-  status      String
+  score       Float?
+  maxScore    Float
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   version     Int      @default(1)
   
   // Relations
   subjectId   String
-  subject     Subject  @relation(fields: [subjectId], references: [id])
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
+  subject     Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  todos       ToDo[]
 }
 
 model ToDo {
   id          String   @id @default(uuid())
   title       String
   description String?
-  dueDate     DateTime
-  priority    String
+  startDate   DateTime?
+  endDate     DateTime?
   status      ToDoStatus @default(PENDING)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   version     Int      @default(1)
   
   // Relations
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  subjectId   String?
-  subject     Subject? @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  subjectId    String?
+  subject      Subject? @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  assessmentId String?
+  assessment   Assessment? @relation(fields: [assessmentId], references: [id])
+  timerSessions TimerSession[]
 }
 
 model TimerSession {
   id          String   @id @default(uuid())
   startTime   DateTime
-  endTime     DateTime
-  duration    Int      // in minutes
-  notes       String?
+  endTime     DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   version     Int      @default(1)
@@ -167,6 +165,6 @@ model TimerSession {
   // Relations
   userId      String
   user        User     @relation(fields: [userId], references: [id])
-  subjectId   String?
-  subject     Subject? @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  todoId      String?
+  todo        ToDo? @relation(fields: [todoId], references: [id])
 }
