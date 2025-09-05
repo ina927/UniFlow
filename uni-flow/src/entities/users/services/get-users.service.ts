@@ -1,6 +1,6 @@
-import { User } from "@/shared/models";
+import { prisma } from '@/shared/lib/prisma';
 
 export const getUsers = async () => {
-  const users = await User.find();
+  const users = await prisma.user.findMany();
   return users;
 };

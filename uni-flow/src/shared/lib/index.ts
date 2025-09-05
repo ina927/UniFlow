@@ -1,1 +1,1 @@
-export { connectDB } from "./mongoose";
+export { prisma } from "./prisma";
