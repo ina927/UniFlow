@@ -1,6 +1,6 @@
-import { User } from "@/shared/models";
+import { prisma } from "@/shared";
 
 export const getUserById = async (id: string) => {
-  const user = await User.findById(id);
+  const user = await prisma.user.findUnique({ where: { id } });
   return user;
 };

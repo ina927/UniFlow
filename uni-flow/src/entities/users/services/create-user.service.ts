@@ -1,9 +1,9 @@
-import { User } from "@/shared/models";
+import { prisma } from '@/shared/lib/prisma';
 import { CreateUserDto } from "../dto/create-user.dto";
 
 export const createUser = async (user: CreateUserDto) => {
   try {
-    const newUser = await User.create(user);
+    const newUser = await prisma.user.create({ data: user });
     return newUser;
   } catch (error) {
     if (error instanceof Error && 'code' in error && error.code === 11000) {

@@ -1,7 +1,7 @@
 import { UpdateUserDto } from "@/entities/users/dto";
-import { User } from "@/shared/models";
+import { prisma } from "@/shared";
 
 export const updateUser = async (id: string, body: UpdateUserDto) => {
-  const user = await User.findByIdAndUpdate(id, body);
+  const user = await prisma.user.update({ where: { id }, data: body });
   return user;
 };
