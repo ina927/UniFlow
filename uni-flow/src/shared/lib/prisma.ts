@@ -60,4 +60,5 @@ if (process.env.NODE_ENV !== 'production') {
   globalThis.prisma = prisma;
 }
 
+// Export types
 export type { PrismaClient };
