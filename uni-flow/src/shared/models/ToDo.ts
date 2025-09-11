@@ -22,3 +22,16 @@ const ToDoSchema = new Schema({
 });
 
 export const ToDo = models.ToDo || model("ToDo", ToDoSchema);
+
+export interface ToDoLayOut{
+  title: String,
+  content: String,
+  startDate: Date,
+  dueDate: Date,
+  taskStatus: { 
+    type: String, 
+    enum: ToDoStatus, 
+    default: ToDoStatus.PENDING, 
+    required: true 
+  }
+}
