@@ -3,8 +3,6 @@
 @plugin "tailwindcss-animate";
 @import "pretendard/dist/web/static/pretendard.css";
 @import "tw-animate-css";
-@tailwind base;
-@tailwind components;
 @tailwind utilities;
 
 @custom-variant dark (&:is(.dark *));

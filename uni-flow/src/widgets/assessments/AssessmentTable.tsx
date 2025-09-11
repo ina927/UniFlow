@@ -3,15 +3,22 @@
 import styles from "./AssessmentTable.module.css";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "@/components/ui/table";
 import AssessmentRow from "@/features/assessments/AssessmentRow";
-import { Assessment } from "@/entities/assessments";
+import { Assessment, Grade } from "@/entities/assessments";
+import { requiredOnSingleItemForGoal, isGraded } from "@/entities/assessments";
 
 type Props = {
     items: Assessment[];
     mode: "view" | "whatif";
     onEnterScore?: (id: string) => void;
+    showRequiredMarks?: boolean;
+    goal?: Grade;
 }
 
-export default function AssessmentTable({ items, mode, onEnterScore}: Props){
+export default function AssessmentTable({ 
+    items, mode, onEnterScore,
+    showRequiredMarks = false,
+    goal = Grade.HD,
+    }: Props){
     const gradedCount = items.filter(i => i.score !== undefined && i.score !== null).length;
     const totalWeight = items.reduce((acc, it) => acc + (it.weight || 0), 0);
 
@@ -28,14 +35,23 @@ export default function AssessmentTable({ items, mode, onEnterScore}: Props){
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {items.map((item) => (
+                    {items.map((item) => {
+                        const req = !isGraded(item)
+                            ? requiredOnSingleItemForGoal(items, item.id, goal)
+                            : null;
+
+                        return (
                         <AssessmentRow
                             key={item.id}
                             item={item}
                             mode={mode}
                             onEnterScore={onEnterScore}
+                            showRequiredMarks={showRequiredMarks}
+                            goal={goal}
+                            requiredRaw={req?.requiredRawScore}
                         />
-                    ))}
+                        );
+                    })}
                 </TableBody>
                 <TableFooter>
                     <TableRow>

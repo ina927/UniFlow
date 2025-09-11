@@ -7,6 +7,7 @@ import TutorInfoCard from "@/widgets/assessments/TutorInfoCard";
 import AssessmentControls from "@/widgets/assessments/AssessmentControls";
 import AssessmentTable from "@/widgets/assessments/AssessmentTable";
 import AddAssessmentModal from "@/widgets/assessments/AddAssessmentModal";
+import GradeSummary from "@/widgets/assessments/GradeSummary";
 import styles from "./page.module.css";
 
 import { Assessment, AssessmentType } from "@/entities/assessments";
@@ -24,6 +25,8 @@ export default function AssessmentsPage(){
     };
 
     const [mode]=useState<"view" | "whatif">("view");
+    const [showRequired, setShowRequired] = useState(false);
+    const goal = Grade.HD;
 
     const items: Assessment[] = [
         {
@@ -108,12 +111,22 @@ export default function AssessmentsPage(){
         <div className={styles.container}>
             <div className={styles.left}> 
                 <SubjectHeader {...exampleSubject}/>
-                <AssessmentControls onAddAssessment={() => setOpenAdd(true)} />
-                <AssessmentTable items={items} mode={mode} onEnterScore={handleEnterScore} />
+                <AssessmentControls 
+                    onAddAssessment={() => setOpenAdd(true)} 
+                    showRequiredMarks={showRequired}
+                    onToggleRequired={(next) => setShowRequired(v => !v)}
+                />
+                <AssessmentTable 
+                    items={items}
+                    mode={mode}
+                    onEnterScore={handleEnterScore}
+                    showRequiredMarks={showRequired}
+                    goal={goal}
+                />
             </div>
             <div className={styles.right}> 
                 <TutorInfoCard {...exampleTutorInfo} />
-                {/* GradeSummary */} 
+                <GradeSummary goal={goal} items={items} />
             </div> 
             <AddAssessmentModal open={openAdd} onOpenChange={setOpenAdd} />
 
