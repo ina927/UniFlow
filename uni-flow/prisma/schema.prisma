@@ -79,8 +79,8 @@ model AcademicCourse {
 
 model Term {
   id                String   @id @default(uuid())
-  title             String?
-  currentAcademicYear Int?
+  title             String
+  academicYear      Int?
   startDate         DateTime?
   endDate           DateTime?
   createdAt         DateTime @default(now())
