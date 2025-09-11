@@ -13,6 +13,7 @@ export default function RegisterPage() {
 
   async function signUp() {
     setMsg(null);
+    if (!email.includes("@")) return setMsg("invalid email");
     if (!email || !pwd) return setMsg("email & password required");
     setLoading(true);
     try {
