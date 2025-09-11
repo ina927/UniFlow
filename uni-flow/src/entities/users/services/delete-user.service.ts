@@ -1,6 +1,6 @@
-import { User } from "@/shared/models";
+import { prisma } from "@/shared";
 
 export const deleteUser = async (id: string) => {
-  const user = await User.findByIdAndDelete(id);
+  const user = await prisma.user.delete({ where: { id } });
   return user;
 };
