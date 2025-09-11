@@ -1,6 +1,6 @@
 "use client";
 
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {
     Dialog,
     DialogContent,
@@ -12,6 +12,7 @@ import Link from "next/link";
 // database import
 import Axios from "axios";
 import { ToDoStatus } from "@/entities/enums";
+import { ToDoEntity } from "@/entities/todos/entities";
 
 // React import
 
@@ -24,6 +25,25 @@ export default function StudyPlanner(){
     const [newEventTitle, setNewEventTitle] = useState<string>("");
     const [content, setContent] = useState<string>("");
     const [taskStatus, setTaskStatus] = useState<string>("");
+    const [events, setFetchEvent] = useState<ToDoEntity[]>();
+
+    // data dummy for now
+    const userId = '68ad41c7486238ade8bb2f2d'
+
+    // click handler
+    useEffect(() => {
+        const fetchToDo = async() => {
+            const response = await fetch('http://localhost:3000/api/todos', {
+                headers: {
+                    userId: userId,
+                }
+            });
+ 
+            const fetchEvents =  await response.json();
+            setFetchEvent(fetchEvents);
+            console.log(events)        }
+        fetchToDo();
+    }, []); //open json file
     
     
     const handleAddButton = () => {

@@ -1,14 +1,14 @@
 "use client";
 
 // React import
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
   } from "@/components/ui/dialog"
-import { DateSelectArg, EventApi, EventClickArg, formatDate } from "@fullcalendar/core/index.js";
+import { DateSelectArg, EventApi, EventClickArg, EventInput, formatDate } from "@fullcalendar/core/index.js";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -18,6 +18,10 @@ import Link from "next/link";
 // database import
 import Axios from "axios";
 import { ToDoStatus } from "@/entities/enums";
+import { start } from "repl";
+import { CalendarSearch } from "lucide-react";
+import { todo } from "node:test";
+import { title } from "process";
 
 
 export default function Calendar(){
@@ -35,6 +39,7 @@ export default function Calendar(){
 
     // data dummy for now
     const userId = '68ad41c7486238ade8bb2f2d'
+    const calendarRef = useRef<FullCalendar | null>(null);
 
     // click handler
     useEffect(() => {
@@ -44,26 +49,21 @@ export default function Calendar(){
                     userId: userId,
                 }
             });
+
+            calendarRef.current?.getApi().removeAllEvents()
  
             const fetchEvents =  await response.json();
-            let savedEvents: EventApi[] = [];
-            for (let i = 0; i < fetchEvents.length; i++){
-                setSelectedDate(fetchEvents[i].startDate)
-                const calendarApi = selectedDate?.view.calendar
-                calendarApi?.unselect()
-                const event = calendarApi?.addEvent({
-                    id: `${i}`,
-                    title: fetchEvents[i].title,
-                    start: fetchEvents[i].startDate,
-                    end: fetchEvents[i].endDate,
-                    allDat: selectedDate?.allDay,
-                });
-                if (event){
-                    savedEvents.push(event);
-                }
-            }
-            setCurrentEvents(savedEvents);
-            console.log("Events: ", savedEvents);
+            
+            const FormattedEvents: EventApi[] = fetchEvents.map((todo: any) => ({
+                id: todo._id,
+                title: todo.title,
+                start: new Date(todo.startDate),
+                end: todo.endDate ? new Date(todo.endDate) : undefined,
+                allDay: todo.allDay ?? false
+            }))
+
+            setCurrentEvents(FormattedEvents)
+            console.log(FormattedEvents)
         }
         fetchToDo();
     }, []); //open json file
@@ -108,6 +108,8 @@ export default function Calendar(){
             end: selectedDate?.end,
             allDat: selectedDate?.allDay,
         };
+
+        setEndDate(selectedDate.end)
 
         // this is for the database
         
@@ -189,14 +191,14 @@ export default function Calendar(){
                     <textarea placeholder="Description(optional) (150 characters max)" className="p-3" style={{height: "10vh", wordWrap: "break-word", textWrap: "balance"}} maxLength={150} onChange={(e) => {
                         setContent(e.target.value)
                     }}/>
-                    <div className="due-date" style={{display: "flex", flexDirection: "row"}}>
+                    {/* <div className="due-date" style={{display: "flex", flexDirection: "row"}}>
                         <label style={{marginLeft: "0.9vw", paddingRight: "1.5vw"}}>Due Date: </label>
                         <input type="date" name="deadline" required onChange={(e) => {
                             const date = e.target.value;
                             const newDate = new Date(date)
                             setEndDate(newDate)
                         }}/>
-                    </div>
+                    </div> */}
                     <div className="tags" style={{display: "flex", flexDirection: "row"}}>
                         <label style={{marginLeft: "0.9vw", paddingRight: "1.5vw"}}>Tags: </label>
                         <input type="text" name="deadline" /> {/*placeholder for now*/}
