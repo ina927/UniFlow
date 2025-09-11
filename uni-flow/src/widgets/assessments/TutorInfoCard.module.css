@@ -1,5 +1,5 @@
 .tutorBox {
-    width: 100%;
+    width: auto;
     margin: 0;
     padding: 20px;
     background-color: var(--components-fill);

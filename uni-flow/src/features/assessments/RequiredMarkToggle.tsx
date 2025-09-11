@@ -4,7 +4,7 @@ import styles from "@/widgets/assessments/AssessmentControls.module.css";
 
 type Props = {
     checked: boolean;
-    onToggle: () => void;
+    onToggle: (next: boolean) => void;
 }
 
 export default function RequiredMarkToggle({ checked, onToggle }: Props) {

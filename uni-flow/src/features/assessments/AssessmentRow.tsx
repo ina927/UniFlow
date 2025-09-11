@@ -15,6 +15,7 @@ type Props = {
     showRequiredMarks?: boolean;
     goal?: Grade; 
     onEnterScore?: (id: string) => void;
+    requiredRaw?: number | null;
 };
 
 export default function AssessmentRow({
@@ -23,6 +24,7 @@ export default function AssessmentRow({
     showRequiredMarks = false,
     goal = Grade.HD,
     onEnterScore,
+    requiredRaw = null,
 }: Props) {
     // derived values for display
     const graded = isGraded(item); // score present & maxScore > 0
@@ -60,13 +62,20 @@ export default function AssessmentRow({
                 </span>
             </TableCell>
 
-            {/* Score */}
+           {/* Score + Required */}
             <TableCell className={styles.colScore}>
-                <span className="text-body1 text-primary">
-                    {graded ? fmt(item.score!) : "-"} / {fmt(item.maxScore)}
-                </span>
+                <div className={styles.scoreBlock}>
+                    <span className="text-body1 text-primary">
+                        {graded ? fmt(item.score!) : "-"} / {fmt(item.maxScore)}
+                    </span>
+                    {showRequiredMarks && !graded && Number.isFinite(requiredRaw) && (
+                        <span className={styles.requiredNote}>
+                            {fmt(requiredRaw as number)} required
+                        </span>
+                    )}
+                </div>
             </TableCell>
-
+            
             {/* Enter Score Btn */}
             <TableCell className={styles.colAction}>
                 <button
