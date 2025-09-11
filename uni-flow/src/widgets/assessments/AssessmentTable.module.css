@@ -82,6 +82,21 @@
     font-weight: 500;
 }
 
+.scoreBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.requiredNote {
+    color: var(--destructive);
+    font-size: 13px;
+    line-height: 1.2;
+    font-weight: 600;
+}
+
+
 @media (max-width: 720px) {
   .footer {
     grid-template-columns: 1fr;
