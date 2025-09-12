@@ -1,8 +1,4 @@
-export { createAcademicCourse } from "./createAcademicCourse.service";
-export { getAcademicCourses } from "./getAcademicCourses.service";
-
-export { createSubject } from "./createSubject.service";
-export { getSubjects } from "./getSubjects.service";
-
-export { createTerm } from "./createTerm.service";
-export { getTerms } from "./getTerms.service";
+export * from "./academicCourse.service";
+export * from "./instructor.service";
+export * from "./subject.service";
+export * from "./term.service";
