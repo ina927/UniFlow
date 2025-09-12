@@ -1,77 +1,61 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 
-import { getSubjects } from "@/features/academics/api";
-import { SubjectItem, TermSeletor } from "@/features/academics/ui";
-import { SubjectEntity } from "@/entities";
-import {  SUBJECTS_QUERY_KEY } from "@/shared/consts";
-import { AcademicSeletor } from "@/features/academics/ui/AcademicSeletor";
+import { getAcademicCourses } from "@/features/academics";
+import { ACADEMIC_COURSES_QUERY_KEY } from "@/shared/consts";
+import { AcademicHeader } from "@/widgets/academics";
+import { useAcademicStore } from "@/shared/stores/academicStore";
 
 export default function Academic() {
-  const [selectedCourse, setSelectedCourse] = useState<string>("");
-  const [selectedTerm, setSelectedTerm] = useState<string>("");
-
-  console.log(selectedCourse);
-  console.log(selectedTerm);
+  const { academicCourse, setAcademicCourse } = useAcademicStore();
   
-  const { data: subjectsData } = useQuery({
-    queryKey: [SUBJECTS_QUERY_KEY, selectedTerm],
-    queryFn: () => getSubjects(selectedTerm),
-    enabled: !!selectedTerm,
+  const { 
+    data: academicCoursesData, 
+    isPending: academicCoursesIsPending, 
+    isError: academicCoursesIsError, 
+    error: academicCoursesError 
+  } = useQuery({
+    queryKey: [ACADEMIC_COURSES_QUERY_KEY],
+    queryFn: () => getAcademicCourses(),
+    enabled: true,
   });
 
-  // if (isPending) {
-  //   return <div>Loading courses...</div>;
-  // }
+  // Move useEffect to the top level of the component
+  useEffect(() => {
+    if (academicCoursesData?.data?.data?.[0]) {
+      setAcademicCourse(academicCoursesData.data.data[0]);
+    }
+  }, [academicCoursesData, setAcademicCourse]);
 
-  // if (isError) {
-  //   return <div>Error loading courses: {error?.message}</div>;
-  // }
+  if (academicCoursesIsPending) {
+    return <div className="flex justify-center items-center h-screen">Loading courses...</div>;
+  }
 
-  const subjects: SubjectEntity[] = (subjectsData?.data && Array.isArray(subjectsData.data) && subjectsData.data.length > 0) ? subjectsData.data : [
-    {
-      id: "1",
-      termId: "1",
-      title: "Subject 1",
-      code: "SUBJ1",
-      credits: 6,
-    },
-    {
-      id: "2",
-      termId: "1",
-      title: "Subject 2",
-      code: "SUBJ2",
-      credits: 6,
-    },
-  ];
+  if (academicCoursesIsError) {
+    return <div className="flex justify-center items-center h-screen">Error loading courses: {academicCoursesError?.message}</div>;
+  }
 
   return (
-    <div className="p-4 max-w-[calc(100vw-94px)]">
-      <h2 className="text-lg font-bold mb-4">
-        <AcademicSeletor
-          className="mr-4"
-          selectedCourse={selectedCourse}
-          setSelectedCourse={setSelectedCourse}
-        />
+    <section className="p-4 max-w-[calc(100vw-94px)]">
+      <AcademicHeader academicCourse={academicCourse!} />
 
-        <TermSeletor
-          selectedAcademicCourseId={selectedCourse}
-          selectedTerm={selectedTerm}
-          setSelectedTerm={setSelectedTerm}
+      <div className="flex flex-row items-center mb-4">
+        <h3 className="font-bold">Terms: </h3>
+        {/* <TermSeletor
+          className="ml-2 w-48 cursor-pointer"
+        /> */}
+        <Image
+          src="/settings.svg"
+          alt="Setting"
+          width={20}
+          height={20}
+          className="ml-2 cursor-pointer"
+          onClick={() => {}}
         />
-      </h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full gap-4 mt-6">
-        {subjects.length > 0 ? (
-          subjects.map((subject: SubjectEntity) => (
-            <SubjectItem key={subject.id} subject={subject} />
-          ))
-        ) : (
-          <p>No subjects found for the selected term.</p>
-        )}
       </div>
-    </div>
+    </section>
   );
 }
