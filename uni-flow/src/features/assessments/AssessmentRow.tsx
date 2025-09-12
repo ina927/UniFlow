@@ -16,6 +16,7 @@ type Props = {
     goal?: Grade; 
     onEnterScore?: (id: string) => void;
     requiredRaw?: number | null;
+    requiredPct?: number | null;
 };
 
 export default function AssessmentRow({
@@ -25,6 +26,7 @@ export default function AssessmentRow({
     goal = Grade.HD,
     onEnterScore,
     requiredRaw = null,
+    requiredPct = null,
 }: Props) {
     // derived values for display
     const graded = isGraded(item); // score present & maxScore > 0
@@ -68,9 +70,9 @@ export default function AssessmentRow({
                     <span className="text-body1 text-primary">
                         {graded ? fmt(item.score!) : "-"} / {fmt(item.maxScore)}
                     </span>
-                    {showRequiredMarks && !graded && Number.isFinite(requiredRaw) && (
+                    {showRequiredMarks && !graded && requiredRaw !== null && Number.isFinite(requiredRaw) && (
                         <span className={styles.requiredNote}>
-                            {fmt(requiredRaw as number)} required
+                          {requiredPct! > 100 ? "Goal unreachable" : `${fmt(requiredRaw)} required`}
                         </span>
                     )}
                 </div>
