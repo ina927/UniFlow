@@ -3,8 +3,8 @@
 import styles from "./AssessmentTable.module.css";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "@/components/ui/table";
 import AssessmentRow from "@/features/assessments/AssessmentRow";
-import { Assessment, Grade } from "@/entities/assessments";
-import { requiredOnSingleItemForGoal, isGraded } from "@/entities/assessments";
+import { Assessment, Grade, overallPercent } from "@/entities/assessments";
+import { requiredMarksPerRemaining, isGraded } from "@/entities/assessments";
 
 type Props = {
     items: Assessment[];
@@ -21,6 +21,7 @@ export default function AssessmentTable({
     }: Props){
     const gradedCount = items.filter(i => i.score !== undefined && i.score !== null).length;
     const totalWeight = items.reduce((acc, it) => acc + (it.weight || 0), 0);
+    const reqMap = requiredMarksPerRemaining(items, goal);
 
     return(
         <div className={styles.wrapper}>
@@ -36,20 +37,18 @@ export default function AssessmentTable({
                 </TableHeader>
                 <TableBody>
                     {items.map((item) => {
-                        const req = !isGraded(item)
-                            ? requiredOnSingleItemForGoal(items, item.id, goal)
-                            : null;
-
+                        const req = !isGraded(item) ? reqMap[item.id] : undefined;
                         return (
-                        <AssessmentRow
+                            <AssessmentRow
                             key={item.id}
                             item={item}
                             mode={mode}
                             onEnterScore={onEnterScore}
                             showRequiredMarks={showRequiredMarks}
                             goal={goal}
-                            requiredRaw={req?.requiredRawScore}
-                        />
+                            requiredRaw={req?.requiredRawScore ?? null}
+                            requiredPct={req?.requiredPctOnItem ?? null}
+                            />
                         );
                     })}
                 </TableBody>
@@ -65,8 +64,7 @@ export default function AssessmentTable({
                             <div className={styles.footerRight}>
                                 <span className="text-body1-bold text-primary">Total weight:</span>
                                 <span className="text-body1 text-primary">
-                                    {items.reduce((acc,it) => acc + (it.weight || 0), 0).toFixed(1)} / {" "}
-                                </span>
+                                    { overallPercent(items).toFixed(1)} /{" "}                                </span>
                                 <span className="text-body1-bold primary-light">{totalWeight.toFixed(1)} %</span>
                                 {totalWeight !== 100 && (
                                     <span className={styles.weightWarning}>
