@@ -3,8 +3,10 @@ export type CreateSubjectDto = {
   title: string;
   code: string;
   credits: number;
-  coordinatorId?: string;
-  labTutorId?: string;
+  coordinatorName?: string;
+  coordinatorEmail?: string;
+  labTutorName?: string;
+  labTutorEmail?: string;
   goalGrade?: number;
   actualGrade?: number;
 };
