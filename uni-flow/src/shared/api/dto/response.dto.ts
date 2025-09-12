@@ -1,4 +1,6 @@
-export interface ResponseDto {
-  status: number;
-  data: unknown;
+export interface ResponseDto<T = unknown> {
+  status: boolean;
+  statusCode: number;
+  message: string;
+  data?: T;
 }
