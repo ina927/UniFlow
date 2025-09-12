@@ -1,9 +1,9 @@
 export interface AcademicCourseEntity {
   id: string;
-  title: string;
+  userId: string;
   degree: string;
-  major: string;
-  totalAcademicYear: number;
+  credits: number;
   createdAt: Date;
   updatedAt: Date;
+  version: number;
 }
