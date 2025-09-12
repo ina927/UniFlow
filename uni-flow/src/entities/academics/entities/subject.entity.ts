@@ -1,11 +1,14 @@
 export interface SubjectEntity {
-  id: number;
-  termId: number;
+  id: string;
+  termId: string;
   title: string;
   code: string;
   credits: number;
-  coordinatorId?: number;
-  labTutorId?: number;
-  goalGrade?: number;
-  actualGrade?: number;
+  coordinatorId?: string | null;
+  labTutorId?: string | null;
+  goalGrade?: number | null;
+  actualGrade?: number | null;
+  createdAt: Date;
+  updatedAt: Date;
+  version: number;
 }
