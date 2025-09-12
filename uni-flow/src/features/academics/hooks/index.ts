@@ -1,0 +1,1 @@
+export { useSubjectsQuery } from "./useSubjectsQuery";
