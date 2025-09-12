@@ -20,6 +20,7 @@ export const Header = (props: HeaderProps) => {
             alt={LOGO.alt}
             width={68}
             height={68}
+            priority
           />
         </Link>
       </div>
