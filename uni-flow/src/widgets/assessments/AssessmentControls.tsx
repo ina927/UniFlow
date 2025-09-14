@@ -7,23 +7,24 @@ import AssessmentModeToggle from "@/features/assessments/AssessmentModeToggle";
 import RequiredMarkToggle from "@/features/assessments/RequiredMarkToggle";
 
 type Props = {
-    onAddAssessment?: () => void;
+    mode: "view" | "whatif";
+    onModeChange: (m: "view" | "whatif") => void;
     showRequiredMarks?: boolean;
     onToggleRequired?: (next: boolean) => void;
+    onAddAssessment?: () => void;
 };
 
 export default function AssessmentControls({
-    onAddAssessment,
+    mode,
+    onModeChange,
     showRequiredMarks = false,
     onToggleRequired,
+    onAddAssessment,
 }: Props) {    
-    
-    const [mode, setMode] = useState<"view" | "whatif">("view");
-
     return (
         <div className={styles.container}>
             <div className={styles.topRow}>
-                <AssessmentModeToggle mode={ mode } onChange={setMode} />
+                <AssessmentModeToggle mode={ mode } onChange={onModeChange} />
             </div>
             <div className={styles.bottomRow}>
                 <RequiredMarkToggle
@@ -33,6 +34,11 @@ export default function AssessmentControls({
                 <Button className={styles.addButton} onClick={onAddAssessment}>
                     + Add Assessment</Button>
             </div>
+            {mode === "whatif" && (
+                <span className={styles.simNotice}>
+                    You are on What-if simulation mode: These scores are not saved.
+                </span>
+            )}
         </div>
     );
 
