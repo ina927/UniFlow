@@ -15,7 +15,8 @@ import type { Assessment } from "@/entities/assessments";
 
 type Props = {
   goal: Grade;          
-  items: Assessment[];   
+  items: Assessment[];
+  whatIfMode?: boolean;
 };
 
 function fmtPct(p: number) {
@@ -23,7 +24,7 @@ function fmtPct(p: number) {
   return `${n}`;
 }
 
-export default function GradeSummary({ goal, items }: Props) {
+export default function GradeSummary({ goal, items, whatIfMode }: Props) {
   const completedPct = completedWeightedPercent(items);     
   const completedLetter = letterFromPercent(completedPct); 
 
@@ -55,24 +56,22 @@ export default function GradeSummary({ goal, items }: Props) {
       </div>
 
       <div className={styles.block}>
-        <div className={`text-body1-bold text-primary ${styles.blockTitle}`}>Overall Grade:
-        <div className="text-body1 text-primary">(All Assessment)</div>
+          <div className={`text-body1-bold text-primary ${styles.blockTitle}`}>Overall Grade:
+          <div className="text-body1 text-primary">(All Assessment)</div>
+          </div>
+          <DonutGauge
+              value={overallPct}
+              label={overallLetter}
+              subLabel={fmtPct(overallPct) + "%"}
+              goalMarker={goalCut}
+              trackThickness={18}
+              progressThickness={24}
+              progressColor="#F2808E"
+          />
+          <div className={`text-body1-bold text-primary ${styles.required}`}>
+              {"> "}<span style={{color: "#F2808E"}}>{fmtPct(needed)}</span>% required to reach {goal}
+          </div>
         </div>
-        <DonutGauge
-          value={overallPct}
-          label={overallLetter}
-          subLabel={fmtPct(overallPct) + "%"}
-          goalMarker={goalCut}
-          trackThickness={18}
-          progressThickness={24}
-          progressColor="#F2808E"
-          goalColor="#D8DAE5"
-          goalThickness={24}
-        />
-        <div className={`text-body1-bold text-primary ${styles.required}`}>
-          {"> "}<span style={{color: "#F2808E"}}>{fmtPct(needed)}</span>% required to reach {goal}
-        </div>
-      </div>
     </aside>
   );
 }

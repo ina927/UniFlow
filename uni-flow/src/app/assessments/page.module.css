@@ -1,7 +1,7 @@
 .container {
     display: flex;
     width: 90%;  
-    margin: 60px auto;
+    margin: 44px auto;
     gap: 8%;
     grid-template-columns: 55% 32%;
     box-sizing: border-box;
