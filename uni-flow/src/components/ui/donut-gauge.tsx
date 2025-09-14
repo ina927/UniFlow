@@ -26,8 +26,8 @@ export default function DonutGauge({
   trackColor = "var(--muted)",
   progressColor = "var(--primary)",
   goalMarker,
-  goalColor = "var(--border)",
-  goalThickness,
+  goalColor="#D8DAE5",
+  goalThickness = 24,
 }: DonutGaugeProps) {
   const maxStroke = Math.max(trackThickness, progressThickness);
   const radius = (size - maxStroke) / 2;

@@ -22,3 +22,11 @@
   align-items: center;
   gap: 10px;
 }
+
+.simNotice{
+    font-size: 13px;
+    color: var(--destructive);
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: -32px;
+}

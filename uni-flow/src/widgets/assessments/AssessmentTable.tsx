@@ -4,21 +4,25 @@ import styles from "./AssessmentTable.module.css";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "@/components/ui/table";
 import AssessmentRow from "@/features/assessments/AssessmentRow";
 import { Assessment, Grade, overallPercent } from "@/entities/assessments";
-import { requiredMarksPerRemaining, isGraded } from "@/entities/assessments";
+import { requiredMarksPerRemaining, isGraded, neededToReach, remainingWeightSum } from "@/entities/assessments";
 
 type Props = {
     items: Assessment[];
     mode: "view" | "whatif";
     onEnterScore?: (id: string) => void;
+    onWhatIfScoreChange?: (id: string, value: number | null) => void;
     showRequiredMarks?: boolean;
     goal?: Grade;
 }
 
 export default function AssessmentTable({ 
-    items, mode, onEnterScore,
+    items, mode, onEnterScore, onWhatIfScoreChange,
     showRequiredMarks = false,
     goal = Grade.HD,
     }: Props){
+    const need = neededToReach(items, goal);
+    const left = remainingWeightSum(items);
+    const goalUnreachable = need > left + 1e-9;
     const gradedCount = items.filter(i => i.score !== undefined && i.score !== null).length;
     const totalWeight = items.reduce((acc, it) => acc + (it.weight || 0), 0);
     const reqMap = requiredMarksPerRemaining(items, goal);
@@ -44,6 +48,7 @@ export default function AssessmentTable({
                             item={item}
                             mode={mode}
                             onEnterScore={onEnterScore}
+                            onWhatIfScoreChange={onWhatIfScoreChange}
                             showRequiredMarks={showRequiredMarks}
                             goal={goal}
                             requiredRaw={req?.requiredRawScore ?? null}
@@ -73,7 +78,13 @@ export default function AssessmentTable({
                                 )}
                             </div>   
                         </TableCell>
-                        <TableCell colSpan={2}></TableCell>
+                        <TableCell colSpan={2}>
+                            {goalUnreachable && (
+                                <span className={styles.goalWarn}>
+                                    Goal unreachable - adjust your goal.
+                                </span>
+                            )}
+                        </TableCell>
                     </TableRow>
                 </TableFooter>
             </Table>          
