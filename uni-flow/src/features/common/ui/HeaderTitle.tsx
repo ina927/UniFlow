@@ -11,7 +11,7 @@ export const HeaderTitle = () => {
   
   return (
     <Link href={pathname}>
-      <h1 className={clsx("text-center text-title3-bold")}>
+      <h1 className={clsx("text-center text-title3-bold text-primary ml-6 mb-2")}>
         {displayText}
       </h1>
     </Link>
