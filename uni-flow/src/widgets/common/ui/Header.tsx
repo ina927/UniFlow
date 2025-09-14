@@ -11,7 +11,7 @@ interface HeaderProps {
 
 export const Header = (props: HeaderProps) => {
   return (
-    <header className={clsx(props.className, "flex flex-row w-full h-[74px] items-center px-[16px]")}>
+    <header className={clsx(props.className, "flex flex-row w-full max-h-[60px] items-center px-[16px]")}>
       <div className="flex items-center mr-[8px]">
         <Link href="/">
           <Image 
@@ -24,7 +24,7 @@ export const Header = (props: HeaderProps) => {
           />
         </Link>
       </div>
-      <div className="flex items-center justify-between ml-[8px] w-full h-[74px] border-b border-b-[#E5E7EB]">
+      <div className="flex items-center justify-between ml-[8px] w-full h-[60px] border-b border-b-[#E5E7EB]">
         <HeaderTitle />
         <div className="flex items-center mr-[8px]">
           <Link href="/settings">
