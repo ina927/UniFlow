@@ -114,8 +114,8 @@ export default function Calendar(){
         // this is for the database
         
         const newToDo = {
-            userId: userId,
-            subjectId: null,
+            userId: '83482f49-8367-48d1-93f0-e98f01010f0f',
+            subjectId: '91bc3c52-fe3c-4df8-ad77-284c108730a6',
             assessmentId: null,
             title: newEventTitle,
             content: content,
@@ -134,8 +134,8 @@ export default function Calendar(){
     <div className="studyPlanner" style={{marginTop: "3rem", marginLeft: "6rem", overflow: "hidden"}}>
         <div className="title" style={{display: "flex", flexDirection: "row", width: "100vw"}}>
             <h1 style={{fontSize: "2rem", fontWeight: "bold"}}>User&#39;s Study Planner</h1>
-            <button style={{float: "right", marginLeft: "50vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw"}}>Select Filter</button>
-            <Link href="../planner" style={{float: "right", marginLeft: "2vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw", paddingTop:"0.8vw"}}>List View</Link>
+            <button style={{float: "right", marginLeft: "48vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw"}} className="text-title3-bold">Select Filter</button>
+            <Link href="../planner" style={{float: "right", marginLeft: "1vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw", paddingTop:"1vw"}} className="text-title3-bold">List View</Link>
         </div>
         <br />
 

@@ -493,33 +493,3 @@ div.navbar {
 div.navbar a{
   margin-top: 0.5rem;
 }
-
-/* STUDY PLANNER SETTINGS */
-div.to-doList{
-  display: flex;
-  flex-direction: row;
-}
-
-div.list{
-  width: 23.5vw;
-  height: 65vh;
-  background: var(--background-prime);
-  border-radius: 1vw;
-}
-
-div.todoList2{
-  width: 23.5vw;
-  height: 53vh;
-  margin-top: -1vw;
-  border-radius: 1rem;
-  background: var(--background-prime);
-  overflow-y: auto;
-}
-
-div.to-doCard{
-  background: var(--background);
-  border-radius: 1rem;
-  width: 20.5vw;
-  height: 10vh;
-  color: var(--background-prime);
-}
