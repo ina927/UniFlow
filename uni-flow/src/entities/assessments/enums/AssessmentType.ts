@@ -4,5 +4,5 @@ export enum AssessmentType {
     INDV_ASSIGNMENT = "Individual Assignment",
     GROUP_ASSIGNMENT = "Group Assignment",
     GROUP_INDV_ASSIGNMENT = "Group, Individual Assignment",
-    Other = "Other",
+    OTHER = "Other",
 }

@@ -3,8 +3,8 @@
 import styles from "./AssessmentTable.module.css";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "@/components/ui/table";
 import AssessmentRow from "@/features/assessments/AssessmentRow";
-import { Assessment, Grade, overallPercent } from "@/entities/assessments";
-import { requiredMarksPerRemaining, isGraded, neededToReach, remainingWeightSum } from "@/entities/assessments";
+import { Assessment, Grade } from "@/entities/assessments";
+import { overallPercent, requiredMarksPerRemaining, isGraded, neededToReach, remainingWeightSum } from "@/features/assessments/grade-logics";
 
 type Props = {
     items: Assessment[];
@@ -73,7 +73,8 @@ export default function AssessmentTable({
                                 <span className="text-body1-bold primary-light">{totalWeight.toFixed(1)} %</span>
                                 {totalWeight !== 100 && (
                                     <span className={styles.weightWarning}>
-                                        Total weight is not 100%. Please add all assessments for accurate calculation.
+                                        Total weight is not 100%. <br></br>
+                                        Please add all assessments for accurate calculation.
                                     </span>
                                 )}
                             </div>   
