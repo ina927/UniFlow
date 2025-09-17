@@ -54,7 +54,8 @@ export default function AssessmentTable({ items, mode, onEnterScore}: Props){
                                 <span className="text-body1-bold primary-light">{totalWeight.toFixed(1)} %</span>
                                 {totalWeight !== 100 && (
                                     <span className={styles.weightWarning}>
-                                        Total weight is not 100%. Please add all assessments for accurate calculation.
+                                        Total weight is not 100%. <br></br>
+                                        Please add all assessments for accurate calculation.
                                     </span>
                                 )}
                             </div>   
