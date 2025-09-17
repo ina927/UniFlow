@@ -10,15 +10,21 @@ export default function TutorInfoCard({ tutorEmail, coordinatorEmail }: TutorInf
     <div className={styles.tutorBox}>
       <p className="text-body1-bold">
         Tutor:{' '}
-        <span className="text-body1 underline">
+         <a
+          className="text-body1 underline"
+          href={`mailto:${tutorEmail}`}
+        >
           {tutorEmail}
-        </span>
+        </a>
       </p>
       <p className="text-body1-bold">
         Coordinator:{' '}
-        <span className="text-body1 underline">
+        <a
+          className="text-body1 underline"
+          href={`mailto:${coordinatorEmail}`}
+        >
           {coordinatorEmail}
-        </span>
+        </a>
       </p>
     </div>
   );

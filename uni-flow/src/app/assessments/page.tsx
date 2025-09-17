@@ -7,52 +7,52 @@ import TutorInfoCard from "@/widgets/assessments/TutorInfoCard";
 import AssessmentControls from "@/widgets/assessments/AssessmentControls";
 import AssessmentTable from "@/widgets/assessments/AssessmentTable";
 import AddAssessmentModal from "@/widgets/assessments/AddAssessmentModal";
+import EnterScoreModal from "@/widgets/assessments/EnterScoreModal";
 import GradeSummary from "@/widgets/assessments/GradeSummary";
+import { Grade } from "@/entities/assessments";
+import {
+  useAssessmentsQuery,
+  useCreateAssessment,
+  useEnterScore,
+} from "@/features/assessments/hooks/useAssessmentsQuery";
+import { useSubjectDetailQuery } from "@/features/academics/hooks/useSubjectDetailQuery";
+import { letterFromPercent } from "@/features/assessments/grade-logics";
+import { useSearchParams } from "next/navigation";
 import styles from "./page.module.css";
 
-import { Assessment, AssessmentType } from "@/entities/assessments";
-import { Grade } from "@/entities/assessments";
-import EnterScoreModal from "@/widgets/assessments/EnterScoreModal";
 
 /**
  * AssessmentsPage
  * Main page for displaying all assessments of a subject.
  * Combines header, controls, table, summary, and modals into one view.
+ * Uses ?subjectId=... query param (no route change required)
  */
-export default function AssessmentsPage(){ 
-    const exampleSubject = { 
-        subjectName: "Advanced Software Development", 
-        subjectCode: "41026", term: "Spring", year: 2025, 
-        creditPoint: 6, 
-    } 
-    const exampleTutorInfo = {
-        tutorEmail: "dyer.david@uts.edu.au",
-        coordinatorEmail: "hua.zuo@uts.edu.au",
-    };
+export default function AssessmentsPage(){
+    // Read subjectId from query string: /assessments?subjectId=subj-41026
+    const searchParams = useSearchParams();
+    const subjectId = searchParams.get("subjectId") ?? "";
 
+    // Load subject list and pick the current one by id
+    const { data: subject } = useSubjectDetailQuery(subjectId);
+
+    // Assessments query/mutations
+    const { data: items = [], isLoading } = useAssessmentsQuery(subjectId);
+    const createAssessment = useCreateAssessment(subjectId);
+    const enterScore = useEnterScore(subjectId);
+    
+    // Local UI state
     const [mode, setMode] = useState<"view" | "whatif">("view");
-
-    // Example assessments (would be replaced with DB data later)
-    const [items, setItems] = useState<Assessment[]>([
-        { id: "a1", subjectId: "subj-41026", title: "Assessment task 1: Project Release 0", type: AssessmentType.GROUP_INDV_ASSIGNMENT, weight: 20, dueDate: "2025-09-05T23:59:00+10:00", maxScore: 20, score: 19.8 },
-        { id: "a2", subjectId: "subj-41026", title: "Assessment task 2: Project Release 1", type: AssessmentType.GROUP_INDV_ASSIGNMENT, weight: 30, dueDate: "2025-10-03T23:59:00+10:00", maxScore: 100, score: 90 },
-        { id: "a3", subjectId: "subj-41026", title: "Assessment task 3: Project Release 2", type: AssessmentType.GROUP_INDV_ASSIGNMENT, weight: 30, dueDate: "2025-10-24T23:59:00+11:00", maxScore: 100 },
-        { id: "q1", subjectId: "subj-41026", title: "Quiz 1", type: AssessmentType.QUIZ, weight: 5, dueDate: "2025-08-27T23:59:00+10:00", maxScore: 10, score: 7 },
-        { id: "q2", subjectId: "subj-41026", title: "Quiz 2", type: AssessmentType.QUIZ, weight: 5, dueDate: "2025-09-03T23:59:00+10:00", maxScore: 10, score: 10 },
-        { id: "q3", subjectId: "subj-41026", title: "Quiz 3", type: AssessmentType.QUIZ, weight: 5, dueDate: "2025-10-07T23:59:00+11:00", maxScore: 10 },
-        { id: "q4", subjectId: "subj-41026", title: "Quiz 4", type: AssessmentType.QUIZ, weight: 5, dueDate: "2025-10-27T23:59:00+11:00", maxScore: 10 },
-    ]);
 
     // What-If overlay map: id → number | null | undefined
     // undefined: no simulation, number: simulated score, null: simulated ungraded
     const [whatIf, setWhatIf] = useState<Record<string, number | null | undefined>>({});
 
     // Merge items with what-if overlay only when mode === "whatif"
-    const displayItems = useMemo<Assessment[]>(() => {
+    const displayItems = useMemo(() => {
         if (mode !== "whatif") return items;
-        return items.map(it => {
+        return items.map((it) => {
         const sim = whatIf[it.id];
-        return (sim !== undefined) ? { ...it, score: sim } : it;
+        return sim !== undefined ? { ...it, score: sim } : it;
         });
     }, [items, whatIf, mode]);
 
@@ -72,23 +72,19 @@ export default function AssessmentsPage(){
         setEnterOpen(true);
     };
 
-    // Handler for saving updated score
+    // Save score via API 
     const handleSaveScore = (id: string, nextScore: number) => {
-        setItems(prev =>
-            prev.map(it => (it.id === id ? { ...it, score: nextScore } : it))
-        );
-        // TODO: Replace with API call when DB integration is ready
+        enterScore.mutate({ assessmentId: id, score: nextScore });
     };
 
-    // Handler for clearing its score
+    // Clear score via API (send score = null)
     const handleClearScore = (id: string) => {
-        setItems(prev => prev.map(it => (it.id === id ? { ...it, score: null } : it)));
-        // TODO: API call for clearing score
+        enterScore.mutate({ assessmentId: id, score: null });
     };
 
     const [openAdd, setOpenAdd] = useState(false);
     const [showRequired, setShowRequired] = useState(false);
-    const goal = Grade.HD;
+    const goal = subject?.goalGrade != null ? letterFromPercent(subject.goalGrade) : Grade.HD;
 
     // Reset simulation when switching back to view
     const handleModeChange = (next: "view" | "whatif") => {
@@ -98,14 +94,21 @@ export default function AssessmentsPage(){
 
     // revision token based on what-if map (small dataset → OK)
     const whatIfRev = useMemo(
-    () => Object.entries(whatIf).map(([k, v]) => `${k}:${v ?? ""}`).join("|"),
-    [whatIf]
+        () => Object.entries(whatIf).map(([k, v]) => `${k}:${v ?? ""}`).join("|"),
+        [whatIf]
     );
     
     return ( 
         <div className={styles.container}>
             <div className={styles.left}> 
-                <SubjectHeader {...exampleSubject}/>
+                {/* Subject header sourced from DB (fallbacks keep UI stable) */}
+                <SubjectHeader
+                    subjectName={subject?.title ?? "—"}
+                    subjectCode={subject?.code ?? "—"}
+                    term={subject?.termTitle ?? "—"}
+                    year={subject?.academicYear ?? new Date().getFullYear()}
+                    creditPoint={subject?.credits ?? 0}
+                />
                 <AssessmentControls 
                     mode={mode}
                     onModeChange={handleModeChange}
@@ -123,7 +126,10 @@ export default function AssessmentsPage(){
                 />
             </div>
             <div className={styles.right}> 
-                <TutorInfoCard {...exampleTutorInfo} />
+                <TutorInfoCard
+                    tutorEmail={subject?.labTutorEmail ?? "-"}
+                    coordinatorEmail={subject?.coordinatorEmail ?? "-"}
+                />
                 <GradeSummary
                     key={`${mode}-${whatIfRev}`}
                     goal={goal}
@@ -133,7 +139,7 @@ export default function AssessmentsPage(){
                 </div> 
 
             {/* Modal for adding a new assessment */}
-            <AddAssessmentModal open={openAdd} onOpenChange={setOpenAdd} />
+            <AddAssessmentModal open={openAdd} onOpenChange={setOpenAdd} subjectId={subjectId} />
 
             {/* Modal for entering/updating score */}
             {selected && (
