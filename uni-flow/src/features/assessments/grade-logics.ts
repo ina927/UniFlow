@@ -1,5 +1,4 @@
-import type { Assessment } from "../entities/assessment.entity";
-import { Grade } from "../enums/Grade";
+import { Assessment, Grade } from "@/entities/assessments";
 
 export const GRADE_THRESHOLDS: Record<Grade, number> = {
     [Grade.HD]: 85,

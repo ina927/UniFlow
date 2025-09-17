@@ -2,14 +2,14 @@
 
 import styles from "./GradeSummary.module.css";
 import DonutGauge from "@/components/ui/donut-gauge";
+import { Grade } from "@/entities/assessments";
 import {
-  Grade,
   overallPercent,
   completedWeightedPercent,
   letterFromPercent,
   neededToReach,
   GRADE_THRESHOLDS,
-} from "@/entities/assessments";
+} from "@/features/assessments/grade-logics";
 
 import type { Assessment } from "@/entities/assessments";
 
