@@ -12,3 +12,18 @@ export interface SubjectEntity {
   updatedAt: Date;
   version: number;
 }
+
+export interface SubjectDetail {
+  id: string;
+  title: string;
+  code: string;
+  credits: number;
+  goalGrade: number | null;
+  actualGrade: number | null;
+  termTitle: string | null;
+  academicYear: number | null;
+  coordinatorName: string | null;
+  coordinatorEmail: string | null;
+  labTutorName: string | null;
+  labTutorEmail: string | null;
+}
