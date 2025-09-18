@@ -1,6 +1,20 @@
 import { prisma } from "@/shared/lib/prisma";
 import type { Assessment } from "..";
-import { AssessmentType, CreateAssessmentDto, EnterScoreDto } from "..";
+import { AssessmentType, CreateAssessmentDto, EnterScoreDto, UpdateAssessmentDto } from "..";
+
+const TYPE_VALUES = Object.values(AssessmentType) as string[];
+
+function normalizeTypeFromDb(raw: unknown): AssessmentType {
+  if (typeof raw === "string") {
+    if (TYPE_VALUES.includes(raw)) return raw as AssessmentType;
+
+    const byKey = (AssessmentType as any)[raw];
+    if (typeof byKey === "string" && TYPE_VALUES.includes(byKey)) {
+      return byKey as AssessmentType;
+    }
+  }
+  return AssessmentType.OTHER;
+}
 
 // Helper: convert DB row → front-end Assessment entity
 function toEntity(a: any): Assessment {
@@ -13,7 +27,7 @@ function toEntity(a: any): Assessment {
     maxScore: a.maxScore,
     score: a.score ?? null,
     dueDate: a.dueDate ? a.dueDate.toISOString() : undefined,
-    type: (AssessmentType as any)[a.type] ?? AssessmentType.OTHER,
+    type: normalizeTypeFromDb(a.type),
   };
 }
 
@@ -24,6 +38,13 @@ export async function listAssessments(params: { subjectId: string }) {
     orderBy: { createdAt: "asc" },
   });
   return rows.map(toEntity);
+}
+
+// GET: get an assessment by ID
+export async function getAssessment(id: string) {
+  const row = await prisma.assessment.findUnique({ where: { id } });
+  if (!row) return null;
+  return toEntity(row);
 }
 
 // POST: create a new assessment
@@ -55,3 +76,27 @@ export async function enterScore(params: { dto: EnterScoreDto }) {
   });
   return toEntity(updated);
 }
+
+// PATCH: Update assessment
+export async function updateAssessment(params: { id: string; dto: UpdateAssessmentDto }) {
+  const d = params.dto;
+  const updated = await prisma.assessment.update({
+    where: { id: params.id },
+    data: {
+      title: d.title ?? undefined,
+      type: d.type ? String(d.type) : undefined,
+      weight: d.weight ?? undefined,
+      maxScore: d.maxScore ?? undefined,
+      dueDate: d.dueDate ? new Date(d.dueDate) : undefined,
+      description: d.description ?? undefined,
+    },
+  });
+  return toEntity(updated);
+}
+
+// DELETE: Delete assessment
+export async function deleteAssessment(id: string) {
+  const deleted = await prisma.assessment.delete({ where: { id } });
+  return toEntity(deleted);
+}
+
