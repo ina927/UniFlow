@@ -2,8 +2,9 @@
  
 import styles from "./AssessmentTable.module.css";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "@/components/ui/table";
-import AssessmentRow from "@/features/assessments/AssessmentRow";
-import { Assessment } from "@/entities/assessments";
+import AssessmentRow from "@/features/assessments/ui/AssessmentRow";
+import { Assessment, Grade } from "@/entities/assessments";
+import { overallPercent, requiredMarksPerRemaining, isGraded, neededToReach, remainingWeightSum } from "@/features/assessments/ui/grade-logics";
 
 type Props = {
     items: Assessment[];
@@ -28,14 +29,22 @@ export default function AssessmentTable({ items, mode, onEnterScore}: Props){
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {items.map((item) => (
-                        <AssessmentRow
-                            key={item.id}
-                            item={item}
-                            mode={mode}
-                            onEnterScore={onEnterScore}
-                        />
-                    ))}
+                    {items.map((item) => {
+                        const req = !isGraded(item) ? reqMap[item.id] : undefined;
+                        return (
+                            <AssessmentRow
+                                key={item.id}
+                                item={item}
+                                mode={mode}
+                                onEnterScore={onEnterScore}
+                                onWhatIfScoreChange={onWhatIfScoreChange}
+                                showRequiredMarks={showRequiredMarks}
+                                goal={goal}
+                                requiredRaw={req?.requiredRawScore ?? null}
+                                requiredPct={req?.requiredPctOnItem ?? null}
+                            />
+                        );
+                    })}
                 </TableBody>
                 <TableFooter>
                     <TableRow>
