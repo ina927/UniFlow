@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import styles from "@/widgets/assessments/AssessmentTable.module.css";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Assessment, Grade } from "@/entities/assessments";
-import { isGraded, weightedContribution } from "@/features/assessments/grade-logics";
+import { isGraded, weightedContribution } from "@/features/assessments/ui/grade-logics";
 
 type Props = {
     item: Assessment;
@@ -28,6 +29,13 @@ export default function AssessmentRow({
     requiredRaw = null,
     requiredPct = null,
 }: Props) {
+    const router = useRouter();
+
+    const goDetail = () => {
+        const q = new URLSearchParams({ subjectId: item.subjectId }).toString();
+        router.push(`/assessments/${item.id}?${q}`);
+    };
+
     // derived values for display
     const graded = isGraded(item); // score present & maxScore > 0
     const currentWeightPct = graded ? weightedContribution(item) : null;
@@ -85,7 +93,7 @@ export default function AssessmentRow({
     };
 
     return(
-        <TableRow className={styles.row} aria-label={`assessment row ${item.title}`}>
+        <TableRow className={styles.row} aria-label={`assessment row ${item.title}`}onClick={goDetail}>
             {/* Title + (type) */}
             <TableCell className={styles.colTitle}>
                 <div className={styles.titleBlock}>
@@ -125,6 +133,7 @@ export default function AssessmentRow({
                             value={draft}
                             onChange={(e) => onChangeDraft(e.target.value)}
                             onBlur={commit}
+                            onClick={(e) => e.stopPropagation()}
                             onKeyDown={onKeyDown}
                             inputMode="decimal"
                             placeholder={item.score == null ? "" : undefined}
@@ -165,7 +174,12 @@ export default function AssessmentRow({
                 <button
                     type="button"
                     className={`${styles.enterBtn} ${mode === "whatif" ? styles.enterBtnWhatIf : ""}`}
-                    onClick={() => onEnterScore?.(item.id)}
+                    onClick={(e) => { 
+                        e.stopPropagation();
+                        onEnterScore?.(item.id);
+                    }}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
                     aria-label={`enter or edit score for ${item.title}`}
                     disabled={mode === "whatif"}
                     aria-disabled={mode === "whatif"}

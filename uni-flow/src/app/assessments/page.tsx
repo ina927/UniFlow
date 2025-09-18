@@ -16,7 +16,7 @@ import {
   useEnterScore,
 } from "@/features/assessments/hooks/useAssessmentsQuery";
 import { useSubjectDetailQuery } from "@/features/academics/hooks/useSubjectDetailQuery";
-import { letterFromPercent } from "@/features/assessments/grade-logics";
+import { letterFromPercent } from "@/features/assessments/ui/grade-logics";
 import { useSearchParams } from "next/navigation";
 import styles from "./page.module.css";
 
