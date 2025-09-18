@@ -7,6 +7,16 @@
     box-sizing: border-box;
 }
 
+.detailContainer {
+   display: flex;
+   flex-direction: column;
+   gap: 32px;
+   width: min(85.1vw);
+   margin: 44px 90px;
+   align-self: stretch;
+   min-width: 0;
+}
+
 .left{
     flex: 1;
     display: flex;
@@ -18,4 +28,9 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    min-width: 320px;
+}
+
+.headerRow {
+    display: flex;
 }
