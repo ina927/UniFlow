@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import AssessmentForm, { AssessmentFormHandle } from "@/features/assessments/AssessmentForm";
+import AssessmentForm, { AssessmentFormHandle } from "@/features/assessments/ui/AssessmentForm";
 import { useCreateAssessment } from "@/features/assessments/hooks/useAssessmentsQuery";
 import styles from "./AddAssessmentModal.module.css";
 
@@ -15,11 +15,12 @@ type Props = {
 
 export default function AddAssessmentModal({ open, onOpenChange, subjectId }: Props) {
   const formRef = React.useRef<AssessmentFormHandle>(null);
+  const [canSave, setCanSave] = React.useState(false); 
   const create = useCreateAssessment(subjectId);
 
   const onSave = () => {
     const dto = formRef.current?.getDto();
-    if (!dto) { /* TODO: toast */ return; }
+    if (!dto) return;
     create.mutate(dto, {
       onSuccess: () => {
         formRef.current?.reset();
@@ -27,7 +28,6 @@ export default function AddAssessmentModal({ open, onOpenChange, subjectId }: Pr
       },
       onError: (e) => {
         console.error("create assessment failed", e);
-        // TODO: toast
       },
     });
   };
@@ -39,13 +39,13 @@ export default function AddAssessmentModal({ open, onOpenChange, subjectId }: Pr
           <DialogTitle className="text-title2-bold">Add Assessment</DialogTitle>
         </DialogHeader>
 
-        <AssessmentForm ref={formRef} subjectId={subjectId} />
+        <AssessmentForm ref={formRef} subjectId={subjectId} onValidityChange={setCanSave} />
 
         <DialogFooter className={styles.footer}>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={create.isPending}>
             Discard
           </Button>
-          <Button onClick={onSave} className={styles.saveBtn} disabled={create.isPending}>
+          <Button onClick={onSave} className={styles.saveBtn} disabled={create.isPending || !canSave}>
             {create.isPending ? "Saving..." : "Save"}
           </Button>
         </DialogFooter>
