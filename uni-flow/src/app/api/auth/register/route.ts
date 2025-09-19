@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-<<<<<<< HEAD
+import { prisma } from "@/shared/lib/prisma";
+import bcryptjs from "bcryptjs";
 
 type RegisterBody = {
   name?: string;
@@ -19,34 +20,34 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const hash = bcryptjs.hashSync(password, 10);
+
     // TODO: Replace with your actual user creation logic (DB call, hashing, etc.)
     const user = { id: "temp-id", name: name ?? "", email };
+    const createdUser = await prisma.user.create({
+      data: {
+        name: name ?? "",
+        email,
+        hash, // In real app, hash the password before storing
+      },
+    });
 
-    return NextResponse.json(
-      { message: "User registered successfully", user },
-      { status: 201 }
-    );
+    // return NextResponse.json(
+    //   { message: "User registered successfully", createdUser },
+    //   { status: 201 }
+    // );
+    return NextResponse.json({
+      status: true,
+      statusCode: 201,
+      message: "User registered successfully", 
+      data: {
+        data: createdUser,
+      },
+    });
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to register user" },
       { status: 500 }
     );
-=======
-import { createUser } from "@/app/lib/users";
-import { sign } from "@/app/lib/jwt";
-
-
-export async function POST(req: NextRequest) {
-  const { email, password, name } = await req.json();
-  if (!email || !password) return NextResponse.json({ error: "email & password required" }, { status: 400 });
-  try {
-    const user = await createUser(email, password, name);
-    const token = sign({ sub: user.id, email: user.email });
-    const res = NextResponse.json({ user });
-    res.cookies.set("token", token, { httpOnly: true, sameSite: "lax", path: "/" });
-    return res;
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message || "registration failed" }, { status: 400 });
->>>>>>> 457c526 (feat(auth): add F101 user authentication prototype and stub unfinished APIs)
   }
 }
