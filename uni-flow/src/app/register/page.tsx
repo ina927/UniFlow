@@ -13,10 +13,6 @@ export default function RegisterPage() {
 
   async function signUp() {
     setMsg(null);
-<<<<<<< HEAD
-    if (!email.includes("@")) return setMsg("invalid email");
-=======
->>>>>>> 457c526 (feat(auth): add F101 user authentication prototype and stub unfinished APIs)
     if (!email || !pwd) return setMsg("email & password required");
     setLoading(true);
     try {
