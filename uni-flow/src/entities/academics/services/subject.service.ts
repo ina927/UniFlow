@@ -1,23 +1,16 @@
 import { prisma } from "@/shared/lib/prisma";
 import { CreateSubjectDto, UpdateSubjectDto } from "../dto";
-import { SubjectEntity } from "../entities";
+import { SubjectEntity, SubjectDetail } from "../entities";
 
 export const getSubjects = async ({ academicCourseId, termId }: { academicCourseId: string, termId?: string }): Promise<{ data: SubjectEntity[]; count: number }> => {
   if (!termId) {
-    const terms = await prisma.term.findMany({ where: { academicCourseId } });
-    const subjects = await prisma.subject.findMany({ 
-      where: { 
-        termId: { 
-          in: terms.map((term) => term.id) 
-        } 
-      } 
+    const subjects = await prisma.subject.findMany({
+      where: { term: { academicCourseId } },
     });
-
     return { data: subjects, count: subjects.length };
   }
 
   const subjects = await prisma.subject.findMany({ where: { termId } });
-
   return { data: subjects, count: subjects.length };
 };
 
@@ -97,3 +90,31 @@ export const deleteSubject = async ({ id }: { id: string }): Promise<{ data: str
   const deletedSubject: SubjectEntity = await prisma.subject.delete({ where: { id } });
   return { data: deletedSubject.id };
 };
+
+
+export async function getSubjectDetailById(id: string): Promise<SubjectDetail | null> {
+  const row = await prisma.subject.findUnique({
+    where: { id },
+    include: {
+      term: true,
+      coordinator: true,
+      labTutor: true,
+    },
+  });
+  if (!row) return null;
+
+  return {
+    id: row.id,
+    title: row.title,
+    code: row.code,
+    credits: row.credits,
+    goalGrade: row.goalGrade ?? null,
+    actualGrade: row.actualGrade ?? null,
+    termTitle: row.term?.title ?? null,
+    academicYear: row.term?.academicYear ?? null,
+    coordinatorName: row.coordinator?.name ?? null,
+    coordinatorEmail: row.coordinator?.email ?? null,
+    labTutorName: row.labTutor?.name ?? null,
+    labTutorEmail: row.labTutor?.email ?? null,
+  };
+}
