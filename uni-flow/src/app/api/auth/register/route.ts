@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/shared/lib/prisma";
-import bcryptjs from "bcryptjs";
+import { createUser as createPublicUser } from "@/app/lib/users";
 
 type RegisterBody = {
   name?: string;
@@ -20,22 +19,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const hash = bcryptjs.hashSync(password, 10);
+    const createdUser = await createPublicUser(email, password, name);
 
-    // TODO: Replace with your actual user creation logic (DB call, hashing, etc.)
-    const user = { id: "temp-id", name: name ?? "", email };
-    const createdUser = await prisma.user.create({
-      data: {
-        name: name ?? "",
-        email,
-        hash, // In real app, hash the password before storing
-      },
-    });
-
-    // return NextResponse.json(
-    //   { message: "User registered successfully", createdUser },
-    //   { status: 201 }
-    // );
     return NextResponse.json({
       status: true,
       statusCode: 201,
@@ -45,6 +30,11 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
+    if (error instanceof Error && error.message === "Email already registered") {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
+
+    console.error("Error registering user:", error);
     return NextResponse.json(
       { error: "Failed to register user" },
       { status: 500 }
