@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Role } from "@/entities";
 
-type User = { email: string; name?: string };
+type User = { email: string; name?: string; role?: Role };
 
 export default function HomePage() {
   const router = useRouter();
@@ -37,6 +38,11 @@ export default function HomePage() {
           <button className="pill-btn pill-primary" onClick={() => router.push("/profile")}>
             Go to Profile
           </button>
+          {user?.role === Role.ADMIN && (
+            <button className="pill-btn pill-secondary" onClick={() => router.push("/admin")}>
+              Admin Dashboard
+            </button>
+          )}
           <button className="pill-btn pill-secondary" onClick={logout}>
             Logout
           </button>

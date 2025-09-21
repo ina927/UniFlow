@@ -1,38 +1,92 @@
 import bcrypt from "bcryptjs";
+import { prisma } from "@/shared/lib/prisma";
+import { Role, UserStatus } from "@/entities/users/enums";
 
-export type PublicUser = { id: string; email: string; name?: string };
-type User = PublicUser & { passwordHash: string };
+export type PublicUser = {
+  id: string;
+  email: string;
+  name?: string;
+  role?: Role;
+  status?: UserStatus;
+};
 
-const users = new Map<string, User>(); // email -> user
+type PrismaUserSnapshot = {
+  id: string;
+  email: string;
+  name: string | null;
+  role?: Role;
+  status?: UserStatus;
+};
+
+const toPublicUser = (user: PrismaUserSnapshot): PublicUser => ({
+  id: user.id,
+  email: user.email,
+  name: user.name ?? undefined,
+  role: user.role,
+  status: user.status,
+});
 
 export async function createUser(email: string, password: string, name?: string): Promise<PublicUser> {
-  if (users.has(email)) throw new Error("Email already registered");
-  const u: User = {
-    id: crypto.randomUUID(),
-    email,
-    name,
-    passwordHash: await bcrypt.hash(password, 10),
-  };
-  users.set(email, u);
-  return { id: u.id, email: u.email, name: u.name };
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) throw new Error("Email already registered");
+
+  const hash = await bcrypt.hash(password, 10);
+  const normalizedName = name?.trim();
+  const created = await prisma.user.create({
+    data: {
+      email,
+      name: normalizedName && normalizedName.length > 0 ? normalizedName : email,
+      hash,
+    },
+  });
+
+  await prisma.auditLog.create({
+    data: {
+      actor: "System",
+      action: "USER_CREATED",
+      targetUserId: created.id,
+      targetEmail: created.email,
+      statusAfter: created.status,
+      details: normalizedName ? `Account created for ${normalizedName}` : undefined,
+    },
+  });
+
+  return toPublicUser(created);
 }
 
 export async function verifyUser(email: string, password: string): Promise<PublicUser | null> {
-  const u = users.get(email);
-  if (!u) return null;
-  return (await bcrypt.compare(password, u.passwordHash)) ? { id: u.id, email: u.email, name: u.name } : null;
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) return null;
+
+  const isValid = await bcrypt.compare(password, user.hash);
+  return isValid ? toPublicUser(user) : null;
 }
 
-export function getByEmail(email: string): PublicUser | null {
-  const u = users.get(email);
-  return u ? { id: u.id, email: u.email, name: u.name } : null;
+export async function getByEmail(email: string): Promise<PublicUser | null> {
+  const user = await prisma.user.findUnique({ where: { email } });
+  return user ? toPublicUser(user) : null;
 }
 
-export async function updateUser(email: string, data: { name?: string; password?: string }): Promise<PublicUser | null> {
-  const u = users.get(email);
-  if (!u) return null;
-  if (typeof data.name === "string") u.name = data.name;
-  if (typeof data.password === "string") u.passwordHash = await bcrypt.hash(data.password, 10);
-  users.set(email, u);
-  return { id: u.id, email: u.email, name: u.name };
+export async function updateUser(
+  email: string,
+  data: { name?: string; password?: string }
+): Promise<PublicUser | null> {
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) return null;
+
+  const updates: { name?: string; hash?: string } = {};
+  if (typeof data.name === "string") {
+    const trimmed = data.name.trim();
+    if (trimmed.length === 0) {
+      updates.name = user.email;
+    } else {
+      updates.name = trimmed;
+    }
+  }
+  if (typeof data.password === "string") updates.hash = await bcrypt.hash(data.password, 10);
+
+  if (Object.keys(updates).length === 0) return toPublicUser(user);
+
+  const updated = await prisma.user.update({ where: { email }, data: updates });
+  return toPublicUser(updated);
 }

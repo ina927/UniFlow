@@ -30,6 +30,14 @@ enum ToDoStatus {
   DONE
 }
 
+enum AuditAction {
+  USER_CREATED
+  USER_EDITED
+  USER_DEACTIVATED
+  USER_REACTIVATED
+  USER_RESET
+}
+
 // Models
 model User {
   id        String     @id @default(uuid())
@@ -47,6 +55,7 @@ model User {
   academicCourses AcademicCourse[]
   todos ToDo[]
   timerSessions TimerSession[]
+  auditEntries  AuditLog[] @relation("AuditLogTargetUser")
 }
 
 model Instructor {
@@ -167,4 +176,16 @@ model TimerSession {
   user        User     @relation(fields: [userId], references: [id])
   todoId      String?
   todo        ToDo? @relation(fields: [todoId], references: [id])
+}
+
+model AuditLog {
+  id            String      @id @default(uuid())
+  actor         String
+  action        AuditAction
+  targetUserId  String?
+  targetUser    User?       @relation("AuditLogTargetUser", fields: [targetUserId], references: [id], onDelete: SetNull)
+  targetEmail   String
+  details       String?
+  statusAfter   UserStatus?
+  createdAt     DateTime    @default(now())
 }
