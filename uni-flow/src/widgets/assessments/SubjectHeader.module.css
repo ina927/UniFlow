@@ -1,9 +1,0 @@
-.subjectInfoGroup{ 
-    width: flex; 
-    height: 75px; 
-    flex-shrink: 0;
-}
-
-.subjectInfoGroup p{ 
-    margin-top: 8px; 
-}
