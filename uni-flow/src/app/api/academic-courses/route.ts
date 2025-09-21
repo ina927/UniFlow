@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 
-import { createAcademicCourse, getAcademicCourses } from "@/entities/academics";
+import { createAcademicCourse, CreateAcademicCourseDto, getAcademicCourses } from "@/entities/academics";
 import { withDB } from "@/shared";
 
 export const GET = withDB(async (req: NextRequest) => {
@@ -44,8 +44,26 @@ export const GET = withDB(async (req: NextRequest) => {
 export const POST = withDB(async (req: NextRequest) => {
   try {
     const userId: string = req.headers.get('user-id') as string;
-    const body = await req.json();
+
+    if (!userId) {
+      return {
+        status: false,
+        statusCode: 400,
+        message: "User ID is required",
+      };
+    }
+
+    const body: CreateAcademicCourseDto = await req.json();
+
     const academicCourse = await createAcademicCourse({ userId, dto: body });
+
+    if (!academicCourse.data) {
+      return {
+        status: false,
+        statusCode: 400,
+        message: "Academic course creation failed",
+      };
+    }
 
     return {
       status: true,
@@ -57,7 +75,7 @@ export const POST = withDB(async (req: NextRequest) => {
     console.error('Error creating academic course:', error);
     return {
       status: false,
-      statusCode: 500,
+      statusCode: error instanceof Error ? error.cause as number ?? 500 : 500,
       message: "Internal Server Error",
     };
   }
