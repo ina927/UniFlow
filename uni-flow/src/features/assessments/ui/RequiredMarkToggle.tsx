@@ -1,5 +1,5 @@
-import { Switch } from "@/components/ui/switch";
-import styles from "@/widgets/assessments/AssessmentControls.module.css";
+import { Switch } from "@/shared/ui/switch";
+import styles from "@/widgets/assessments/ui/AssessmentControls.module.css";
 
 
 type Props = {
@@ -7,7 +7,7 @@ type Props = {
     onToggle: (next: boolean) => void;
 }
 
-export default function RequiredMarkToggle({ checked, onToggle }: Props) {
+export const RequiredMarkToggle = ({ checked, onToggle }: Props) => {
     return (
         <div className={styles.requiredMarkToggle}>
             <Switch id="required-marks" checked={checked} onCheckedChange={onToggle} />

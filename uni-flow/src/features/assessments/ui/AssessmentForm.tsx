@@ -1,17 +1,18 @@
 "use client";
 
 import * as React from "react";
+
 import { AssessmentType, Assessment } from "@/entities/assessments";
 import type { CreateAssessmentDto } from "@/entities/assessments";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { Input } from "@/shared/ui/input";
+import { Textarea } from "@/shared/ui/textarea";
+import { Label } from "@/shared/ui/label";
 import {
   Select, SelectTrigger, SelectContent, SelectItem, SelectValue,
-} from "@/components/ui/select";
+} from "@/shared/ui/select";
+import { Calendar24 } from "@/shared/ui/calendar24";
 
-import styles from "@/widgets/assessments/AddAssessmentModal.module.css";
-import { Calendar24 } from "@/components/ui/calendar24";
+import styles from "./AssessmentForm.module.css";
 
 export type AssessmentFormHandle = {
   getDto: () => CreateAssessmentDto | null;
@@ -27,7 +28,7 @@ const labelToKey = (lbl: string): string =>
 
 type Props = { subjectId: string, initial?: Assessment, onValidityChange?: (ok: boolean) => void; };
 
-const AssessmentForm = React.forwardRef<AssessmentFormHandle, Props>(
+export const AssessmentForm = React.forwardRef<AssessmentFormHandle, Props>(
   ({ subjectId, initial, onValidityChange }, ref) => {
   const [title, setTitle] = React.useState("");
   const [typeKey, setTypeKey] = React.useState<string | undefined>(() => labelToKey(String(initial?.type ?? "")) || undefined);
@@ -70,7 +71,7 @@ const AssessmentForm = React.forwardRef<AssessmentFormHandle, Props>(
       return {
         subjectId,
         title: title.trim(),
-        type: (label || typeKey) as any,
+        type: (label || typeKey) as unknown as AssessmentType,
         weight: w,
         maxScore: m,
         dueDate: dueISO,
@@ -144,4 +145,3 @@ const AssessmentForm = React.forwardRef<AssessmentFormHandle, Props>(
 });
 
 AssessmentForm.displayName = "AssessmentForm";
-export default AssessmentForm;
