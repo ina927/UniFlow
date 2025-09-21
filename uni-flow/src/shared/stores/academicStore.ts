@@ -1,38 +1,37 @@
-// store/useStore.ts
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-import { AcademicCourseEntity, SubjectEntity, TermEntity } from '@/entities';
-
-interface AcademicStoreState {
-  academicCourse: AcademicCourseEntity | null;
-  setAcademicCourse: (academicCourse: AcademicCourseEntity) => void;
-
-  term: TermEntity | null;
-  setTerm: (term: TermEntity) => void;
-  resetTerm: () => void;
-  
-  subjects: SubjectEntity[];
-  setSubjects: (subjects: SubjectEntity[]) => void;
-  resetSubjects: () => void;
-
-  subject: SubjectEntity | null;
-  setSubject: (subject: SubjectEntity) => void;
-  resetSubject: () => void;
+interface AcademicState {
+  selectedTermId: string | null;
 }
 
-export const useAcademicStore = create<AcademicStoreState>((set) => ({
-  academicCourse: null,
-  setAcademicCourse: (academicCourse: AcademicCourseEntity) => set({ academicCourse }),
+interface AcademicActions {
+  setSelectedTermId: (termId: string | null) => void;
+  clearSelectedTerm: () => void;
+}
 
-  term: null,
-  setTerm: (term: TermEntity) => set({ term }),
-  resetTerm: () => set({ term: null }),
+type AcademicStore = AcademicState & AcademicActions;
 
-  subjects: [],
-  setSubjects: (subjects: SubjectEntity[]) => set({ subjects }),
-  resetSubjects: () => set({ subjects: [] }),
+export const useAcademicStore = create<AcademicStore>()(
+  persist(
+    (set) => ({
+      selectedTermId: null,
 
-  subject: null,
-  setSubject: (subject: SubjectEntity) => set({ subject }),
-  resetSubject: () => set({ subject: null }),
-}));
+      setSelectedTermId: (termId: string | null) => {
+        set({ selectedTermId: termId });
+      },
+
+      clearSelectedTerm: () => {
+        set({ selectedTermId: null });
+      },
+    }),
+    {
+      name: 'academic-storage',
+      partialize: (state) => ({
+        selectedTermId: state.selectedTermId,
+      }),
+    }
+  )
+);
+
+export const useSelectedTermId = () => useAcademicStore((state) => state.selectedTermId);
