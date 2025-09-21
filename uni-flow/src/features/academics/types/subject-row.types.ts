@@ -3,5 +3,5 @@ export type SubjectRow = {
   title: string;
   code: string;
   credits: number;
-  goalGrade?: number;
+  term: string;
 };
