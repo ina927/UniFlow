@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import styles from "@/widgets/assessments/AssessmentTable.module.css";
-import { TableRow, TableCell } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
+
+import { TableRow, TableCell } from "@/shared/ui/table";
+import { Input } from "@/shared/ui/input";
 import { Assessment, Grade } from "@/entities/assessments";
-import { isGraded, weightedContribution } from "@/features/assessments/ui/grade-logics";
+import { isGraded, weightedContribution } from "@/features/assessments/utils/grade-logics";
+
+import styles from "@/widgets/assessments/ui/AssessmentTable.module.css";
 
 type Props = {
     item: Assessment;
@@ -19,8 +21,8 @@ type Props = {
     requiredPct?: number | null;
 };
 
-export default function AssessmentRow({
-    item,
+export const AssessmentRow = ({
+    item,   
     mode,
     showRequiredMarks = false,
     goal = Grade.HD,
@@ -28,7 +30,7 @@ export default function AssessmentRow({
     onWhatIfScoreChange,
     requiredRaw = null,
     requiredPct = null,
-}: Props) {
+}: Props) => {
     const router = useRouter();
 
     const goDetail = () => {
