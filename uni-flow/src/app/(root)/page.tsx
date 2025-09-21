@@ -1,12 +1,12 @@
 "use client";
 
 import { redirect } from "next/navigation";
-import { useState } from "react";
+import { useAuthStore } from "@/shared/stores";
 
-export default function Home() {
-  const [user, setUser] = useState<string>("");
+export default function HomePage() {
+  const { userId } = useAuthStore();
 
-  if (user) {
+  if (userId) {
     redirect("/academic");
   }
 
