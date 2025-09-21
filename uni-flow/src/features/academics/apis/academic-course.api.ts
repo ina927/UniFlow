@@ -1,6 +1,6 @@
-import { ACADEMIC_COURSES_URL } from "../const/url";
+import { ACADEMIC_COURSES_API } from "../const/api";
 import { apiClient } from "@/shared/api";
 
 export const getAcademicCourses = async () => {
-    return await apiClient.get(ACADEMIC_COURSES_URL).then(res => res.data);
+    return await apiClient.get(ACADEMIC_COURSES_API).then(res => res.data);
 };

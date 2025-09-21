@@ -1,7 +1,7 @@
 "use client";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/shared/ui/dialog";
+import { Button } from "@/shared/ui/button";
 
 type ConfirmDialogProps = {
     open: boolean;
@@ -13,7 +13,7 @@ type ConfirmDialogProps = {
     onConfirm: () => void;
 };
 
-export default function ConfirmDialog({
+export const ConfirmDialog = ({
     open,
     onOpenChange,
     title = "Change confirmation",
@@ -21,7 +21,7 @@ export default function ConfirmDialog({
     confirmText = "Confirm",
     cancelText = "Cancel",
     onConfirm,
-}: ConfirmDialogProps) {
+}: ConfirmDialogProps) => {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-[420px]">
