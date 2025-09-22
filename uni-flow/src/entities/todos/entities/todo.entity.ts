@@ -2,11 +2,12 @@
 import { ToDoStatus } from "@/entities/enums/ToDoStatus"
 
 export interface ToDoEntity{
+    id: String,
     title: String,
     content: String,
     startDate: Date,
-    dueDate: Date,
-    taskStatus: { 
+    endDate: Date,
+    status: { 
       type: String, 
       enum: ToDoStatus, 
       default: ToDoStatus.PENDING, 

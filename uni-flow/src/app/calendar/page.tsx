@@ -28,6 +28,7 @@ export default function Calendar(){
 
     // for event control
     const [currentEvents, setCurrentEvents] = useState<EventApi[]>([]);
+    const [currentEventsInput, setCurrentEventsInput] = useState<EventInput[]>([])
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
     // for database control (tags in form is to opt for the subject id)
@@ -50,7 +51,47 @@ export default function Calendar(){
                 }
             });
 
-            calendarRef.current?.getApi().removeAllEvents()
+            console.log("calendar test")
+            console.log(currentEvents)
+ 
+            const fetchEvents =  await response.json();
+            
+            const FormattedEvents: EventApi[] = fetchEvents.map((todo: any) => ({
+                id: todo._id,
+                title: todo.title,
+                start: new Date(todo.startDate),
+                end: todo.endDate ? new Date(todo.endDate) : undefined,
+                allDay: todo.allDay ?? false
+            }))
+
+            const FormattedEventsInput: EventInput[] = fetchEvents.map((todo: any) => ({
+                id: todo._id,
+                title: todo.title,
+                start: new Date(todo.startDate),
+                end: todo.endDate ? new Date(todo.endDate) : undefined,
+                allDay: todo.allDay ?? false
+            }))
+
+            setCurrentEvents(FormattedEvents)
+            setCurrentEventsInput(FormattedEventsInput)
+            console.log(FormattedEvents)
+            console.log("-----")
+            console.log(currentEvents)
+        }
+        calendarRef.current?.getApi().removeAllEvents()
+        fetchToDo();
+    }, []); //open json file
+
+    const refresh = () => {
+        const fetchToDo = async() => {
+            const response = await fetch('http://localhost:3000/api/todos', {
+                headers: {
+                    userId: userId,
+                }
+            });
+
+            console.log("calendar test")
+            setCurrentEvents([])
  
             const fetchEvents =  await response.json();
             
@@ -66,13 +107,12 @@ export default function Calendar(){
             console.log(FormattedEvents)
         }
         fetchToDo();
-    }, []); //open json file
-
-    useEffect(() => {
-        if (typeof window !== "undefined"){
-            localStorage.setItem("events", JSON.stringify(currentEvents));
-        }
-    }, [currentEvents]); //overwrite
+    }
+    // useEffect(() => {
+    //     if (typeof window !== "undefined"){
+    //         localStorage.setItem("events", JSON.stringify(currentEvents));
+    //     }
+    // }, [currentEvents]); //overwrite
 
     const handleDateClick = (selected: DateSelectArg) => {
         setSelectedDate(selected);
@@ -120,13 +160,14 @@ export default function Calendar(){
             title: newEventTitle,
             content: content,
             startDate: selectedDate?.start,
-            endDate: endDate,
+            endDate: selectedDate?.end,
             taskStatus: ToDoStatus.PENDING
         }
 
         calendarApi.addEvent(newEvent);
         const response = await Axios.post('/api/todos', {newToDo})
         console.log(response)
+        refresh();
         handleCloseDialog();
     }};
 
@@ -156,7 +197,7 @@ export default function Calendar(){
                             {event.title}
                             <br />
                             <label className="text-slate-950">
-                                {formatDate(event.start!, {
+                                {formatDate(event.end!, {
                                     year: "numeric",
                                     month: "short",
                                     day: "numeric"
@@ -172,7 +213,7 @@ export default function Calendar(){
                 <FullCalendar height={"75vh"} plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]} headerToolbar={{left: "prev,next today", center: "title", right: "dayGridMonth, timeGridWeek, timeGridDay"}} initialView="dayGridMonth" selectable={true} editable={true} selectMirror={true} dayMaxEvents={true} select={handleDateClick}
                 eventClick={handleEventClick}
                 eventsSet={(events) => setCurrentEvents(events)}
-                initialEvents={typeof window !== "undefined" ? JSON.parse(localStorage.getItem("events") || "[]") : []}
+                events={currentEventsInput}
                 />
             </div>
         </div>
@@ -224,6 +265,6 @@ export default function Calendar(){
         </Dialog>
         </>
     </div>
-
+    // https://www.youtube.com/watch?v=3CMgznBdl-M
     )
 }
