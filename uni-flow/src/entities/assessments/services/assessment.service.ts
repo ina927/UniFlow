@@ -8,6 +8,7 @@ function normalizeTypeFromDb(raw: unknown): AssessmentType {
   if (typeof raw === "string") {
     if (TYPE_VALUES.includes(raw)) return raw as AssessmentType;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const byKey = (AssessmentType as any)[raw];
     if (typeof byKey === "string" && TYPE_VALUES.includes(byKey)) {
       return byKey as AssessmentType;
@@ -17,6 +18,7 @@ function normalizeTypeFromDb(raw: unknown): AssessmentType {
 }
 
 // Helper: convert DB row → front-end Assessment entity
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function toEntity(a: any): Assessment {
   return {
     id: a.id,

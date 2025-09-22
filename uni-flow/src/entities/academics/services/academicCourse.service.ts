@@ -1,9 +1,14 @@
 import { prisma } from "@/shared/lib/prisma";
 import { CreateAcademicCourseDto, UpdateAcademicCourseDto } from "../dto";
 import { AcademicCourseEntity } from "../entities";
+import { deleteFailed, notFoundError, updateFailed } from "@/shared";
 
 export const getAcademicCourses = async ({ userId }: { userId: string }): Promise<{ data: AcademicCourseEntity[]; count: number }> => {
   const academicCourses = await prisma.academicCourse.findMany({ where: { userId } });
+
+  if (academicCourses.length === 0) {
+    throw notFoundError("Academic Courses");
+  }
 
   return { data: academicCourses, count: academicCourses.length };
 };
@@ -35,11 +40,20 @@ export const updateAcademicCourse = async ({ id, dto }: { id: string, dto: Updat
 
   const updatedAcademicCourse = await prisma.academicCourse.update({ where: { id }, data: dto });
 
+  if (!updatedAcademicCourse) {
+    throw updateFailed("Academic Course");
+  }
+
   return { data: updatedAcademicCourse };
 };
 
 
 export const deleteAcademicCourse = async ({ id }: { id: string }): Promise<{ data: string }> => {
   const deletedAcademicCourse: AcademicCourseEntity = await prisma.academicCourse.delete({ where: { id } });
+
+  if (!deletedAcademicCourse) {
+    throw deleteFailed("Academic Course");
+  }
+
   return { data: deletedAcademicCourse.id };
 };

@@ -8,6 +8,22 @@ export const GET = withDB(async (req: NextRequest) => {
     const userId: string = req.headers.get('user-id') as string;
 
     if (!userId) {
+      return missingError("User ID");
+    }
+
+    const academicCourses = await getAcademicCourses({ userId });
+    
+    return getSuccess(academicCourses, "Academic courses");
+  } catch (error) {
+    return serverError(error as ResponseDto);
+  }
+});
+
+export const POST = withDB(async (req: NextRequest) => {
+  try {
+    const userId: string = req.headers.get('user-id') as string;
+
+    if (!userId) {
       return {
         status: false,
         statusCode: 400,
