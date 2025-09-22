@@ -1,46 +1,33 @@
 import { NextRequest } from "next/server";
 
-import { withDB } from "@/shared/api";
+import { ResponseDto, withDB } from "@/shared/api";
 import { UpdateAcademicCourseDto } from "@/entities";
 import { deleteAcademicCourse, getAcademicCourse, updateAcademicCourse } from "@/entities/academics/services";
+import { deleteSuccess, getSuccess, missingError, notFoundError, serverError, updateSuccess } from "@/shared";
 
 export const GET = withDB(async (req: NextRequest) => {
   try {
     const userId: string = req.headers.get('user-id') as string;
 
     if (!userId) {
-      return {
-        status: false,
-        statusCode: 400,
-        message: "User ID is required",
-      };
+      return missingError("User ID");
     }
 
     const academicCourseId = req.nextUrl.href.split('/').pop();
 
     if (!academicCourseId) {
-      return {
-        status: false,
-        statusCode: 400,
-        message: "Academic course ID is required",
-      };
+      return missingError("Academic course ID");
     }
 
     const academicCourse = await getAcademicCourse({ id: academicCourseId });
+
+    if (!academicCourse.data) {
+      return notFoundError("Academic course");
+    }
     
-    return {
-      status: true,
-      statusCode: 200,
-      message: "Academic course fetched successfully",
-      data: academicCourse,
-    };
+    return getSuccess(academicCourse, "Academic course");
   } catch (error) {
-    console.error('Error fetching academic course:', error);
-    return {
-      status: false,
-      statusCode: 500,
-      message: "Internal Server Error",
-    };
+    return serverError(error as ResponseDto);
   }
 });
 
@@ -49,39 +36,21 @@ export const PATCH = withDB(async (req: NextRequest) => {
     const userId: string = req.headers.get('user-id') as string;
 
     if (!userId) {
-      return {
-        status: false,
-        statusCode: 400,
-        message: "User ID is required",
-      };
+      return missingError("User ID");
     }
 
     const academicCourseId = req.nextUrl.href.split('/').pop();
 
     if (!academicCourseId) {
-      return {
-        status: false,
-        statusCode: 400,
-        message: "Academic course ID is required",
-      };
+      return missingError("Academic course ID");
     }
 
     const body: UpdateAcademicCourseDto = await req.json();
     const academicCourse = await updateAcademicCourse({ id: academicCourseId, dto: body });
 
-    return {
-      status: true,
-      statusCode: 200,
-      message: "Academic course updated successfully",
-      data: academicCourse,
-    };
+    return updateSuccess(academicCourse, "Academic course");
   } catch (error) {
-    console.error('Error updating academic course:', error);
-    return {
-      status: false,
-      statusCode: 500,
-      message: "Internal Server Error",
-    };
+    return serverError(error as ResponseDto);
   }
 });
 
@@ -90,37 +59,19 @@ export const DELETE = withDB(async (req: NextRequest) => {
     const userId: string = req.headers.get('user-id') as string;
 
     if (!userId) {
-      return {
-        status: false,
-        statusCode: 400,
-        message: "User ID is required",
-      };
+      return missingError("User ID");
     }
     
     const academicCourseId = req.nextUrl.href.split('/').pop();
 
     if (!academicCourseId) {
-      return {
-        status: false,
-        statusCode: 400,
-        message: "Academic course ID is required",
-      };
+      return missingError("Academic course ID");
     }
 
-    const deletedAcademicCourseId = await deleteAcademicCourse({ id: academicCourseId });  
+    const deletedAcademicCourse = await deleteAcademicCourse({ id: academicCourseId });  
 
-    return {
-      status: true,
-      statusCode: 200,
-      message: "Academic course deleted successfully",
-      data: deletedAcademicCourseId,
-    };
+    return deleteSuccess(deletedAcademicCourse.data, "Academic course");
   } catch (error) {
-    console.error('Error deleting academic course:', error);
-    return {
-      status: false,
-      statusCode: 500,
-      message: "Internal Server Error",
-    };
+    return serverError(error as ResponseDto);
   }
 });
