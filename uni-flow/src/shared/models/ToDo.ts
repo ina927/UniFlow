@@ -9,7 +9,7 @@ const ToDoSchema = new Schema({
   content: String,
   startDate: Date,
   endDate: Date,
-  taskStatus: { 
+  status: { 
     type: String, 
     enum: Object.values(ToDoStatus), 
     default: ToDoStatus.PENDING, 
@@ -23,15 +23,15 @@ const ToDoSchema = new Schema({
 
 export const ToDo = models.ToDo || model("ToDo", ToDoSchema);
 
-export interface ToDoLayOut{
-  title: String,
-  content: String,
-  startDate: Date,
-  dueDate: Date,
-  taskStatus: { 
-    type: String, 
-    enum: ToDoStatus, 
-    default: ToDoStatus.PENDING, 
-    required: true 
-  }
-}
+// export interface ToDoLayOut{
+//   title: String,
+//   content: String,
+//   startDate: Date,
+//   dueDate: Date,
+//   taskStatus: { 
+//     type: String, 
+//     enum: ToDoStatus, 
+//     default: ToDoStatus.PENDING, 
+//     required: true 
+//   }
+// }

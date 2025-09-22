@@ -14,6 +14,7 @@ import styles from "./page.module.css";
 import Axios from "axios";
 import { ToDoStatus } from "@/entities/enums";
 import { ToDoEntity } from "@/entities/todos/entities";
+import { ToDo } from "@/shared/generated/prisma";
 
 // React import
 
@@ -26,7 +27,11 @@ export default function StudyPlanner(){
     const [newEventTitle, setNewEventTitle] = useState<string>("");
     const [content, setContent] = useState<string>("");
     const [taskStatus, setTaskStatus] = useState<string>("");
-    const [events, setFetchEvent] = useState<ToDoEntity[]>();
+    const [events, setFetchEvent] = useState<ToDoEntity[]>([]);
+
+    const [pendingEvent, setPendingEvent] = useState<ToDoEntity[]>([]);
+    const [inProgressEvent, setInProgressEvent] = useState<ToDoEntity[]>([]);
+    const [completedEvent, setCompletedEvent] = useState<ToDoEntity[]>([])
 
     // data dummy for now
     const userId = '68ad41c7486238ade8bb2f2d'
@@ -42,11 +47,68 @@ export default function StudyPlanner(){
  
             const fetchEvents =  await response.json();
             setFetchEvent(fetchEvents);
+
+            // filtering
+            const pendings = fetchEvents.filter((event: { status: ToDoStatus; }) => event.status === ToDoStatus.PENDING)
+            setPendingEvent(pendings);
+
+            const inProgress = fetchEvents.filter((event: {status: ToDoStatus}) => event.status === ToDoStatus.IN_PROGRESS)
+            setInProgressEvent(inProgress);
+
+            const dones = fetchEvents.filter((event: {status: ToDoStatus}) => event.status === ToDoStatus.DONE)
+            setCompletedEvent(dones);
+
             console.log(events)        }
         fetchToDo();
     }, []); //open json file
     
     
+    const refresh = () => {
+        const fetchToDo = async() => {
+            const response = await fetch('http://localhost:3000/api/todos', {
+                headers: {
+                    userId: userId,
+                }
+            });
+ 
+            const fetchEvents =  await response.json();
+            setFetchEvent(fetchEvents);
+
+            // filtering
+            const pendings = fetchEvents.filter((event: { status: ToDoStatus; }) => event.status === ToDoStatus.PENDING)
+            setPendingEvent(pendings);
+
+            const inProgress = fetchEvents.filter((event: {status: ToDoStatus}) => event.status === ToDoStatus.IN_PROGRESS)
+            setInProgressEvent(inProgress);
+
+            const dones = fetchEvents.filter((event: {status: ToDoStatus}) => event.status === ToDoStatus.DONE)
+            setCompletedEvent(dones);
+
+            console.log(events)        }
+        fetchToDo();
+    };
+
+    const statusChangePending = async (event: ToDoEntity) => {
+        const updated = { ...event, status: ToDoStatus.IN_PROGRESS };
+        await Axios.put(`/api/todos/${event.id}`, {
+            status: ToDoStatus.IN_PROGRESS
+        });
+        refresh();
+    }
+
+    const statusChangeComplete = async (event: ToDoEntity) => {
+        const updated = { ...event, status: ToDoStatus.DONE };
+        await Axios.put(`/api/todos/${event.id}`, {
+            status: ToDoStatus.DONE
+        });
+        refresh();
+    }
+
+    const deleteToDo = async (event:ToDoEntity) => {
+        await Axios.delete(`/api/todos/${event.id}`);
+        refresh();
+    }
+
     const handleAddButton = () => {
         setIsDialogOpen(true);
     }
@@ -60,17 +122,19 @@ export default function StudyPlanner(){
         e.preventDefault();
         // this is for the database
         const newToDo = {
-            userId: '68ad41c7486238ade8bb2f2d',
-            subjectId: null,
+            userId: '83482f49-8367-48d1-93f0-e98f01010f0f',
+            subjectId: '91bc3c52-fe3c-4df8-ad77-284c108730a6',
             assessmentId: null,
             title: newEventTitle,
             content: content,
-            startDate: Date.now(),
+            startDate: endDate, //new Date()
             endDate: endDate,
             taskStatus: ToDoStatus.PENDING
         }
 
         const response = await Axios.post('/api/todos', {newToDo})
+        console.log(response)
+        refresh();
         handleCloseDialog();
     };
 
@@ -100,7 +164,27 @@ export default function StudyPlanner(){
 
                 <div className={styles.todoList2}>
                 <ul style={{marginLeft: "1rem"}}>
-                    <li>
+                {pendingEvent.length <= 0 && (
+                        <div className="italic text-center text-gray-400">
+                            Nothing in Here Yet..
+                        </div>
+                    )}
+                    {pendingEvent.length > 0 && pendingEvent.map((event:ToDoEntity) => (
+                        <li key={"plannner-"+events.indexOf(event)}>
+                        <div className={styles.todoCard}>
+                            <div style={{display: "flex", flexDirection: "row", marginTop: "1vw", marginLeft: "1vw", paddingTop: "0.6vw"}} className="text-body1-semibold">
+                                <h2 style={{paddingRight: "0.5vw"}}>{events.indexOf(event) + 1}</h2>
+                                <h2 style={{paddingRight: "0.5vw"}}>|</h2>
+                                <h2>{event.title}</h2>
+                            </div>
+                            <h3 className="text-body1" style={{opacity: 0.7, fontSize: "0.8rem", marginLeft: "3vw"}}>Deadline: {(event.endDate.toString().substring(0, 10))}</h3>
+                            <div>
+                            <button onClick={() => statusChangePending(event)} style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "0.6vw", width: "4.5vw", height: "1.8vw", marginTop: "-1vh"}} className="text-body1">Start</button>
+                            </div>
+                        </div>
+                    </li>
+                    ))}
+                    {/* <li>
                         <div className={styles.todoCard}>
                             <div style={{display: "flex", flexDirection: "row", marginTop: "1vw", marginLeft: "1vw", paddingTop: "0.6vw"}} className="text-body1-semibold">
                                 <h2 style={{paddingRight: "0.5vw"}}>1</h2>
@@ -165,7 +249,7 @@ export default function StudyPlanner(){
                             </div>
                         </div>
                     </li>
-                    <br />
+                    <br /> */}
                 </ul>
                 </div>
             </div>
@@ -182,7 +266,27 @@ export default function StudyPlanner(){
                 </div>
                 <div className="todoList2">
                 <ul style={{marginLeft: "1rem", marginTop: "3rem"}}>
-                    <li>
+                {inProgressEvent.length <= 0 && (
+                        <div className="italic text-center text-gray-400">
+                            Nothing in Here Yet..
+                        </div>
+                    )}
+                    {inProgressEvent.length > 0 && inProgressEvent.map((event:ToDoEntity) => (
+                        <li key={"plannner-"+events.indexOf(event)}>
+                        <div className={styles.todoCard}>
+                            <div style={{display: "flex", flexDirection: "row", marginTop: "1vw", marginLeft: "1vw", paddingTop: "0.6vw"}} className="text-body1-semibold">
+                                <h2 style={{paddingRight: "0.5vw"}}>{events.indexOf(event) + 1}</h2>
+                                <h2 style={{paddingRight: "0.5vw"}}>|</h2>
+                                <h2>{event.title}</h2>
+                            </div>
+                            <h3 className="text-body1" style={{opacity: 0.7, fontSize: "0.8rem", marginLeft: "3vw"}}>Deadline: {(event.endDate.toString().substring(0, 10))}</h3>
+                            <div>
+                            <button onClick={() => statusChangeComplete(event)} style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "0.6vw", width: "4.5vw", height: "1.8vw", marginTop: "-1vh"}} className="text-body1">Finish</button>
+                            </div>
+                        </div>
+                    </li>
+                    ))}
+                    {/* <li>
                         <div className={styles.todoCard}>
                             <div style={{display: "flex", flexDirection: "row", marginTop: "1vw", marginLeft: "1vw", paddingTop: "0.6vw"}} className="text-body1-semibold">
                                 <h2 style={{paddingRight: "0.5vw"}}>1</h2>
@@ -222,7 +326,7 @@ export default function StudyPlanner(){
                         </div>
                     </li>
                     
-                    <br />
+                    <br /> */}
                 </ul>
                 </div>
             </div>
@@ -239,7 +343,28 @@ export default function StudyPlanner(){
                 </div>
                 <div className="todoList2">
                 <ul style={{marginLeft: "1rem", marginTop: "3rem"}}>
-                <li>
+                {completedEvent.length <= 0 && (
+                        <div className="italic text-center text-gray-400">
+                            Nothing in Here Yet..
+                        </div>
+                    )}
+                    {completedEvent.length > 0 && completedEvent.map((event:ToDoEntity) => (
+                        <li key={"plannner-"+events.indexOf(event)}>
+                        <div className={styles.todoCard}>
+                            <div style={{display: "flex", flexDirection: "row", marginTop: "1vw", marginLeft: "1vw", paddingTop: "0.6vw"}} className="text-body1-semibold">
+                                <h2 style={{paddingRight: "0.5vw"}}>{events.indexOf(event) + 1}</h2>
+                                <h2 style={{paddingRight: "0.5vw"}}>|</h2>
+                                <h2>{event.title}</h2>
+                            </div>
+                            <h3 className="text-body1" style={{opacity: 0.7, fontSize: "0.8rem", marginLeft: "3vw"}}>Deadline: {(event.endDate.toString().substring(0, 10))}</h3>
+                            <div>
+                            <button onClick={() => deleteToDo(event)} style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "0.6vw", width: "4.5vw", height: "1.8vw", marginTop: "-1vh"}} className="text-body1">Delete</button>
+                            </div>
+                        </div>
+                    </li>
+                    ))}
+
+                {/* <li>
                         <div className={styles.todoCard}>
                             <div style={{display: "flex", flexDirection: "row", marginTop: "1vw", marginLeft: "1vw", paddingTop: "0.6vw"}} className="text-body1-semibold">
                                 <h2 style={{paddingRight: "0.5vw"}}>1</h2>
@@ -265,7 +390,7 @@ export default function StudyPlanner(){
                             </div>
                         </div>
                     </li>
-                    <br />
+                    <br /> */}
                 </ul>
                 </div>
             </div>

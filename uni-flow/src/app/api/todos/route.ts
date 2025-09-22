@@ -1,6 +1,7 @@
 import { ToDo } from "@/shared/models/ToDo";
 import { NextRequest, NextResponse } from "next/server";
 import {prisma} from "@/shared/lib/"
+import { ToDoStatus } from "@/entities/enums/ToDoStatus";
 
 export async function POST(request: { json: () => PromiseLike<{ newToDo: any; }> | { newToDo: any; }; }){
     try {
