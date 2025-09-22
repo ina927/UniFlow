@@ -33,6 +33,7 @@ export default function TimerPage() {
       try {
         const response = await fetch("/api/todos");
         const data = await response.json();
+
         if (!response.ok) {
           throw new Error(data.error || "Failed to fetch tasks");
         }
@@ -142,7 +143,7 @@ export default function TimerPage() {
   }, [secondsLeft, isActive, isWorkTime, workTime, shortBreakTime, tasks]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-components-fill">
+    <div className="w-screen h-screen flex flex-col items-center justify-center bg-components-fill">
       {/* Top right buttons */}
       <div className="absolute top-4 right-4 flex gap-2">
         <Link href="/history">
@@ -161,7 +162,7 @@ export default function TimerPage() {
       </div>
 
       {/* Main content */}
-      <div className="relative rounded-lg shadow-lg p-8 bg-primary-light flex flex-col items-center">
+      <div className="relative rounded-lg shadow-lg p-8 bg-primary-light flex flex-col items-center w-full max-w-[1920px] max-h-[1080px]">
         <h1 className="text-title1 mt-8 text-white">
           {isWorkTime ? "Work Time" : "Break Time"}
         </h1>
@@ -195,7 +196,7 @@ export default function TimerPage() {
       </div>
 
       {/* Task List */}
-      <div className="mt-8 w-full max-w-2xl">
+      <div className="mt-8 w-full max-w-[1920px] max-h-[1080px]">
         <h2 className="text-title2-bold mb-4 text-primary">Tasks</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {tasks.map((task) => (
