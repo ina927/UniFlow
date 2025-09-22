@@ -71,3 +71,32 @@ export async function POST(req: Request) {
     );
   }
 }
+
+export async function GET(req: Request) {
+  try {
+    // Extract userId from query parameters (or authentication context)
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get("userId");
+
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: "Missing userId" },
+        { status: 400 }
+      );
+    }
+
+    // Fetch timer sessions for the user
+    const timerSessions = await prisma.timerSession.findMany({
+      where: { userId },
+      orderBy: { startTime: "desc" }, // Sort by most recent sessions
+    });
+
+    return NextResponse.json({ success: true, timerSessions });
+  } catch (error) {
+    console.error("Error fetching timer sessions:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to fetch timer sessions" },
+      { status: 500 }
+    );
+  }
+}
