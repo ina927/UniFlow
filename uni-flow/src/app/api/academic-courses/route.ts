@@ -1,43 +1,21 @@
 import { NextRequest } from "next/server";
 
 import { createAcademicCourse, getAcademicCourses } from "@/entities/academics";
-import { withDB } from "@/shared";
+import { createSuccess, getSuccess, missingError, ResponseDto, serverError, withDB } from "@/shared";
 
 export const GET = withDB(async (req: NextRequest) => {
   try {
     const userId: string = req.headers.get('user-id') as string;
 
     if (!userId) {
-      return {
-        status: false,
-        statusCode: 400,
-        message: "User ID is required",
-      };
+      return missingError("User ID");
     }
 
     const academicCourses = await getAcademicCourses({ userId });
-
-    if (academicCourses.data.length === 0) {
-      return {
-        status: false,
-        statusCode: 404,
-        message: "Academic courses not found",
-      };
-    }
     
-    return {
-      status: true,
-      statusCode: 200,
-      message: "Academic courses fetched successfully",
-      data: academicCourses,
-    };
+    return getSuccess(academicCourses, "Academic courses");
   } catch (error) {
-    console.error('Error fetching academic courses:', error);
-    return {
-      status: false,
-      statusCode: 500,
-      message: "Internal Server Error",
-    };
+    return serverError(error as ResponseDto);
   }
 });
 
@@ -47,18 +25,8 @@ export const POST = withDB(async (req: NextRequest) => {
     const body = await req.json();
     const academicCourse = await createAcademicCourse({ userId, dto: body });
 
-    return {
-      status: true,
-      statusCode: 201,
-      message: "Academic course created successfully",
-      data: academicCourse,
-    };
+    return createSuccess(academicCourse, "Academic course");
   } catch (error) {
-    console.error('Error creating academic course:', error);
-    return {
-      status: false,
-      statusCode: 500,
-      message: "Internal Server Error",
-    };
+    return serverError(error as ResponseDto);
   }
 });

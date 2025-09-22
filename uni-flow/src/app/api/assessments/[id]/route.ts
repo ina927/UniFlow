@@ -1,18 +1,18 @@
-import { NextResponse } from "next/server";
-import { getAssessment, updateAssessment, deleteAssessment } from "@/entities/assessments/services/assessment.service";
+import { getAssessment, updateAssessment, deleteAssessment } from "@/entities/assessments/services";
+import { deleteSuccess, getSuccess, updateSuccess } from "@/shared";
 
 export async function GET(_: Request, { params }: { params: { id: string } }) {
     const data = await getAssessment(params.id);
-    return NextResponse.json({ status: true, statusCode: 200, message: "OK", data });
+    return getSuccess(data, "Assessment");
 }
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
     const dto = await req.json();
     const data = await updateAssessment({ id: params.id, dto });
-    return NextResponse.json({ status: true, statusCode: 200, message: "Updated", data });
+    return updateSuccess(data, "Assessment");
 }
 
 export async function DELETE(_: Request, { params }: { params: { id: string } }) {
     const data = await deleteAssessment(params.id);
-    return NextResponse.json({ status: true, statusCode: 200, message: "Deleted", data });
+    return deleteSuccess(data.id, "Assessment");
 }
