@@ -93,7 +93,13 @@ export default function AssessmentRow({
     };
 
     return(
-        <TableRow className={styles.row} aria-label={`assessment row ${item.title}`}onClick={goDetail}>
+        <TableRow 
+            className={styles.row} 
+            aria-label={`assessment row ${item.title}`}
+            onClick={mode === "view" ? goDetail : undefined}
+            data-interactive={mode === "view" ? "true" : "false"}
+            style={mode === "view" ? undefined : { cursor: "default" }}
+        >
             {/* Title + (type) */}
             <TableCell className={styles.colTitle}>
                 <div className={styles.titleBlock}>

@@ -38,6 +38,9 @@
     flex-direction: column;
     gap: 2px; 
 }
+.row[data-interactive="false"]:hover {
+  background: transparent;
+}
 
 /* ----- Button ----- */
 .enterBtn {
