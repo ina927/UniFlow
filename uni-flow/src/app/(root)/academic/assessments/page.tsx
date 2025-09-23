@@ -142,7 +142,12 @@ export default function AssessmentsPage(){
                 </div> 
 
             {/* Modal for adding a new assessment */}
-            <AddAssessmentModal open={openAdd} onOpenChange={setOpenAdd} subjectId={subjectId} />
+            <AddAssessmentModal 
+                open={openAdd} 
+                onOpenChange={setOpenAdd} 
+                subjectId={subjectId}
+                currentTotalWeight={currentTotalWeight}                
+            />
 
             {/* Modal for entering/updating score */}
             {selected && (
