@@ -35,6 +35,10 @@ export default function AssessmentDetailPage() {
   // subject + assessments
   const { data: subject } = useSubjectDetailQuery(subjectId);
   const { data: list = [], isLoading } = useAssessmentsQuery(subjectId);
+  const totalWeight = useMemo(
+    () => list.reduce((acc, it) => acc + (Number(it.weight) || 0), 0),
+    [list]
+  );
 
   const item = useMemo(() => list.find((i) => i.id === id) ?? null, [list, id]);
 
@@ -112,6 +116,7 @@ export default function AssessmentDetailPage() {
         onOpenChange={setOpenEdit}
         subjectId={subjectId}
         initial={item}
+        currentTotalWeight={totalWeight}
       />
 
       {/* Delete confirm */}

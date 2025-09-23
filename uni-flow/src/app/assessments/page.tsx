@@ -37,6 +37,10 @@ export default function AssessmentsPage(){
 
     // Assessments query/mutations
     const { data: items = [], isLoading } = useAssessmentsQuery(subjectId);
+    const currentTotalWeight = useMemo(
+        () => items.reduce((acc, it) => acc + (it.weight || 0), 0),
+        [items]
+    );
     const createAssessment = useCreateAssessment(subjectId);
     const enterScore = useEnterScore(subjectId);
     
@@ -139,7 +143,12 @@ export default function AssessmentsPage(){
                 </div> 
 
             {/* Modal for adding a new assessment */}
-            <AddAssessmentModal open={openAdd} onOpenChange={setOpenAdd} subjectId={subjectId} />
+            <AddAssessmentModal 
+                open={openAdd} 
+                onOpenChange={setOpenAdd} 
+                subjectId={subjectId}
+                currentTotalWeight={currentTotalWeight}                
+            />
 
             {/* Modal for entering/updating score */}
             {selected && (
