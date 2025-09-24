@@ -53,16 +53,24 @@ export async function POST(req: Request) {
     }
 
     // Create timer session
-    const timerSession = await prisma.timerSession.create({
-      data: {
-        startTime: start,
-        endTime: end,
-        userId,
-        ...(todoId && { todoId }),
+const timerSessions = await prisma.timerSession.findMany({
+  where: { userId },
+  include: {
+    todo: {
+      select: {
+        id: true,
+        title: true,
+        status: true, // 👈 include status so you know if it’s completed
+        subject: {
+          select: { name: true }, // if you have a Subject relation
+        },
       },
-    });
+    },
+  },
+  orderBy: { startTime: "desc" },
+});
 
-    return NextResponse.json({ success: true, timerSession });
+return NextResponse.json({ timerSessions }, { status: 200 });
   } catch (error) {
     console.error("Error saving timer session:", error);
     return NextResponse.json(

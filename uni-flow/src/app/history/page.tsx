@@ -25,16 +25,18 @@ export default function HistoryPage() {
         }
 
         // Map the fetched data to include duration
-        const sessions = data.timerSessions.map((session: any) => ({
-          id: session.id,
-          subject: session.todo?.title || "No Subject", // Use linked ToDo title if available
-          duration:
-            (new Date(session.endTime).getTime() -
-              new Date(session.startTime).getTime()) /
-            1000, // Calculate duration in seconds
-          startTime: session.startTime,
-          endTime: session.endTime,
-        }));
+const sessions = data.timerSessions.map((session: any) => ({
+  id: session.id,
+  subject: session.todo?.subject?.name || "No Subject",
+  taskTitle: session.todo?.title || "Untitled Task",
+  taskStatus: session.todo?.status || "UNKNOWN",
+  duration:
+    (new Date(session.endTime).getTime() -
+      new Date(session.startTime).getTime()) /
+    1000,
+  startTime: session.startTime,
+  endTime: session.endTime,
+}));
 
         setHistory(sessions);
       } catch (error) {
@@ -80,24 +82,46 @@ export default function HistoryPage() {
         <span className="text-large-title-bold text-white">{totalFocusHours.toFixed(2)} hrs</span>
       </div>
 
-      {/* Task List */}
-      <div className="w-full max-w-[1920px] max-h-[1080px]">
-        <div className="bg-white rounded-lg shadow px-6 py-4 mb-4">
-          <span className="text-title2-bold text-primary mb-4 block">Tasks</span>
-          <ul className="list-none">
-            {history.map((s) => (
-              <li
-                key={s.id}
-                className="bg-components-fill rounded px-4 py-2 mb-2 shadow text-body1 text-primary"
-              >
-                {s.subject} – {(s.duration / 60).toFixed(0)} mins (
-                {new Date(s.startTime).toLocaleTimeString()} →{" "}
-                {new Date(s.endTime).toLocaleTimeString()} )
-              </li>
-            ))}
-          </ul>
+{/* Task List */}
+<div className="w-full h-full px-6">
+  <span className="text-title2-bold text-primary mb-4 block">Tasks</span>
+  
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[80vh] overflow-y-auto">
+    {history.map((s) => (
+      <div
+        key={s.id}
+        className="bg-white rounded-xl shadow-md border border-primary-light p-4 flex flex-col justify-between h-48"
+      >
+        <h3 className="text-body1-bold text-primary mb-2">{s.taskTitle}</h3>
+        <p className="text-sm text-gray-600 mb-1">
+          Subject: <span className="font-medium">{s.subject}</span>
+        </p>
+        <p className="text-sm mb-2">
+          Status:{" "}
+          <span
+            className={`font-semibold ${
+              s.taskStatus === "COMPLETED"
+                ? "text-green-600"
+                : s.taskStatus === "IN_PROGRESS"
+                ? "text-yellow-600"
+                : "text-red-600"
+            }`}
+          >
+            {s.taskStatus}
+          </span>
+        </p>
+        <div className="mt-auto text-sm text-gray-700">
+          <p>Duration: {(s.duration / 60).toFixed(0)} mins</p>
+          <p>
+            {new Date(s.startTime).toLocaleTimeString()} →{" "}
+            {new Date(s.endTime).toLocaleTimeString()}
+          </p>
         </div>
       </div>
+    ))}
+  </div>
+</div>
+
     </div>
   );
 }
