@@ -32,8 +32,11 @@ export default function TimerPage() {
 
   // Task type definition
   type Task = {
-    id: string | number;
+    id: string;
     title: string;
+    description?: string;
+    status: string;
+    startDate?: string;
     endDate?: string;
   };
 
@@ -42,20 +45,21 @@ export default function TimerPage() {
 
   // Fetch tasks from the backend
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await fetch("/api/todos");
-        const data = await response.json();
+const fetchTasks = async () => {
+  try {
+    const response = await fetch("/api/todos");
+    const data = await response.json();
 
-        if (!response.ok) {
-          throw new Error(data.error || "Failed to fetch tasks");
-        }
+    if (!response.ok) {
+      throw new Error("Failed to fetch tasks");
+    }
 
-        setTasks(data.todos);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    };
+    // API returns array directly
+    setTasks(data);
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
+  }
+};
 
     fetchTasks();
   }, []);
@@ -209,7 +213,7 @@ export default function TimerPage() {
         </button>
       </div>
 
-      {/* Main content */}
+      {/* Timer Section */}
       <div className="relative rounded-lg shadow-lg p-8 bg-primary-light flex flex-col items-center w-full max-w-[1920px] max-h-[1080px]">
         <h1 className="text-title1 mt-8 text-white">
           {isWorkTime ? "Work Time" : "Break Time"}
@@ -230,7 +234,7 @@ export default function TimerPage() {
           </button>
           <button
             onClick={reset}
-            className="px-4 py-2 rounded bg-components-fill text-primary mr-2"
+            className="px-4 py-2 rounded bg-components-fill text-primary"
           >
             Reset
           </button>
@@ -249,6 +253,8 @@ export default function TimerPage() {
           <p className="text-body1-bold">Timer is complete!</p>
         </div>
       )}
+
+      
 
       {/* Settings Modal */}
       {showSettings && (
@@ -322,6 +328,50 @@ export default function TimerPage() {
           </div>
         </div>
       )}
+      {/* Task List */}
+{/* Task List */}
+<div className="mt-8 w-full max-w-[1920px]">
+  <h2 className="text-title2-bold mb-4 text-primary">Tasks</h2>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {Array.isArray(tasks) && tasks.slice(0, 4).map((task) => (
+      <div
+        key={task.id}
+        className="p-6 rounded-lg shadow-md bg-white border border-primary-light flex flex-col justify-between"
+      >
+        <div>
+          <h3 className="text-body1-bold text-primary mb-2">{task.title}</h3>
+          <p className="text-body2 text-gray-600 mb-2">
+            {task.description || "No description provided"}
+          </p>
+        </div>
+
+        <div className="mt-2 text-sm text-gray-700 space-y-1">
+          {task.startDate && (
+            <p>Start: {new Date(task.startDate).toLocaleDateString()}</p>
+          )}
+          {task.endDate && (
+            <p>Due: {new Date(task.endDate).toLocaleDateString()}</p>
+          )}
+          <p>
+            Status:{" "}
+            <span
+              className={`font-semibold ${
+                task.status === "COMPLETED"
+                  ? "text-green-600"
+                  : task.status === "IN_PROGRESS"
+                  ? "text-yellow-600"
+                  : "text-red-600"
+              }`}
+            >
+              {task.status}
+            </span>
+          </p>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
 
       {/* Alarm Sound */}
       <audio ref={alarmRef} src="/alarm.mp3" preload="auto" />
