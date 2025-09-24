@@ -52,25 +52,17 @@ export async function POST(req: Request) {
       }
     }
 
-    // Create timer session
-const timerSessions = await prisma.timerSession.findMany({
-  where: { userId },
-  include: {
-    todo: {
-      select: {
-        id: true,
-        title: true,
-        status: true, // 👈 include status so you know if it’s completed
-        subject: {
-          select: { name: true }, // if you have a Subject relation
-        },
+    // Save the timer session
+    const timerSession = await prisma.timerSession.create({
+      data: {
+        startTime,
+        endTime,
+        userId,
+        todoId,
       },
-    },
-  },
-  orderBy: { startTime: "desc" },
-});
+    });
 
-return NextResponse.json({ timerSessions }, { status: 200 });
+    return NextResponse.json({ success: true, timerSession });
   } catch (error) {
     console.error("Error saving timer session:", error);
     return NextResponse.json(
@@ -82,7 +74,6 @@ return NextResponse.json({ timerSessions }, { status: 200 });
 
 export async function GET(req: Request) {
   try {
-    // Extract userId from query parameters (or authentication context)
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");
 
@@ -93,10 +84,13 @@ export async function GET(req: Request) {
       );
     }
 
-    // Fetch timer sessions for the user
+    // Fetch timer sessions with related ToDo details
     const timerSessions = await prisma.timerSession.findMany({
       where: { userId },
-      orderBy: { startTime: "desc" }, // Sort by most recent sessions
+      include: {
+        todo: true, // Include the related ToDo details
+      },
+      orderBy: { startTime: "desc" },
     });
 
     return NextResponse.json({ success: true, timerSessions });
@@ -104,6 +98,32 @@ export async function GET(req: Request) {
     console.error("Error fetching timer sessions:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch timer sessions" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const { userId } = await req.json();
+
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: "User ID is required" },
+        { status: 400 }
+      );
+    }
+
+    // Delete all timer sessions for the user
+    await prisma.timerSession.deleteMany({
+      where: { userId },
+    });
+
+    return NextResponse.json({ success: true, message: "History cleared" });
+  } catch (error) {
+    console.error("Error clearing history:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to clear history" },
       { status: 500 }
     );
   }
