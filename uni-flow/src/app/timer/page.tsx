@@ -1,11 +1,10 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import styles from "./page.module.css";
 
 export default function TimerPage() {
   // Default times (in seconds)
-  const [workTime, setWorkTime] = useState(0.1 * 60);
+  const [workTime, setWorkTime] = useState(25 * 60);
   const [shortBreakTime, setShortBreakTime] = useState(5 * 60);
   const [longBreakTime, setLongBreakTime] = useState(15 * 60);
 
@@ -17,14 +16,28 @@ export default function TimerPage() {
   // ✅ Track completion status
   const [isComplete, setIsComplete] = useState(false);
 
-  // ✅ Task type definition
+  // ✅ Notification popup state
+  const [showNotification, setShowNotification] = useState(false);
+
+  // ✅ Ref for alarm sound
+  const alarmRef = useRef<HTMLAudioElement | null>(null);
+
+  // ✅ Auto-start settings
+  const [autoStartBreaks, setAutoStartBreaks] = useState(false);
+  const [autoStartPomodoro, setAutoStartPomodoro] = useState(false);
+
+  // ✅ Long break interval setting
+  const [longBreakInterval, setLongBreakInterval] = useState(4); // Default: 4 pomodoros
+  const [completedPomodoros, setCompletedPomodoros] = useState(0); // Track completed pomodoros
+
+  // Task type definition
   type Task = {
     id: string | number;
     title: string;
     endDate?: string;
   };
 
-  // ✅ State for tasks
+  // State for tasks
   const [tasks, setTasks] = useState<Task[]>([]);
 
   // Fetch tasks from the backend
@@ -133,14 +146,49 @@ export default function TimerPage() {
           todoId: tasks.length > 0 ? tasks[0].id.toString() : undefined, // Example: Link to the first task
         });
 
-        setIsWorkTime(false);
-        setSecondsLeft(shortBreakTime);
+        setCompletedPomodoros((prev) => prev + 1); // Increment completed pomodoros
+
+        // Check if it's time for a long break
+        if ((completedPomodoros + 1) % longBreakInterval === 0) {
+          setIsWorkTime(false);
+          setSecondsLeft(longBreakTime);
+        } else {
+          setIsWorkTime(false);
+          setSecondsLeft(shortBreakTime);
+        }
+
+        // Auto-start break if enabled
+        if (autoStartBreaks) {
+          setIsActive(true);
+        } else {
+          setIsActive(false);
+        }
       } else {
         setIsWorkTime(true);
         setSecondsLeft(workTime);
+
+        // Auto-start pomodoro if enabled
+        if (autoStartPomodoro) {
+          setIsActive(true);
+        } else {
+          setIsActive(false);
+        }
       }
+
+      // Play alarm sound
+      if (alarmRef.current) {
+        alarmRef.current.play();
+      }
+
+      // Show notification popup
+      setShowNotification(true);
+
+      // Hide notification after 5 seconds
+      setTimeout(() => {
+        setShowNotification(false);
+      }, 5000);
     }
-  }, [secondsLeft, isActive, isWorkTime, workTime, shortBreakTime, tasks]);
+  }, [secondsLeft, isActive, isWorkTime, workTime, shortBreakTime, tasks, completedPomodoros, longBreakInterval]);
 
   return (
     <div className="w-screen h-screen flex flex-col items-center justify-center bg-components-fill">
@@ -195,25 +243,12 @@ export default function TimerPage() {
         </div>
       </div>
 
-      {/* Task List */}
-      <div className="mt-8 w-full max-w-[1920px] max-h-[1080px]">
-        <h2 className="text-title2-bold mb-4 text-primary">Tasks</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {tasks.map((task) => (
-            <div
-              key={task.id}
-              className="p-4 rounded-lg shadow-md bg-white border border-primary-light"
-            >
-              <h3 className="text-body1-bold text-primary mb-2">{task.title}</h3>
-              <p className="text-body2 text-gray-600">
-                {task.endDate
-                  ? new Date(task.endDate).toLocaleDateString()
-                  : "No due date"}
-              </p>
-            </div>
-          ))}
+      {/* Notification Popup */}
+      {showNotification && (
+        <div className="fixed bottom-4 right-4 bg-primary-light text-white px-6 py-4 rounded-lg shadow-lg z-50">
+          <p className="text-body1-bold">Timer is complete!</p>
         </div>
-      </div>
+      )}
 
       {/* Settings Modal */}
       {showSettings && (
@@ -240,7 +275,7 @@ export default function TimerPage() {
                 className="ml-2 px-2 py-1 rounded border border-primary-light w-20"
               />
             </label>
-            <label className="mb-4 w-full text-body1 text-primary">
+            <label className="mb-2 w-full text-body1 text-primary">
               Long Break (minutes):
               <input
                 type="number"
@@ -249,6 +284,34 @@ export default function TimerPage() {
                 onChange={(e) => setLongBreakTime(Number(e.target.value) * 60)}
                 className="ml-2 px-2 py-1 rounded border border-primary-light w-20"
               />
+            </label>
+            <label className="mb-2 w-full text-body1 text-primary">
+              Long Break Interval (Pomodoros):
+              <input
+                type="number"
+                min={1}
+                value={longBreakInterval}
+                onChange={(e) => setLongBreakInterval(Number(e.target.value))}
+                className="ml-2 px-2 py-1 rounded border border-primary-light w-20"
+              />
+            </label>
+            <label className="mb-2 w-full text-body1 text-primary flex items-center">
+              <input
+                type="checkbox"
+                checked={autoStartBreaks}
+                onChange={(e) => setAutoStartBreaks(e.target.checked)}
+                className="mr-2"
+              />
+              Auto Start Breaks
+            </label>
+            <label className="mb-4 w-full text-body1 text-primary flex items-center">
+              <input
+                type="checkbox"
+                checked={autoStartPomodoro}
+                onChange={(e) => setAutoStartPomodoro(e.target.checked)}
+                className="mr-2"
+              />
+              Auto Start Pomodoro
             </label>
             <button
               className="px-4 py-2 bg-primary-light text-white rounded shadow text-body1-bold hover:bg-button-hover-light"
@@ -259,6 +322,9 @@ export default function TimerPage() {
           </div>
         </div>
       )}
+
+      {/* Alarm Sound */}
+      <audio ref={alarmRef} src="/alarm.mp3" preload="auto" />
     </div>
   );
 }
