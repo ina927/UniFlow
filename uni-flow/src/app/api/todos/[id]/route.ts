@@ -13,10 +13,19 @@ export async function PUT(request: NextRequest, context: { params: { id: string 
         const newStatus: ToDoStatus | undefined =
         update.status && ToDoStatus[update.status as keyof typeof ToDoStatus];
 
+        const newTitle: string | undefined = update.title 
+        
+        const newContent: string | undefined = update.description
+
+        const newDue: Date | undefined = update.endDate
+
         const updatedToDo = await prisma.toDo.update({
             where: {id},
             data : {
-                ...(newStatus && {status: newStatus})
+                ...(newStatus && {status: newStatus}),
+                ...(newTitle && {title: newTitle}),
+                ...(newContent && {description: newContent}),
+                ...(newDue && {endDate: newDue})
             }
     })
     return NextResponse.json(updatedToDo, {status: 200})

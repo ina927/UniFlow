@@ -22,6 +22,7 @@ import { start } from "repl";
 import { CalendarSearch } from "lucide-react";
 import { todo } from "node:test";
 import { title } from "process";
+import { ToDoEntity } from "@/entities/todos/entities/todo.entity";
 
 
 export default function Calendar(){
@@ -30,12 +31,16 @@ export default function Calendar(){
     const [currentEvents, setCurrentEvents] = useState<EventApi[]>([]);
     const [currentEventsInput, setCurrentEventsInput] = useState<EventInput[]>([])
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+    const [isDialogUpdateOpen, setIsDialogUpdateOpen] = useState<boolean>(false);
 
     // for database control (tags in form is to opt for the subject id)
     const [selectedDate, setSelectedDate] = useState<DateSelectArg | null>(null); // this is the considered the start date
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [newEventTitle, setNewEventTitle] = useState<string>("");
     const [content, setContent] = useState<string>("");
+    const [selectedEvent, setSelectedEvent] = useState<EventApi>();
+    const [selectedEventId, setSelectedEventId] = useState<string>();
+    const [selectedEventArg, setSelectedEventArg] = useState<EventClickArg>();
     // const [taskStatus, setTaskStatus] = useState<string>("");
 
     // data dummy for now
@@ -57,16 +62,19 @@ export default function Calendar(){
             const fetchEvents =  await response.json();
             
             const FormattedEvents: EventApi[] = fetchEvents.map((todo: any) => ({
-                id: todo._id,
+                id: todo.id,
                 title: todo.title,
+                content: todo.description,
                 start: new Date(todo.startDate),
                 end: todo.endDate ? new Date(todo.endDate) : undefined,
                 allDay: todo.allDay ?? false
+
             }))
 
             const FormattedEventsInput: EventInput[] = fetchEvents.map((todo: any) => ({
-                id: todo._id,
+                id: String(todo.id),
                 title: todo.title,
+                content: todo.description,
                 start: new Date(todo.startDate),
                 end: todo.endDate ? new Date(todo.endDate) : undefined,
                 allDay: todo.allDay ?? false
@@ -91,21 +99,35 @@ export default function Calendar(){
             });
 
             console.log("calendar test")
-            setCurrentEvents([])
+            console.log(currentEvents)
  
             const fetchEvents =  await response.json();
             
             const FormattedEvents: EventApi[] = fetchEvents.map((todo: any) => ({
-                id: todo._id,
+                id: todo.id,
                 title: todo.title,
+                content: todo.description,
+                start: new Date(todo.startDate),
+                end: todo.endDate ? new Date(todo.endDate) : undefined,
+                allDay: todo.allDay ?? false
+            }))
+
+            const FormattedEventsInput: EventInput[] = fetchEvents.map((todo: any) => ({
+                id: todo.id,
+                title: todo.title,
+                content: todo.description,
                 start: new Date(todo.startDate),
                 end: todo.endDate ? new Date(todo.endDate) : undefined,
                 allDay: todo.allDay ?? false
             }))
 
             setCurrentEvents(FormattedEvents)
+            setCurrentEventsInput(FormattedEventsInput)
             console.log(FormattedEvents)
+            console.log("-----")
+            console.log(currentEvents)
         }
+        calendarRef.current?.getApi().removeAllEvents()
         fetchToDo();
     }
     // useEffect(() => {
@@ -113,6 +135,11 @@ export default function Calendar(){
     //         localStorage.setItem("events", JSON.stringify(currentEvents));
     //     }
     // }, [currentEvents]); //overwrite
+
+    const deleteToDo = async (event:ToDoEntity) => {
+        await Axios.delete(`/api/todos/${event.id}`);
+        refresh();
+    }
 
     const handleDateClick = (selected: DateSelectArg) => {
         setSelectedDate(selected);
@@ -126,12 +153,67 @@ export default function Calendar(){
         setEndDate(null);
     };
 
-    const handleEventClick = (selected: EventClickArg) => {
-        if (
-            window.confirm(`Delete the event "${selected.event.title}" from your calendar?`)
-        ) {
-            selected.event.remove();
-        }
+    const handleEventClick = async (selected: EventClickArg) => {
+
+        const event = selected.event;
+
+        setSelectedEventArg(selected);           
+        setSelectedEvent(selected.event);        
+        setNewEventTitle(selected.event.title); 
+        setContent(selected.event.extendedProps.content || ""); 
+        setSelectedEventId(event.id ?? null)
+        setEndDate(selected.event.end || null);  
+        setIsDialogUpdateOpen(true);             
+        // setSelectedEventArg(selected);
+
+        // const response = await fetch(`/api/todos/${selected.event.id}`, {
+        //     headers: {
+        //         userId: userId,
+        //     }
+        // })
+
+        // const stringRes = await response.json()
+
+        // setNewEventTitle(stringRes.title);
+        // setContent(stringRes.description);
+        // setEndDate(stringRes.endDate);
+
+        // setIsDialogUpdateOpen(true);
+        
+        // if (
+        //     window.confirm(`Delete the event "${selected.event.title}" from your calendar?`)
+        // ) {
+            
+        //     selected.event.remove();
+        //     // await Axios.delete(`/api/todos/${event.id}`);
+        //     // refresh();
+        // }
+    }
+
+    const updateDialog = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedEventArg) return;
+
+        console.log(selectedEventId)
+        
+        await Axios.put(`/api/todos/${selectedEventArg.event.id}`, {
+            title: newEventTitle,
+            description: content,
+            endDate: endDate,
+        });
+
+        refresh();
+        setIsDialogUpdateOpen(false);
+    }
+
+    const handleDeleteEvent = async () => {
+
+        if (!selectedEventArg) return;
+
+        await Axios.delete(`/api/todos/${selectedEventArg.event.id}`);
+        selectedEventArg.event.remove()
+        refresh();
+        setIsDialogUpdateOpen(false);
     }
 
     const handleAddEvent = async (e: React.FormEvent) => {
@@ -140,14 +222,15 @@ export default function Calendar(){
             const calendarApi = selectedDate.view.calendar;
             calendarApi.unselect();
         
-        // this is for calendar view only
-        const newEvent = {
-            id: `${selectedDate?.start.toISOString()}-${newEventTitle}`,
-            title: newEventTitle,
-            start: selectedDate?.start,
-            end: selectedDate?.end,
-            allDat: selectedDate?.allDay,
-        };
+        // // this is for calendar view only
+        // const newEvent = {
+        //     id: `${selectedDate?.start.toISOString()}-${newEventTitle}`,
+        //     title: newEventTitle,
+        //     content: content,
+        //     start: selectedDate?.start,
+        //     end: selectedDate?.end,
+        //     allDat: selectedDate?.allDay,
+        // };
 
         setEndDate(selectedDate.end)
 
@@ -164,7 +247,7 @@ export default function Calendar(){
             taskStatus: ToDoStatus.PENDING
         }
 
-        calendarApi.addEvent(newEvent);
+        // calendarApi.addEvent(newEvent);
         const response = await Axios.post('/api/todos', {newToDo})
         console.log(response)
         refresh();
@@ -260,6 +343,31 @@ export default function Calendar(){
                     {/* <br />
                     <hr style={{width: "93%", marginLeft: "1vw", height: "1px", background: "black", opacity: 0.8}}/> */}
                     <button className="text-white p-3 mt-5 rounded-md" style={{width: "92%", color: "var(--foreground)", background: "(var(--background-prime)", border: "solid 1px var(--background-prime)", marginLeft: "1vw"}} type="submit">Save</button>
+                </form>
+            </DialogContent>
+        </Dialog>
+
+        <Dialog open={isDialogUpdateOpen} onOpenChange={setIsDialogUpdateOpen}>
+            <DialogContent>
+                <br />
+                <DialogHeader>
+                    <DialogTitle style={{marginLeft: "1vw"}}>
+                        Update Task
+                    </DialogTitle>
+                </DialogHeader>
+                <form className="space-x-5 mb-4" style={{display: "flex",flexDirection: "column"}} onSubmit={updateDialog}>
+                    <input type="text" placeholder="NEW TASK" value={newEventTitle} onChange={(event) => setNewEventTitle(event.target.value)} required style={{borderBottom: "solid 3px gray", fontWeight: "bold", fontSize: "1.5rem", marginLeft:"0.7vw", opacity: 0.6, width: "97%"}} className="p-1 text-lg"/>
+
+                    <textarea placeholder="Description(optional) (150 characters max)" className="p-3" style={{height: "10vh", wordWrap: "break-word", textWrap: "balance"}} maxLength={150} value={content} onChange={(e) => {
+                        setContent(e.target.value)
+                    }}/>
+                    <div className="tags" style={{display: "flex", flexDirection: "row"}}>
+                        <label style={{marginLeft: "0.9vw", paddingRight: "1.5vw"}}>Tags: </label>
+                        <input type="text" name="deadline" /> {/*placeholder for now*/}
+                    </div>
+                    <hr style={{width: "93%", marginLeft: "1vw", height: "1px", background: "black", opacity: 0.8}}/>
+                    <button className="text-white p-3 mt-5 rounded-md" style={{width: "92%", color: "var(--foreground)", background: "(var(--background-prime)", border: "solid 1px var(--background-prime)", marginLeft: "1vw"}} type="submit">Save</button>
+                    <button className="text-white p-3 mt-5 rounded-md" style={{width: "92%", color: "var(--foreground)", background: "(var(--background-prime)", border: "solid 1px var(--background-prime)", marginLeft: "1vw"}} onClick={handleDeleteEvent}>Delete</button>
                 </form>
             </DialogContent>
         </Dialog>
