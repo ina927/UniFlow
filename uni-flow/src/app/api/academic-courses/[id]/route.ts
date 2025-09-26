@@ -1,11 +1,11 @@
 import { NextRequest } from "next/server";
 
-import { ResponseDto, withDB } from "@/shared/api";
+import { ResponseDto, controller } from "@/shared/api";
 import { UpdateAcademicCourseDto } from "@/entities";
 import { deleteAcademicCourse, getAcademicCourse, updateAcademicCourse } from "@/entities/academics/services";
 import { deleteSuccess, getSuccess, missingError, notFoundError, serverError, updateSuccess } from "@/shared";
 
-export const GET = withDB(async (req: NextRequest) => {
+export const GET = controller(async (req: NextRequest) => {
   try {
     const userId: string = req.headers.get('user-id') as string;
 
@@ -31,7 +31,7 @@ export const GET = withDB(async (req: NextRequest) => {
   }
 });
 
-export const PATCH = withDB(async (req: NextRequest) => {
+export const PATCH = controller(async (req: NextRequest) => {
   try {
     const userId: string = req.headers.get('user-id') as string;
 
@@ -54,7 +54,7 @@ export const PATCH = withDB(async (req: NextRequest) => {
   }
 });
 
-export const DELETE = withDB(async (req: NextRequest) => {
+export const DELETE = controller(async (req: NextRequest) => {
   try {
     const userId: string = req.headers.get('user-id') as string;
 
