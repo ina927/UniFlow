@@ -1,10 +1,10 @@
 import { NextRequest } from "next/server";
 
-import { withDB } from "@/shared";
+import { controller } from "@/shared";
 import { getInstructors, createInstructor } from "@/entities/academics/services";
 import { CreateInstructorDto } from "@/entities";
 
-export const GET = withDB(async (req: NextRequest) => {
+export const GET = controller(async (req: NextRequest) => {
   try {
     const userId: string = req.headers.get('user-id') as string;
 
@@ -52,7 +52,7 @@ export const GET = withDB(async (req: NextRequest) => {
   }
 });
 
-export const POST = withDB(async (req: NextRequest) => {
+export const POST = controller(async (req: NextRequest) => {
   try {
     const userId: string = req.headers.get('user-id') as string;
 

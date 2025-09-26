@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { missingError, ResponseDto, serverError, updateSuccess, withDB } from "@/shared";
+import { missingError, ResponseDto, serverError, updateSuccess, controller } from "@/shared";
 import { enterScore } from "@/entities/assessments/services/assessment.service";
 import type { EnterScoreDto } from "@/entities/assessments";
 
@@ -7,7 +7,7 @@ import type { EnterScoreDto } from "@/entities/assessments";
  * PATCH /api/assessments/score
  * Updates or clears the score for a specific assessment.
  */
-export const PATCH = withDB(async (req: NextRequest) => {
+export const PATCH = controller(async (req: NextRequest) => {
   try {
     const body = (await req.json()) as EnterScoreDto & { score: number | null };
 

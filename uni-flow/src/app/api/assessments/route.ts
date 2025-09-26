@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { createSuccess, getSuccess, missingError, notFoundError, ResponseDto, serverError, withDB } from "@/shared"; // same pattern as academic-courses route
+import { createSuccess, getSuccess, missingError, notFoundError, ResponseDto, serverError, controller } from "@/shared"; // same pattern as academic-courses route
 import { listAssessments, createAssessment } from "@/entities/assessments/services/assessment.service";
 import { CreateAssessmentDto } from "@/entities/assessments";
 
@@ -7,7 +7,7 @@ import { CreateAssessmentDto } from "@/entities/assessments";
  * GET /api/assessments?subjectId=...
  * Returns the list of assessments for a given subject.
  */
-export const GET = withDB(async (req: NextRequest) => {
+export const GET = controller(async (req: NextRequest) => {
   try {
     const { searchParams } = new URL(req.url);
     const subjectId = searchParams.get("subjectId");
@@ -33,7 +33,7 @@ export const GET = withDB(async (req: NextRequest) => {
  * Body: CreateAssessmentDto
  * Creates a new assessment for a subject.
  */
-export const POST = withDB(async (req: NextRequest) => {
+export const POST = controller(async (req: NextRequest) => {
   try {
     const body = (await req.json()) as CreateAssessmentDto;
 
