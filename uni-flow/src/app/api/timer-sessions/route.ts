@@ -79,16 +79,20 @@ export async function GET(req: Request) {
 
     if (!userId) {
       return NextResponse.json(
-        { success: false, error: "Missing userId" },
+        { success: false, error: "User ID is required" },
         { status: 400 }
       );
     }
 
-    // Fetch timer sessions with related ToDo details
+    // Fetch timer sessions with related ToDo and Subject details
     const timerSessions = await prisma.timerSession.findMany({
       where: { userId },
       include: {
-        todo: true, // Include the related ToDo details
+        todo: {
+          include: {
+            subject: true, // Include the related subject details
+          },
+        },
       },
       orderBy: { startTime: "desc" },
     });
@@ -128,3 +132,28 @@ export async function DELETE(req: Request) {
     );
   }
 }
+
+/*
+export async function POST(request: Request) {
+  try {
+    const { newToDo } = await request.json();
+
+    // Ensure endDate is in ISO-8601 format
+    if (newToDo.endDate) {
+      newToDo.endDate = new Date(newToDo.endDate).toISOString();
+    }
+
+    const toDo = await prisma.toDo.create({
+      data: newToDo,
+    });
+
+    return NextResponse.json({ success: true, toDo });
+  } catch (error) {
+    console.error("Error creating ToDo:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to create ToDo" },
+      { status: 500 }
+    );
+  }
+}
+  */
