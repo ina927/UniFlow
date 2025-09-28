@@ -1,6 +1,18 @@
+# Enable automatic triggers
 trigger:
-  branches: 
-    include: [ features/F108-calendar ]
+  branches:
+    include:
+      - features/F108-calendar  # Automatically run when this branch is updated
+  paths:
+    include:
+      - 'uni-flow/**'  # Only trigger when files in uni-flow folder change
+
+# Optional: Also run on pull requests
+pr:
+  branches:
+    include:
+      - main
+      - develop
   paths:
     include:
       - 'uni-flow/**'
@@ -30,6 +42,8 @@ stages:
     
   - stage: DownloadComponents
     displayName: "Component download"
+    dependsOn: BuildReact
+    condition: succeeded()
     pool:
       vmImage: ubuntu-latest
 
@@ -45,11 +59,13 @@ stages:
             inputs:
               script: |
                 npm install @fullcalendar/core @fullcalendar/daygrid @fullcalendar/timegrid @fullcalendar/list @fullcalendar/react @fullcalendar/interaction
+              workingDirectory: $(WORKDIR)
             displayName: 'Calendar component download'
-            workingDirectory: $(WORKDIR)
       
   - stage: Test
     displayName: "Run Tests"
+    dependsOn: DownloadComponents
+    condition: succeeded()
     pool:
       vmImage: ubuntu-latest
 
