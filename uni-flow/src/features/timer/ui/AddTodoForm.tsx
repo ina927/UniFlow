@@ -1,16 +1,56 @@
+import { useState } from "react";
+
 type AddTodoFormProps = {
+  subjects: { id: string; title: string }[];
   newTodo: any;
   setNewTodo: (todo: any) => void;
-  subjects: { id: string; title: string }[];
   addTodo: () => void;
-  onCancel: () => void; // New prop for handling cancel action
+  onCancel: () => void;
 };
 
-export const AddTodoForm = ({ newTodo, setNewTodo, subjects, addTodo, onCancel }: AddTodoFormProps) => {
+export const AddTodoForm = ({
+  subjects,
+  newTodo,
+  setNewTodo,
+  addTodo,
+  onCancel,
+}: AddTodoFormProps) => {
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSave = () => {
+    // Title validation
+    if (!newTodo.title || newTodo.title.trim() === "") {
+      setError("Title is required.");
+      return;
+    }
+    // Date validation
+    if (!newTodo.endDate) {
+      setError("End Date is required.");
+      return;
+    }
+    // Check if date is valid and in the future
+    const selectedDate = new Date(newTodo.endDate);
+    const now = new Date();
+    if (isNaN(selectedDate.getTime())) {
+      setError("End Date is invalid.");
+      return;
+    }
+    if (selectedDate < now) {
+      setError("End Date must be in the future.");
+      return;
+    }
+    setError(null);
+    addTodo();
+    onCancel(); 
+  };
+
   return (
     <div className="mb-4 p-4 bg-white rounded-lg shadow-md">
-      <h3 className="text-title3-bold mb-4">Add ToDo Item</h3>
+      <h3 className="text-title3-bold mb-4">Add Task</h3>
       <div className="flex flex-col gap-4">
+        {error && (
+          <div className="text-red-500 text-sm mb-2">{error}</div>
+        )}
         <label>
           Title:
           <input
@@ -59,7 +99,7 @@ export const AddTodoForm = ({ newTodo, setNewTodo, subjects, addTodo, onCancel }
         <label>
           Subject:
           <select
-            value={newTodo.subjectId}
+            value={newTodo.subjectId || ""}
             onChange={(e) =>
               setNewTodo({
                 ...newTodo,
@@ -69,20 +109,19 @@ export const AddTodoForm = ({ newTodo, setNewTodo, subjects, addTodo, onCancel }
             className="ml-2 px-2 py-1 rounded border border-primary-light w-full"
           >
             <option value="">Select a subject</option>
-            {Array.isArray(subjects) &&
-              subjects.map((subject) => (
-                <option key={subject.id} value={subject.id}>
-                  {subject.title}
-                </option>
-              ))}
+            {subjects.map((subject) => (
+              <option key={subject.id} value={subject.id}>
+                {subject.title}
+              </option>
+            ))}
           </select>
         </label>
         <div>
           <button
-            onClick={addTodo}
+            onClick={handleSave}
             className="px-4 py-2 bg-primary-light text-white rounded shadow w-full"
           >
-            Save ToDo
+            Create
           </button>
         </div>
         <div>

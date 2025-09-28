@@ -5,21 +5,23 @@ import HistorySummary from "@/features/history/ui/HistorySummary";
 import HistoryList from "@/features/history/ui/HistoryList";
 
 export default function HistoryPage() {
-  const { history, totalFocusHours, clearHistory } = useHistory();
+  const { history, totalFocusHours, totalPomodoros, clearHistory } = useHistory();
 
   return (
-    <div className="w-screen h-screen flex flex-col items-center justify-center bg-components-fill">
-      {/* Header with navigation and clear history button */}
-      <HistoryHeader onClearHistory={clearHistory} />
+    <div className="w-screen min-h-screen flex flex-col items-center justify-center bg-components-fill">
+      <div className="w-full max-w-screen-lg mx-auto px-4 py-8 flex flex-col items-center">
+        {/* Header with navigation and clear history button */}
+        <HistoryHeader onClearHistory={clearHistory} />
 
-      {/* Page Title */}
-      <h1 className="text-title1 mb-8 text-center">Study Session History</h1>
+        {/* Page Title */}
+        <h1 className="text-title1 mb-8 text-center">Study Session History</h1>
 
-      {/* Total Focus Hours */}
-      <HistorySummary totalFocusHours={totalFocusHours} />
+        {/* Total Focus Hours */}
+        <HistorySummary totalFocusHours={totalFocusHours} totalPomodoros={totalPomodoros} />
 
-      {/* Task List */}
-      <HistoryList history={history} />
+        {/* Task List */}
+        <HistoryList history={history} />
+      </div>
     </div>
   );
 }

@@ -3,7 +3,6 @@ import { useSubjects } from "@/features/timer/hooks/useSubjects";
 
 export const useTimer = ({
   currentTask,
-  setCurrentTask,
 }: {
   currentTask: any;
   setCurrentTask: (task: any) => void;
@@ -77,36 +76,38 @@ export const useTimer = ({
         alarmRef.current.play();
       }
 
-      const endTime = new Date().toISOString();
-      const startTime = new Date(Date.now() - (isWorkTime ? workTime : getNextBreakTime()) * 1000).toISOString();
+      // Only post timer session if work session just ended
+      if (isWorkTime) {
+        const endTime = new Date().toISOString();
+        const startTime = new Date(Date.now() - workTime * 1000).toISOString();
 
-      // Save the timer session using the API
-      fetch("/api/timer-sessions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          startTime,
-          endTime,
-          userId: "83482f49-8367-48d1-93f0-e98f01010f0f",
-          todoId: currentTask?.id || null,
-          taskName: currentTask?.id ? currentTask.title : "Study Session",
-          subjectName: currentTask?.id
-            ? (subjects ?? []).find((subject) => subject.id === currentTask?.subjectId)?.title || "Other"
-            : "Other",
-        }),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Failed to save timer session");
-          }
-          return response.json();
+        fetch("/api/timer-sessions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            startTime,
+            endTime,
+            userId: "83482f49-8367-48d1-93f0-e98f01010f0f",
+            todoId: currentTask?.id || null,
+            taskName: currentTask?.id ? currentTask.title : "Study Session",
+            subjectName: currentTask?.id
+              ? (subjects ?? []).find((subject) => subject.id === currentTask?.subjectId)?.title || "Other"
+              : "Other",
+          }),
         })
-        .then((data) => {
-          console.log("Timer session saved:", data);
-        })
-        .catch((error) => {
-          console.error("Error saving timer session:", error);
-        });
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Failed to save timer session");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("Timer session saved:", data);
+          })
+          .catch((error) => {
+            console.error("Error saving timer session:", error);
+          });
+      }
 
       // Transition between work and break
       if (isWorkTime) {
@@ -160,5 +161,7 @@ export const useTimer = ({
     alarmRef,
     showNotification,
     setShowNotification,
+
+    completedPomodoros, 
   };
 };
