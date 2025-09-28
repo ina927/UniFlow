@@ -2,12 +2,11 @@
 trigger:
   branches:
     include:
-      - features/F108-calendar  # Automatically run when this branch is updated
+      - features/F108-calendar  
   paths:
     include:
-      - 'uni-flow/**'  # Only trigger when files in uni-flow folder change
+      - 'uni-flow/**' 
 
-# Optional: Also run on pull requests
 pr:
   branches:
     include:
