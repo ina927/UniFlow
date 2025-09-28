@@ -17,8 +17,8 @@ type HistoryListProps = {
 const HistoryList = ({ history }: HistoryListProps) => {
   return (
     <div className="w-full h-full px-6">
-      <span className="text-title2-bold text-primary mb-4 block">Tasks</span>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[80vh] overflow-y-auto">
+      <span className="text-title2-bold text-primary mb-4 block">Completed Study Sessions</span>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {history.map((session) => (
           <HistoryCard key={session.id} session={session} />
         ))}

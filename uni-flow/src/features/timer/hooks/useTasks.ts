@@ -24,8 +24,9 @@ export const useTasks = () => {
           throw new Error("Failed to fetch tasks");
         }
 
-        // API returns array directly
-        setTasks(data);
+        // Only include tasks not marked as DONE
+        const inProgressTasks = data.filter((task) => task.taskStatus !== "DONE");
+        setTasks(inProgressTasks);
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
@@ -36,13 +37,16 @@ export const useTasks = () => {
 
   const deleteTodo = async (taskId) => {
     try {
-      const response = await fetch(`/api/todos`, {
+      const response = await fetch(`/api/todos/${taskId}`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: taskId }),
       });
       if (!response.ok) throw new Error("Failed to delete task");
-      setTasks((prev) => prev.filter((task) => task.id !== taskId));
+
+      // Refetch tasks to ensure state is up-to-date
+      const refreshed = await fetch("/api/todos");
+      const data = await refreshed.json();
+      const inProgressTasks = data.filter((task) => task.taskStatus !== "DONE");
+      setTasks(inProgressTasks);
     } catch (error) {
       console.error("Error deleting task:", error);
     }
@@ -50,13 +54,37 @@ export const useTasks = () => {
 
   const addTodo = async () => {
     try {
+      const formattedEndDate = newTodo.endDate
+        ? new Date(newTodo.endDate).toISOString()
+        : undefined;
+
+      const safeSubjectId =
+        newTodo.subjectId && newTodo.subjectId.trim() !== "" ? newTodo.subjectId : null;
+
+      const todoWithDates = {
+        userId: newTodo.userId,
+        subjectId: safeSubjectId,
+        assessmentId: newTodo.assessmentId || null,
+        title: newTodo.title.trim(),
+        content: newTodo.content.trim(),
+        startDate: new Date().toISOString(),
+        endDate: formattedEndDate,
+        taskStatus: newTodo.taskStatus || "IN_PROGRESS",
+      };
+
       const response = await fetch("/api/todos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ newToDo: newTodo }),
+        body: JSON.stringify({ newToDo: todoWithDates }),
       });
+
       const data = await response.json();
-      if (!response.ok) throw new Error("Failed to add task");
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to add task");
+      }
+
+      // Append the new todo
       setTasks((prev) => [...prev, data]);
     } catch (error) {
       console.error("Error adding task:", error);

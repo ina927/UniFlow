@@ -27,7 +27,7 @@ export const useHistory = () => {
         const sessions = data.timerSessions.map((session: any) => ({
           id: session.id,
           subject: session.todo?.subject?.title || "Other",
-          taskTitle: session.todo?.title || "Unnamed Task",
+          taskTitle: session.todo?.title || "Study Session",
           taskStatus: session.todo?.status || "UNKNOWN",
           duration:
             (new Date(session.endTime).getTime() -
@@ -48,6 +48,9 @@ export const useHistory = () => {
 
   const totalFocusHours =
     history.reduce((acc, s) => acc + s.duration, 0) / 3600;
+
+  // Calculate total pomodoros (assuming each session is one pomodoro)
+  const totalPomodoros = history.length;
 
   const clearHistory = async () => {
     try {
@@ -73,5 +76,10 @@ export const useHistory = () => {
     }
   };
 
-  return { history, totalFocusHours, clearHistory };
+  return {
+    history,
+    totalFocusHours,
+    totalPomodoros, // <-- Add this
+    clearHistory,
+  };
 };

@@ -7,29 +7,31 @@ type TimerControlsProps = {
 
 export const TimerControls = ({ isActive, toggle, reset, skip }: TimerControlsProps) => {
   return (
-    <div>
+    <div className="flex gap-4 mt-2 mb-8">
       <button
         onClick={toggle}
-        className={`px-4 py-2 mr-2 rounded text-body1-bold ${
+        className={`w-28 py-2 rounded-full font-bold transition-colors duration-150 ${
           isActive
-            ? "bg-button-active-light text-white"
-            : "bg-button-deactive-light text-white"
+            ? "bg-primary text-white hover:bg-primary-dark"
+            : "bg-white text-primary border border-primary hover:bg-primary-light"
         }`}
       >
         {isActive ? "Pause" : "Start"}
       </button>
       <button
         onClick={reset}
-        className="px-4 py-2 rounded bg-components-fill text-primary"
+        className="w-28 py-2 rounded-full font-bold bg-white text-primary border border-primary hover:bg-primary-light transition-colors duration-150"
       >
         Reset
       </button>
       <button
         onClick={skip}
-        className="px-4 py-2 rounded bg-button-deactive-light text-white mr-2"
+        className="w-28 py-2 rounded-full font-bold bg-white text-primary border border-primary hover:bg-primary-light transition-colors duration-150"
       >
         Skip
       </button>
     </div>
   );
 };
+
+export default TimerControls;

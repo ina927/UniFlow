@@ -1,7 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TimerDisplay } from "@/features/timer/ui/TimerDisplay";
-import { TimerControls } from "@/features/timer/ui/TimerControls";
 import { TaskList } from "@/features/timer/ui/TaskList";
 import { AddTodoForm } from "@/features/timer/ui/AddTodoForm";
 import SettingsModel from "@/features/timer/ui/SettingsModel";
@@ -9,11 +8,12 @@ import NotificationPopup from "@/features/timer/ui/NotificationPopup";
 import TimerHeader from "@/features/timer/ui/TimerHeader";
 import { useTimer } from "@/features/timer/hooks/useTimer";
 import { useTasks } from "@/features/timer/hooks/useTasks";
-import { useSubjects } from "@/features/timer/hooks/useSubjects";
+import { fetchSubjectsForUser } from "@/features/timer/api/subjects";
 
 export default function TimerPage() {
-  // Task and subject logic
   const { tasks, setTasks, currentTask, setCurrentTask, deleteTodo, addTodo, newTodo, setNewTodo } = useTasks();
+  const userId = "83482f49-8367-48d1-93f0-e98f01010f0f";
+  const [subjects, setSubjects] = useState([]);
 
   const timer = useTimer({ currentTask, setCurrentTask });
 
@@ -39,14 +39,18 @@ export default function TimerPage() {
     alarmRef,
     showNotification,
     setShowNotification,
+    completedPomodoros,
   } = timer;
 
-  // State for modals
   const [showSettings, setShowSettings] = useState(false);
   const [showAddTodoForm, setShowAddTodoForm] = useState(false);
 
+  useEffect(() => {
+    fetchSubjectsForUser(userId).then(setSubjects).catch(console.error);
+  }, [userId]);
+
   return (
-    <div className="min-h-screen w-screen bg-background text-foreground">
+    <div className="flex flex-col min-h-screen w-screen bg-background text-foreground">
       {/* Timer Header */}
       <TimerHeader
         onToggleAddTodo={() => setShowAddTodoForm(!showAddTodoForm)}
@@ -55,8 +59,8 @@ export default function TimerPage() {
         showSettings={showSettings}
       />
 
-      {/* Main Content */}
-      <div className="px-4 py-8">
+      {/* Main Content - takes remaining height and scrolls if needed */}
+      <main className="flex-1 overflow-y-auto px-4 py-8">
         <div className="max-w-screen-xl mx-auto flex flex-col items-center gap-6">
           <TimerDisplay
             isWorkTime={isWorkTime}
@@ -67,22 +71,40 @@ export default function TimerPage() {
               const secs = seconds % 60;
               return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
             }}
+            isActive={isActive}
+            toggle={toggle}
+            reset={reset}
+            skip={skip}
+            totalSessionTime={
+              isWorkTime
+                ? workTime
+                : (completedPomodoros + 1) % longBreakInterval === 0
+                ? longBreakTime
+                : shortBreakTime
+            }
           />
-          <TimerControls isActive={isActive} toggle={toggle} reset={reset} skip={skip} />
-          <TaskList tasks={tasks} setCurrentTask={setCurrentTask} deleteTodo={deleteTodo} />
+
+          <TaskList
+            tasks={tasks}
+            setCurrentTask={setCurrentTask}
+            deleteTodo={deleteTodo}
+            subjects={subjects}
+            onToggleAddTodo={() => setShowAddTodoForm(!showAddTodoForm)}
+            showAddTodoForm={showAddTodoForm}
+          />
         </div>
-      </div>
+      </main>
 
       {/* Add ToDo Form */}
       {showAddTodoForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
             <AddTodoForm
               newTodo={newTodo}
               setNewTodo={setNewTodo}
               subjects={subjects}
               addTodo={addTodo}
-              onCancel={() => setShowAddTodoForm(false)} 
+              onCancel={() => setShowAddTodoForm(false)}
             />
           </div>
         </div>
@@ -90,8 +112,8 @@ export default function TimerPage() {
 
       {/* Settings Modal */}
       {showSettings && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
             <SettingsModel
               workTime={workTime}
               setWorkTime={setWorkTime}
@@ -114,7 +136,11 @@ export default function TimerPage() {
       {/* Notification Popup */}
       {showNotification && (
         <NotificationPopup
-          message="Pomodoro session completed!"
+          message={
+            isWorkTime
+              ? "Pomodoro session completed! Time for a break."
+              : "Break finished! Ready to start your next Pomodoro?"
+          }
           onClose={() => setShowNotification(false)}
         />
       )}
