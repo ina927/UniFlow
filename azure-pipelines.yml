@@ -23,11 +23,10 @@ stages:
             displayName: 'Install Node.js'
 
           - script: |
-              cd uni-flow
               npm install
               npm run build
             displayName: 'Install and Build'
-            workingDirectory: uni-flow
+            workingDirectory: $(WORKDIR)
     
   - stage: DownloadComponents
     displayName: "Component download"
@@ -37,19 +36,17 @@ stages:
     jobs:
       - job: Download
         steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '20.x'
+            displayName: 'Install Node.js'
+            
           - task: CmdLine@2
             inputs:
               script: |
-                npm install @fullcalendar/core @fullcalendar/daygrid @fullcalendar/timegrid @fullcalendar/list
-                npm install --save @fullcalendar/core @fullcalendar/react @fullcalendar/daygrid
-                npm install --save @fullcalendar/timegrid @fullcalendar/interaction
+                npm install @fullcalendar/core @fullcalendar/daygrid @fullcalendar/timegrid @fullcalendar/list @fullcalendar/react @fullcalendar/interaction
             displayName: 'Calendar component download'
-          
-          - task: CmdLine@2
-            inputs:
-              script: |
-                npx shadcn@latest add dialog
-            displayName: 'Form component download'
+            workingDirectory: $(WORKDIR)
       
   - stage: Test
     displayName: "Run Tests"
@@ -65,6 +62,6 @@ stages:
             displayName: 'Install Node.js'
           
           - script: |
-              cd uni-flow
               npm run test --if-present
             displayName: 'Run tests'
+            workingDirectory: $(WORKDIR)
