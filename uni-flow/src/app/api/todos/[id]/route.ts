@@ -4,9 +4,9 @@ import {prisma} from "@/shared/lib/"
 import { ToDoStatus } from "@/entities/enums/ToDoStatus";
 
 
-export async function PUT(request: NextRequest, context: { params: { id: string } }) {
+export async function PUT(request: NextRequest, context: { params: Promise<{ id: string }> }) {
     try {
-        const {params} = context;
+        const params = await context.params;
         const id = params.id;
         const update = await request.json();
 
@@ -19,7 +19,7 @@ export async function PUT(request: NextRequest, context: { params: { id: string 
 
         const newDue: Date | undefined = update.endDate
 
-        const updatedToDo = await prisma.toDo.update({
+        const updatedToDo = await prisma.toDo.updateMany({
             where: {id},
             data : {
                 ...(newStatus && {status: newStatus}),
@@ -38,17 +38,19 @@ export async function PUT(request: NextRequest, context: { params: { id: string 
     }
 }
 
-export async function DELETE(request: NextRequest, context: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, context: { params: Promise<{ id: string }> }) {
     try {
-    const {params} = context;
+    const params = await context.params;
     const id = params.id;
-    // const update = await request.json();
+    //const update = await request.json();
+
+    if (id){
 
     const selectedToDo = await prisma.toDo.deleteMany({
         where: {id}
     });
 
-    return NextResponse.json(selectedToDo, {status: 200})
+    return NextResponse.json(selectedToDo, {status: 200})}
     } catch (e: any){
         console.log("Error in", e)
         return NextResponse.json(e, {status: 500})

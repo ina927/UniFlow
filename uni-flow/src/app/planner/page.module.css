@@ -5,14 +5,14 @@ div.todoList{
 }
 
 div.list{
-    width: 23.5vw;
+    width: 22vw;
     height: 65vh;
     background: var(--primary-light);
     border-radius: 1vw;
 }
 
 div.todoList2{
-    width: 23.5vw;
+    width: 22vw;
     height: 53vh;
     margin-top: -1vw;
     border-radius: 1rem;
@@ -23,7 +23,7 @@ div.todoList2{
 div.todoCard{
     background: var(--background);
     border-radius: 1rem;
-    width: 20.5vw;
-    height: 10vh;
+    width: 19.5vw;
+    height: 11vh;
     color: var(--primary-light);
 }
