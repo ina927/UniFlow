@@ -5,9 +5,11 @@ trigger:
   paths:
     include:
     - 'uni-flow/**'
+
 variables:
 - name: WORKDIR
   value: 'uni-flow'
+
 stages:
 - stage: BuildReact
   displayName: "React.js build"
@@ -28,6 +30,7 @@ stages:
           npm install
           npm run build
         workingDirectory: uni-flow
+
 - stage: DownloadComponents
   displayName: "Component download"
   pool:
