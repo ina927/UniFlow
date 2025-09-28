@@ -1,5 +1,5 @@
 trigger:
-  branches:
+  branches:G:\Uni\Advanced Software Development\UniFlow\features\F110-Study_Session_History\azure-pipelines-study-session-history.ym
     include:
       - features/110-Study_Session_History
 

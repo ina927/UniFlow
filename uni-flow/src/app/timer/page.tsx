@@ -138,8 +138,8 @@ export default function TimerPage() {
         <NotificationPopup
           message={
             isWorkTime
-              ? "Pomodoro session completed! Time for a break."
-              : "Break finished! Ready to start your next Pomodoro?"
+              ? "Pomodoro session completed!"
+              : "Break finished!"
           }
           onClose={() => setShowNotification(false)}
         />
