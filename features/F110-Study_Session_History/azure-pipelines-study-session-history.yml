@@ -1,0 +1,24 @@
+trigger:
+  branches:
+    include:
+      - features/110-Study_Session_History
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '20.x'
+    displayName: 'Install Node.js'
+
+  - script: |
+      cd uni-flow
+      npm install
+      npm run build
+    displayName: 'Install and Build'
+
+  - script: |
+      cd uni-flow
+      npm test --if-present
+    displayName: 'Run Tests'
