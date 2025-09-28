@@ -4,7 +4,7 @@ import { ToDoStatus } from "@/entities/enums/ToDoStatus"
 export interface ToDoEntity{
     id: String,
     title: String,
-    content: String,
+    description: String,
     startDate: Date,
     endDate: Date,
     status: { 

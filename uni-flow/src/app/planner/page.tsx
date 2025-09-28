@@ -21,6 +21,7 @@ import { ToDo } from "@/shared/generated/prisma";
 export default function StudyPlanner(){
 
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+    const [isDialogUpdateOpen, setIsDialogUpdateOpen] = useState<boolean>(false);
 
     // for database control (tags in form is to opt for the subject id)
     const [endDate, setEndDate] = useState<Date | null>(null);
@@ -28,6 +29,7 @@ export default function StudyPlanner(){
     const [content, setContent] = useState<string>("");
     const [taskStatus, setTaskStatus] = useState<string>("");
     const [events, setFetchEvent] = useState<ToDoEntity[]>([]);
+    const [selectedEvent, setSelectedEvent] = useState<ToDoEntity>();
 
     const [pendingEvent, setPendingEvent] = useState<ToDoEntity[]>([]);
     const [inProgressEvent, setInProgressEvent] = useState<ToDoEntity[]>([]);
@@ -39,6 +41,9 @@ export default function StudyPlanner(){
     // click handler
     useEffect(() => {
         const fetchToDo = async() => {
+            setNewEventTitle("")
+            setContent("")
+            setEndDate(null)
             const response = await fetch('http://localhost:3000/api/todos', {
                 headers: {
                     userId: userId,
@@ -65,6 +70,9 @@ export default function StudyPlanner(){
     
     const refresh = () => {
         const fetchToDo = async() => {
+            setNewEventTitle("")
+            setContent("")
+            setEndDate(null)
             const response = await fetch('http://localhost:3000/api/todos', {
                 headers: {
                     userId: userId,
@@ -105,12 +113,41 @@ export default function StudyPlanner(){
     }
 
     const deleteToDo = async (event:ToDoEntity) => {
+        if (!event) return;
         await Axios.delete(`/api/todos/${event.id}`);
         refresh();
     }
 
+    const updateDialog = async (e: React.FormEvent) => {
+        e.preventDefault();
+        console.log(selectedEvent)
+        
+        if (selectedEvent){
+        await Axios.put(`/api/todos/${selectedEvent.id}`, {
+            title: newEventTitle,
+            description: content,
+            endDate: endDate,
+        });
+
+        refresh();
+        setIsDialogUpdateOpen(false);
+        }
+    }
+
+    const handleEditButton = (event: ToDoEntity) => {
+        setSelectedEvent(event);
+        setIsDialogUpdateOpen(true);
+        setEndDate(event.endDate)
+        setContent(String(event.description))
+        console.log(content)
+        setNewEventTitle(String(event.title))  
+    }
+
     const handleAddButton = () => {
         setIsDialogOpen(true);
+        setNewEventTitle("")
+        setContent("")
+        setEndDate(null)
     }
 
     const handleCloseDialog = () => {
@@ -139,11 +176,11 @@ export default function StudyPlanner(){
     };
 
     return (
-    <div className="studyPlanner" style={{marginTop: "3rem", marginLeft: "6rem"}}>
+    <div className="studyPlanner" style={{marginTop: "3rem", marginLeft: "4rem"}}>
         <div className="title" style={{display: "flex", flexDirection: "row"}}>
-            <h1 className="text-large-title-bold">User&#39;s Study Planner</h1>
-            <button style={{float: "right", marginLeft: "35vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw"}} className="text-title3-bold">Select Filter</button>
-            <Link href="../calendar" style={{float: "right", marginLeft: "2vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw", paddingTop: "1vh"}} className="text-title3-bold">Calendar View</Link>
+            <h1 className="text-large-title-bold" style={{width: "40vw"}}>User&#39;s Study Planner</h1>
+            <button style={{float: "right", marginLeft: "10vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw", height: "5vh", width: "10vw"}} className="text-title3-bold">Select Filter</button>
+            <Link href="../calendar" style={{float: "right", marginLeft: "2vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw", paddingTop: "1vh", height: "5vh", width: "10vw", textAlign: "center"}} className="text-title3-bold">Calendar View</Link>
         </div>
         <br />
         <h3 className="text-title3">Last updated: DD/MM/YYYY</h3>
@@ -160,7 +197,7 @@ export default function StudyPlanner(){
                     <button id="add-to-do" onClick={handleAddButton} style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "1.5vw", width: "5.3vw", height: "2vw", marginTop:"2vh"}} className="text-body1">New +</button>
                 </div>
 
-                <br /><br /><br />
+                <br /><br />
 
                 <div className={styles.todoList2}>
                 <ul style={{marginLeft: "1rem"}}>
@@ -179,7 +216,9 @@ export default function StudyPlanner(){
                             </div>
                             <h3 className="text-body1" style={{opacity: 0.7, fontSize: "0.8rem", marginLeft: "3vw"}}>Deadline: {(event.endDate.toString().substring(0, 10))}</h3>
                             <div>
-                            <button onClick={() => statusChangePending(event)} style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "0.6vw", width: "4.5vw", height: "1.8vw", marginTop: "-1vh"}} className="text-body1">Start</button>
+                            <button onClick={() => statusChangePending(event)} style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "0.6vw", width: "4.5vw", height: "1.8vw", marginTop: "-0.5vh"}} className="text-body1">Start</button>
+                            <button onClick={() => handleEditButton(event)} 
+                            style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "2rem", width: "1.7vw", height: "1.7vw", marginTop: "-0.5vh", marginRight: "0.4vw"}} className="text-body1">✎</button>
                             </div>
                         </div>
                     </li>
@@ -261,10 +300,11 @@ export default function StudyPlanner(){
                 </div>
                 <h1 className="text-large-title-bold" style={{color: "var(--background)", marginTop: "3vh", marginLeft: "2vw"}}>In-progress</h1>
                 </div>
-                <div className="createTo-do" style={{paddingBottom: "0.5rem"}}>
+                <br />
+                {/* <div className="createTo-do" style={{paddingBottom: "0.5rem"}}>
                     <button style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "1.5vw", width: "5.3vw", height: "2vw", marginTop:"2vh", opacity: 0}}>New +</button>
-                </div>
-                <div className="todoList2">
+                </div> */}
+                <div className={styles.todoList2} style={{height: "57.5vh"}}>
                 <ul style={{marginLeft: "1rem", marginTop: "3rem"}}>
                 {inProgressEvent.length <= 0 && (
                         <div className="italic text-center text-gray-400">
@@ -281,7 +321,8 @@ export default function StudyPlanner(){
                             </div>
                             <h3 className="text-body1" style={{opacity: 0.7, fontSize: "0.8rem", marginLeft: "3vw"}}>Deadline: {(event.endDate.toString().substring(0, 10))}</h3>
                             <div>
-                            <button onClick={() => statusChangeComplete(event)} style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "0.6vw", width: "4.5vw", height: "1.8vw", marginTop: "-1vh"}} className="text-body1">Finish</button>
+                            <button onClick={() => statusChangeComplete(event)} style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "0.6vw", width: "4.5vw", height: "1.8vw", marginTop: "-0.3vh"}} className="text-body1">Finish</button>
+                            <button onClick={() => handleEditButton(event)}  style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "2rem", width: "1.7vw", height: "1.7vw", marginTop: "-0.3vh", marginRight: "0.4vw"}} className="text-body1">✎</button>
                             </div>
                         </div>
                     </li>
@@ -338,10 +379,11 @@ export default function StudyPlanner(){
                 </div>
                 <h1 className="text-large-title-bold" style={{color: "var(--background)", marginTop: "3vh", marginLeft: "2vw"}}>Completed</h1>
                 </div>
-                <div className="createTo-do" style={{paddingBottom: "0.5rem"}}>
+                <br />
+                {/* <div className="createTo-do" style={{paddingBottom: "0.5rem"}}>
                     <button style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "1.5vw", width: "5.3vw", height: "2vw", marginTop:"2vh", opacity: 0}}>New +</button>
-                </div>
-                <div className="todoList2">
+                </div> */}
+                <div className={styles.todoList2} style={{height: "57.5vh"}}>
                 <ul style={{marginLeft: "1rem", marginTop: "3rem"}}>
                 {completedEvent.length <= 0 && (
                         <div className="italic text-center text-gray-400">
@@ -358,7 +400,7 @@ export default function StudyPlanner(){
                             </div>
                             <h3 className="text-body1" style={{opacity: 0.7, fontSize: "0.8rem", marginLeft: "3vw"}}>Deadline: {(event.endDate.toString().substring(0, 10))}</h3>
                             <div>
-                            <button onClick={() => deleteToDo(event)} style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "0.6vw", width: "4.5vw", height: "1.8vw", marginTop: "-1vh"}} className="text-body1">Delete</button>
+                            <button onClick={() => deleteToDo(event)} style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "0.6vw", width: "4.5vw", height: "1.8vw", marginTop: "-0.5vh"}} className="text-body1">Delete</button>
                             </div>
                         </div>
                     </li>
@@ -443,6 +485,40 @@ export default function StudyPlanner(){
             </DialogContent>
         </Dialog>
         </>
+
+        <Dialog open={isDialogUpdateOpen} onOpenChange={setIsDialogUpdateOpen}>
+            <DialogContent>
+                <br />
+                <DialogHeader>
+                    <DialogTitle style={{marginLeft: "1vw"}}>
+                        Update Task
+                    </DialogTitle>
+                </DialogHeader>
+                <form className="space-x-5 mb-4" style={{display: "flex",flexDirection: "column"}} onSubmit={updateDialog}>
+                    <input type="text" placeholder="NEW TASK" value={newEventTitle} onChange={(event) => setNewEventTitle(event.target.value)} required style={{borderBottom: "solid 3px gray", fontWeight: "bold", fontSize: "1.5rem", marginLeft:"0.7vw", opacity: 0.6, width: "97%"}} className="p-1 text-lg"/>
+
+                    <textarea placeholder="Description(optional) (150 characters max)" className="p-3" style={{height: "10vh", wordWrap: "break-word", textWrap: "balance"}} maxLength={150} value={content} onChange={(e) => {
+                        setContent(e.target.value)
+                    }}/>
+                    <div className="tags" style={{display: "flex", flexDirection: "row"}}>
+                        <label style={{marginLeft: "0.9vw", paddingRight: "1.5vw"}}>Tags: currently unavailable</label>
+                        <input type="text" name="deadline" /> {/*placeholder for now*/}
+                    </div>
+                    <hr style={{width: "93%", marginLeft: "1vw", height: "1px", background: "black", opacity: 0.8}}/>
+                    <button className="text-white p-3 mt-5 rounded-md" style={{width: "92%", color: "var(--background-prime)", background: "(var(--foreground)", border: "solid 1px var(--background-prime)", marginLeft: "1vw"}} type="submit">Save</button>
+                    <button className="text-white p-3 mt-5 rounded-md" style={{width: "92%", color: "var(--background-prime)", background: "(var(--foreground)", border: "solid 1px var(--background-prime)", marginLeft: "1vw"}} onClick={() => {
+                        try {
+                            const e = selectedEvent;
+                            if (e){
+                                deleteToDo(e);
+                            }
+                        } catch (e: any){
+                            console.log("No event is chosen")
+                        }
+                    }}>Delete</button>
+                </form>
+            </DialogContent>
+        </Dialog>
 
     </div>
     )

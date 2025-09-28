@@ -10,6 +10,9 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  --background: #ffffff;
+  --foreground: #171717;
+
   /* Font */
   --font-pretendard: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-inter: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -111,6 +114,7 @@
   font-weight: 400;        
   font-size: 32px;        
   line-height: 39px;       
+  letter-spacing: 0.36px;  
 }
 
 .text-large-title-bold {
@@ -118,6 +122,7 @@
   font-weight: 700;        
   font-size: 32px;        
   line-height: 39px;       
+  letter-spacing: 0.36px;  
 }
 
 .text-title1 {

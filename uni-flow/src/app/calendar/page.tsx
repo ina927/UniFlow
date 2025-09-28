@@ -255,20 +255,21 @@ export default function Calendar(){
     }};
 
     return (
-    <div className="studyPlanner" style={{marginTop: "3rem", marginLeft: "6rem", overflow: "hidden"}}>
+    <div className="studyPlanner" style={{marginTop: "3rem", marginLeft: "4rem", overflow: "hidden"}}>
         <div className="title" style={{display: "flex", flexDirection: "row", width: "100vw"}}>
             <h1 style={{fontSize: "2rem", fontWeight: "bold"}}>User&#39;s Study Planner</h1>
-            <button style={{float: "right", marginLeft: "48vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw"}} className="text-title3-bold">Select Filter</button>
-            <Link href="../planner" style={{float: "right", marginLeft: "1vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw", paddingTop:"1vw"}} className="text-title3-bold">List View</Link>
+            <button style={{float: "right", marginLeft: "30vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw", height: "5vh", width: "10vw"}} className="text-title3-bold">Select Filter</button>
+            <Link href="../planner" style={{float: "right", marginLeft: "2vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw", paddingTop: "1vh", height: "5vh", width: "10vw", textAlign: "center"}} className="text-title3-bold">List View</Link>
         </div>
-        <br />
 
         <>
         <div className="flex px-10 justify-start items-start gap-8" style={{display:"flex", flexDirection: "row", width: "100vw", marginLeft: "-3vw"}}>
-            <div className="w-3/12" style={{width: "20vw"}}>
-                <div className="py-10 text-2xl font-extrabold px-7">
+            <div className="w-3/12" style={{width: "17vw", marginTop: "5vh", marginLeft: "0.5vw"}}>
+                <div className="text-title1-bold">
                     Upcoming Events
                 </div>
+                <br /><br />
+                <div style={{height: "55vh", overflow: "scroll", overflowX: "hidden"}}>
                 <ul className="space-y-4">
                     {currentEvents.length <= 0 && (
                         <div className="italic text-center text-gray-400">
@@ -290,9 +291,10 @@ export default function Calendar(){
                         </li>
                     ))}
                 </ul>
+                </div>
             </div>
             {/* calendar part */}
-            <div className="w-9/12 mt-8" style={{width: "65vw"}}>
+            <div className="w-9/12 mt-8" style={{width: "55vw"}}>
                 <FullCalendar height={"75vh"} plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]} headerToolbar={{left: "prev,next today", center: "title", right: "dayGridMonth, timeGridWeek, timeGridDay"}} initialView="dayGridMonth" selectable={true} editable={true} selectMirror={true} dayMaxEvents={true} select={handleDateClick}
                 eventClick={handleEventClick}
                 eventsSet={(events) => setCurrentEvents(events)}
@@ -362,12 +364,12 @@ export default function Calendar(){
                         setContent(e.target.value)
                     }}/>
                     <div className="tags" style={{display: "flex", flexDirection: "row"}}>
-                        <label style={{marginLeft: "0.9vw", paddingRight: "1.5vw"}}>Tags: </label>
+                        <label style={{marginLeft: "0.9vw", paddingRight: "1.5vw"}}>Tags: currently unavailable</label>
                         <input type="text" name="deadline" /> {/*placeholder for now*/}
                     </div>
                     <hr style={{width: "93%", marginLeft: "1vw", height: "1px", background: "black", opacity: 0.8}}/>
-                    <button className="text-white p-3 mt-5 rounded-md" style={{width: "92%", color: "var(--foreground)", background: "(var(--background-prime)", border: "solid 1px var(--background-prime)", marginLeft: "1vw"}} type="submit">Save</button>
-                    <button className="text-white p-3 mt-5 rounded-md" style={{width: "92%", color: "var(--foreground)", background: "(var(--background-prime)", border: "solid 1px var(--background-prime)", marginLeft: "1vw"}} onClick={handleDeleteEvent}>Delete</button>
+                    <button className="text-white p-3 mt-5 rounded-md" style={{width: "92%", color: "var(--background-prime)", background: "(var(--foreground)", border: "solid 1px var(--background-prime)", marginLeft: "1vw"}} type="submit">Save</button>
+                    <button className="text-white p-3 mt-5 rounded-md" style={{width: "92%", color: "var(--background-prime)", background: "(var(--foreground)", border: "solid 1px var(--background-prime)", marginLeft: "1vw"}} onClick={handleDeleteEvent}>Delete</button>
                 </form>
             </DialogContent>
         </Dialog>
