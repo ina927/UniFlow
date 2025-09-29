@@ -56,7 +56,7 @@ export async function createAssessment(params: { dto: CreateAssessmentDto }) {
     data: {
       subjectId: d.subjectId,
       title: d.title,
-      type: String(d.type), // enum -> string
+      type: d.type ?? undefined,
       weight: d.weight,
       maxScore: d.maxScore,
       dueDate: d.dueDate ? new Date(d.dueDate) : new Date(),
@@ -86,7 +86,7 @@ export async function updateAssessment(params: { id: string; dto: UpdateAssessme
     where: { id: params.id },
     data: {
       title: d.title ?? undefined,
-      type: d.type ? String(d.type) : undefined,
+      type: d.type ?? undefined,
       weight: d.weight ?? undefined,
       maxScore: d.maxScore ?? undefined,
       dueDate: d.dueDate ? new Date(d.dueDate) : undefined,
