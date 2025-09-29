@@ -126,7 +126,7 @@ export default function AssessmentDetailPage() {
         confirmText={del.isPending ? "Deleting..." : "Delete"}
         onConfirm={() =>
           del.mutate(item.id, {
-            onSuccess: () => router.push(`/academic/academic/assessments?subjectId=${subjectId}`),
+            onSuccess: () => router.push(`/academic/assessments?subjectId=${subjectId}`),
           })
         }
       />
