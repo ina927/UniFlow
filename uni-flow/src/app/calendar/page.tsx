@@ -296,7 +296,7 @@ export default function Calendar(){
             <h1 className="text-large-title-bold" style={{width: "40vw"}}>User&#39;s Study Planner</h1>
             <Combobox academicCourseId={academicCourseId} onSubjectChange={handleSubjectFilterChange}/>
             {/* <button style={{float: "right", marginLeft: "10vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw", height: "5vh", width: "10vw"}} className="text-title3-bold">Select Filter</button> */}
-            <Link href="../calendar" style={{float: "right", marginLeft: "0.5vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"0.5vw", paddingRight: "0.5vw", paddingTop: "1vh", height: "5vh", width: "2.5vw", borderRadius: "1vw", textAlign: "left"}} className="text-title3-bold">📆</Link>
+            <Link href="../planner" style={{float: "right", marginLeft: "0.5vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"0.5vw", paddingRight: "0.5vw", paddingTop: "1vh", height: "5vh", width: "2.5vw", borderRadius: "1vw", textAlign: "left"}} className="text-title3-bold">📋</Link>
         </div>
 
         <>

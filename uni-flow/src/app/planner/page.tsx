@@ -94,12 +94,18 @@ export default function StudyPlanner(){
                 }
             });
             
-            const fetchEvents =  await response.json();
-            if (filteredEvent.length > 0){
-                const fetchEvents = filteredEvent;
+            let fetchEvents;
+
+            if (selectedSubjectId) {
+                fetchEvents = filteredEvent;
+                console.log("here", fetchEvents);
+            } else {
+                const responseData = await response.json();
+                fetchEvents = responseData;
             }
 
             setFetchEvent(fetchEvents);
+            setFilteredEvent([])
 
             // filtering
             const pendings = fetchEvents.filter((event: { status: ToDoStatus; }) => event.status === ToDoStatus.PENDING)
@@ -213,16 +219,46 @@ export default function StudyPlanner(){
         handleCloseDialog();
     };
 
-    const handleSubjectFilterChange = (subjectId: string) => {
+    const handleSubjectFilterChange = async (subjectId: string) => {
+        
         console.log(subjectId)
-        setSelectedSubjectId(subjectId)
 
-        if (selectedSubjectId){
-            setFilteredEvents(selectedSubjectId)
+        const response = await fetch('http://localhost:3000/api/todos', {
+            headers: {
+                userId: userId,
+            }
+        });
+        
+        const freshEvents = await response.json();
+        
+        if (subjectId) {
+            const filtered = freshEvents.filter((event: ToDoEntity) => 
+                event.subjectId === subjectId
+            );
+            
+            const pendings = filtered.filter((e: ToDoEntity) => e.status === ToDoStatus.PENDING);
+            const inProgress = filtered.filter((e: ToDoEntity) => e.status === ToDoStatus.IN_PROGRESS);
+            const completed = filtered.filter((e: ToDoEntity) => e.status === ToDoStatus.DONE);
+            
+            console.log("Pen", pendings.length);
+            console.log("Between", inProgress.length);
+            console.log("Done", completed.length);
+            
+            setFetchEvent(freshEvents);
+            setSelectedSubjectId(subjectId);
+            setPendingEvent(pendings);
+            setInProgressEvent(inProgress);
+            setCompletedEvent(completed);
         } else {
-            setFilteredEvent([])
+            // Show ALL - no filter
+            setFetchEvent(freshEvents);
+            setSelectedSubjectId("");
+            setPendingEvent(freshEvents.filter((e: ToDoEntity) => e.status === ToDoStatus.PENDING));
+            setInProgressEvent(freshEvents.filter((e: ToDoEntity) => e.status === ToDoStatus.IN_PROGRESS));
+            setCompletedEvent(freshEvents.filter((e: ToDoEntity) => e.status === ToDoStatus.DONE));
         }
-        refresh()
+        
+
     }
 
     const handleSubjectChange = (subjectId: string) => {
@@ -241,7 +277,7 @@ export default function StudyPlanner(){
             <Link href="../calendar" style={{float: "right", marginLeft: "0.5vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"0.5vw", paddingRight: "0.5vw", paddingTop: "1vh", height: "5vh", width: "2.5vw", borderRadius: "1vw", textAlign: "left"}} className="text-title3-bold">📆</Link>
         </div>
         <br />
-        <h3 className="text-title3">Last updated: DD/MM/YYYY</h3>
+        <h3 className="text-title3">Last updated: version 1.0</h3>
         <br />
         <div className={styles.todoList}>
             <div className={styles.list} id="planned">
@@ -265,10 +301,10 @@ export default function StudyPlanner(){
                         </div>
                     )}
                     {pendingEvent.length > 0 && pendingEvent.map((event:ToDoEntity) => (
-                        <li key={"plannner-"+events.indexOf(event)}>
+                        <li key={"plannner-"+ pendingEvent.indexOf(event)}>
                         <div className={styles.todoCard}>
                             <div style={{display: "flex", flexDirection: "row", marginTop: "1vw", marginLeft: "1vw", paddingTop: "0.6vw"}} className="text-body1-semibold">
-                                <h2 style={{paddingRight: "0.5vw"}}>{events.indexOf(event) + 1}</h2>
+                                <h2 style={{paddingRight: "0.5vw"}}>{pendingEvent.indexOf(event) + 1}</h2>
                                 <h2 style={{paddingRight: "0.5vw"}}>|</h2>
                                 <h2>{event.title}</h2>
                             </div>
@@ -301,10 +337,10 @@ export default function StudyPlanner(){
                         </div>
                     )}
                     {inProgressEvent.length > 0 && inProgressEvent.map((event:ToDoEntity) => (
-                        <li key={"plannner-"+events.indexOf(event)}>
+                        <li key={"plannner-"+ inProgressEvent.indexOf(event)}>
                         <div className={styles.todoCard}>
                             <div style={{display: "flex", flexDirection: "row", marginTop: "1vw", marginLeft: "1vw", paddingTop: "0.6vw"}} className="text-body1-semibold">
-                                <h2 style={{paddingRight: "0.5vw"}}>{events.indexOf(event) + 1}</h2>
+                                <h2 style={{paddingRight: "0.5vw"}}>{inProgressEvent.indexOf(event) + 1}</h2>
                                 <h2 style={{paddingRight: "0.5vw"}}>|</h2>
                                 <h2>{event.title}</h2>
                             </div>
@@ -336,10 +372,10 @@ export default function StudyPlanner(){
                         </div>
                     )}
                     {completedEvent.length > 0 && completedEvent.map((event:ToDoEntity) => (
-                        <li key={"plannner-"+events.indexOf(event)}>
+                        <li key={"plannner-"+ completedEvent.indexOf(event)}>
                         <div className={styles.todoCard}>
                             <div style={{display: "flex", flexDirection: "row", marginTop: "1vw", marginLeft: "1vw", paddingTop: "0.6vw"}} className="text-body1-semibold">
-                                <h2 style={{paddingRight: "0.5vw"}}>{events.indexOf(event) + 1}</h2>
+                                <h2 style={{paddingRight: "0.5vw"}}>{completedEvent.indexOf(event) + 1}</h2>
                                 <h2 style={{paddingRight: "0.5vw"}}>|</h2>
                                 <h2>{event.title}</h2>
                             </div>
