@@ -278,17 +278,77 @@ export default function Calendar(){
         }
     }
 
-    const handleSubjectFilterChange = (subjectId: string) => {
+    const handleSubjectFilterChange = async (subjectId: string) => {
         console.log(subjectId)
-        setSelectedSubjectId(subjectId)
 
-        if (selectedSubjectId){
-            setFilteredEvents(selectedSubjectId)
+        const response = await fetch('http://localhost:3000/api/todos', {
+            headers: {
+                userId: userId,
+            }
+        });
+        
+        const freshEvents = await response.json();
+        
+        if (subjectId) {
+            const filtered = freshEvents.filter((event: ToDoEntity) => 
+                event.subjectId === subjectId
+            );
+            
+            const FormattedEvents: EventApi[] = filtered.map((todo: any) => ({
+                id: todo.id,
+                title: todo.title,
+                content: todo.description,
+                subjectId: todo.subjectId,
+                start: new Date(todo.startDate),
+                end: todo.endDate ? new Date(todo.endDate) : undefined,
+                allDay: todo.allDay ?? false
+            }));
+
+            const FormattedEventsInput: EventInput[] = filtered.map((todo: any) => ({
+                id: todo.id,
+                title: todo.title,
+                start: new Date(todo.startDate),
+                end: todo.endDate ? new Date(todo.endDate) : undefined,
+                allDay: todo.allDay ?? false,
+                extendedProps: {
+                    subjectId: todo.subjectId,
+                    content: todo.description,
+                    status: todo.status
+                }
+            }));
+            
+            setCurrentEvents(FormattedEvents);
+            setCurrentEventsInput(FormattedEventsInput);
+            setSelectedSubjectId(subjectId);
+            
         } else {
-            setFilteredEvent([])
-        }
-        refresh()
-    }
+            const FormattedEvents: EventApi[] = freshEvents.map((todo: any) => ({
+                id: todo.id,
+                title: todo.title,
+                content: todo.description,
+                subjectId: todo.subjectId,
+                start: new Date(todo.startDate),
+                end: todo.endDate ? new Date(todo.endDate) : undefined,
+                allDay: todo.allDay ?? false
+            }));
+    
+            const FormattedEventsInput: EventInput[] = freshEvents.map((todo: any) => ({
+                id: todo.id,
+                title: todo.title,
+                start: new Date(todo.startDate),
+                end: todo.endDate ? new Date(todo.endDate) : undefined,
+                allDay: todo.allDay ?? false,
+                extendedProps: {
+                    subjectId: todo.subjectId,
+                    content: todo.description,
+                    status: todo.status
+                }
+            }))
+
+            setCurrentEvents(FormattedEvents);
+            setCurrentEventsInput(FormattedEventsInput);
+            setSelectedSubjectId("")
+    }}
 
     return (
     <div className="studyPlanner" style={{marginTop: "3rem", marginLeft: "4rem", overflow: "hidden"}}>
