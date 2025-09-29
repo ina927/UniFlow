@@ -30,6 +30,15 @@ enum ToDoStatus {
   DONE
 }
 
+enum AssessmentType {
+  QUIZ
+  EXAM
+  INDV_ASSIGNMENT
+  GROUP_ASSIGNMENT
+  GROUP_INDV_ASSIGNMENT
+  OTHER
+}
+
 // Models
 model User {
   id        String     @id @default(uuid())
@@ -117,7 +126,7 @@ model Subject {
 model Assessment {
   id          String   @id @default(uuid())
   title       String
-  type        String
+  type        AssessmentType
   description String?
   dueDate     DateTime
   weight      Float
