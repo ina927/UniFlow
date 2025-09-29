@@ -19,13 +19,16 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ id:
 
         const newDue: Date | undefined = update.endDate
 
+        const newSubId: string | undefined = update.subjectId
+
         const updatedToDo = await prisma.toDo.updateMany({
             where: {id},
             data : {
                 ...(newStatus && {status: newStatus}),
                 ...(newTitle && {title: newTitle}),
                 ...(newContent && {description: newContent}),
-                ...(newDue && {endDate: newDue})
+                ...(newDue && {endDate: newDue}),
+                ...(newSubId && {subjectId: newSubId})
             }
     })
     return NextResponse.json(updatedToDo, {status: 200})
