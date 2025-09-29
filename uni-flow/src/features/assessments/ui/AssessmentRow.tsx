@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { TableRow, TableCell } from "@/shared/ui/table";
 import { Input } from "@/shared/ui/input";
 import { Assessment, Grade } from "@/entities/assessments";
-import { isGraded, weightedContribution } from "@/features/assessments/utils/grade-logics";
+import { isGraded, weightedContribution } from "@/features/assessments/grade-logics";
 
 import styles from "@/widgets/assessments/ui/AssessmentTable.module.css";
 
@@ -35,7 +35,7 @@ export const AssessmentRow = ({
 
     const goDetail = () => {
         const q = new URLSearchParams({ subjectId: item.subjectId }).toString();
-        router.push(`/assessments/${item.id}?${q}`);
+        router.push(`/academic/assessments/${item.id}?${q}`);
     };
 
     // derived values for display
