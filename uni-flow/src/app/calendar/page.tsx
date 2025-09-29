@@ -23,6 +23,7 @@ import { CalendarSearch } from "lucide-react";
 import { todo } from "node:test";
 import { title } from "process";
 import { ToDoEntity } from "@/entities/todos/entities/todo.entity";
+import { Combobox } from "@/widgets/planner/SetFilterModal";
 
 
 export default function Calendar(){
@@ -41,7 +42,12 @@ export default function Calendar(){
     const [selectedEvent, setSelectedEvent] = useState<EventApi>();
     const [selectedEventId, setSelectedEventId] = useState<string>();
     const [selectedEventArg, setSelectedEventArg] = useState<EventClickArg>();
+    const [academicCourseId, setAcademicCourseId] = useState<string>('');
     // const [taskStatus, setTaskStatus] = useState<string>("");
+
+    const [filteredEvent, setFilteredEvent] = useState<EventApi[]>([]);
+    const [selectedSubjectId, setSelectedSubjectId] = useState<string>(""); // filter
+    const [subId, setSubId] = useState<string>("")
 
     // data dummy for now
     const userId = '68ad41c7486238ade8bb2f2d'
@@ -107,6 +113,7 @@ export default function Calendar(){
                 id: todo.id,
                 title: todo.title,
                 content: todo.description,
+                subjectId: todo.subjectId,
                 start: new Date(todo.startDate),
                 end: todo.endDate ? new Date(todo.endDate) : undefined,
                 allDay: todo.allDay ?? false
@@ -115,10 +122,14 @@ export default function Calendar(){
             const FormattedEventsInput: EventInput[] = fetchEvents.map((todo: any) => ({
                 id: todo.id,
                 title: todo.title,
-                content: todo.description,
                 start: new Date(todo.startDate),
                 end: todo.endDate ? new Date(todo.endDate) : undefined,
-                allDay: todo.allDay ?? false
+                allDay: todo.allDay ?? false,
+                extendedProps: {  // Put custom properties here
+                    subjectId: todo.subjectId,
+                    content: todo.description,
+                    status: todo.status
+                }
             }))
 
             setCurrentEvents(FormattedEvents)
@@ -254,12 +265,38 @@ export default function Calendar(){
         handleCloseDialog();
     }};
 
+    const setFilteredEvents = async (subjectId: string) => {
+        const events = currentEvents;
+        if (subjectId){
+            const filtered = currentEvents.filter((event: EventApi) => 
+                event.extendedProps?.subjectId === subjectId
+            );
+            setFilteredEvent(filtered);
+            refresh();
+        } else {
+            return
+        }
+    }
+
+    const handleSubjectFilterChange = (subjectId: string) => {
+        console.log(subjectId)
+        setSelectedSubjectId(subjectId)
+
+        if (selectedSubjectId){
+            setFilteredEvents(selectedSubjectId)
+        } else {
+            setFilteredEvent([])
+        }
+        refresh()
+    }
+
     return (
     <div className="studyPlanner" style={{marginTop: "3rem", marginLeft: "4rem", overflow: "hidden"}}>
-        <div className="title" style={{display: "flex", flexDirection: "row", width: "100vw"}}>
-            <h1 style={{fontSize: "2rem", fontWeight: "bold"}}>User&#39;s Study Planner</h1>
-            <button style={{float: "right", marginLeft: "30vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw", height: "5vh", width: "10vw"}} className="text-title3-bold">Select Filter</button>
-            <Link href="../planner" style={{float: "right", marginLeft: "2vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw", paddingTop: "1vh", height: "5vh", width: "10vw", textAlign: "center"}} className="text-title3-bold">List View</Link>
+        <div className="title" style={{display: "flex", flexDirection: "row"}}>
+            <h1 className="text-large-title-bold" style={{width: "40vw"}}>User&#39;s Study Planner</h1>
+            <Combobox academicCourseId={academicCourseId} onSubjectChange={handleSubjectFilterChange}/>
+            {/* <button style={{float: "right", marginLeft: "10vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw", height: "5vh", width: "10vw"}} className="text-title3-bold">Select Filter</button> */}
+            <Link href="../calendar" style={{float: "right", marginLeft: "0.5vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"0.5vw", paddingRight: "0.5vw", paddingTop: "1vh", height: "5vh", width: "2.5vw", borderRadius: "1vw", textAlign: "left"}} className="text-title3-bold">📆</Link>
         </div>
 
         <>
@@ -330,20 +367,6 @@ export default function Calendar(){
                         <input type="text" name="deadline" /> {/*placeholder for now*/}
                     </div>
                     <hr style={{width: "93%", marginLeft: "1vw", height: "1px", background: "black", opacity: 0.8}}/>
-                    {/* <div className="to-do-table" style={{paddingTop: "1vh", display: "flex", flexDirection: "column"}}> */}
-                    {/* <label style={{marginLeft:"0.9vw", fontSize: "1.2rem", fontWeight: "bold"}}>To-do</label>
-                        <ul style={{marginLeft:"1vw", opacity: 0.6}}>
-                            <li>
-                                <input type="checkbox" /> 
-                                <label style={{paddingLeft: "1vw"}}>To-do task 1</label>
-                            </li>
-                        </ul>
-                        <br />
-                        <textarea name="to-do" placeholder="New to-do..." style={{marginLeft:"1vw", opacity: 0.6, width: "97%", borderBottom: "solid 3px gray"}}></textarea>
-                        <input type="button" value="+" className="bg-green-500 text-white p-3 mt-5 rounded-md" style={{marginLeft: "1vw", marginTop: "1vh", background: "var(--background-prime)"}} />
-                    </div> */}
-                    {/* <br />
-                    <hr style={{width: "93%", marginLeft: "1vw", height: "1px", background: "black", opacity: 0.8}}/> */}
                     <button className="text-white p-3 mt-5 rounded-md" style={{width: "92%", color: "var(--foreground)", background: "(var(--background-prime)", border: "solid 1px var(--background-prime)", marginLeft: "1vw"}} type="submit">Save</button>
                 </form>
             </DialogContent>

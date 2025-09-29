@@ -15,6 +15,8 @@ import Axios from "axios";
 import { ToDoStatus } from "@/entities/enums";
 import { ToDoEntity } from "@/entities/todos/entities";
 import { ToDo } from "@/shared/generated/prisma";
+import { Combobox } from "@/widgets/planner/SetFilterModal";
+import { ComboboxForm } from "@/widgets/planner/SetSubjectModalForm";
 
 // React import
 
@@ -30,20 +32,32 @@ export default function StudyPlanner(){
     const [taskStatus, setTaskStatus] = useState<string>("");
     const [events, setFetchEvent] = useState<ToDoEntity[]>([]);
     const [selectedEvent, setSelectedEvent] = useState<ToDoEntity>();
+    const [allFilter, setAllFilter] = useState<string[]>([]);
+    const [filteredEvent, setFilteredEvent] = useState<ToDoEntity[]>([]);
+    const [selectedSubjectId, setSelectedSubjectId] = useState<string>(""); // filter
+    const [subId, setSubId] = useState<string>("")
 
     const [pendingEvent, setPendingEvent] = useState<ToDoEntity[]>([]);
     const [inProgressEvent, setInProgressEvent] = useState<ToDoEntity[]>([]);
     const [completedEvent, setCompletedEvent] = useState<ToDoEntity[]>([])
 
+    const [academicCourseId, setAcademicCourseId] = useState<string>('');
+
     // data dummy for now
-    const userId = '68ad41c7486238ade8bb2f2d'
+    const userId = 'baacd6fe-1729-4505-9b83-d9f4fd47ea1f'
 
     // click handler
     useEffect(() => {
+        const fetchUser = async() => {
+            // const userResponse = await fetch(`http://localhost:3000/api/users/${userId}`);
+            // const userData = await userResponse.json();
+            setAcademicCourseId('f55828ac-bb78-4345-afc0-152fc35c9f95'); // hard code
+        }
         const fetchToDo = async() => {
             setNewEventTitle("")
             setContent("")
             setEndDate(null)
+            getAllFilter();
             const response = await fetch('http://localhost:3000/api/todos', {
                 headers: {
                     userId: userId,
@@ -64,6 +78,7 @@ export default function StudyPlanner(){
             setCompletedEvent(dones);
 
             console.log(events)        }
+        fetchUser();
         fetchToDo();
     }, []); //open json file
     
@@ -78,8 +93,12 @@ export default function StudyPlanner(){
                     userId: userId,
                 }
             });
- 
+            
             const fetchEvents =  await response.json();
+            if (filteredEvent.length > 0){
+                const fetchEvents = filteredEvent;
+            }
+
             setFetchEvent(fetchEvents);
 
             // filtering
@@ -95,6 +114,24 @@ export default function StudyPlanner(){
             console.log(events)        }
         fetchToDo();
     };
+
+    const getAllFilter = async () => {
+        const response = await fetch('http://localhost:3000/api/subjects')
+        const allFilter = await response.json()
+
+        setAllFilter(allFilter);
+    }
+
+    const setFilteredEvents = async (subjectId: string) => {
+        const currentEvents = events;
+        if (subjectId){
+            const filtered = currentEvents.filter((event: { subjectId: string; }) => event.subjectId === subjectId);
+            setFilteredEvent(filtered);
+            refresh();
+        } else {
+            return
+        }
+    }
 
     const statusChangePending = async (event: ToDoEntity) => {
         const updated = { ...event, status: ToDoStatus.IN_PROGRESS };
@@ -126,6 +163,7 @@ export default function StudyPlanner(){
         await Axios.put(`/api/todos/${selectedEvent.id}`, {
             title: newEventTitle,
             description: content,
+            subjectId: subId,
             endDate: endDate,
         });
 
@@ -159,8 +197,8 @@ export default function StudyPlanner(){
         e.preventDefault();
         // this is for the database
         const newToDo = {
-            userId: '83482f49-8367-48d1-93f0-e98f01010f0f',
-            subjectId: '91bc3c52-fe3c-4df8-ad77-284c108730a6',
+            userId: 'baacd6fe-1729-4505-9b83-d9f4fd47ea1f',
+            subjectId: subId,
             assessmentId: null,
             title: newEventTitle,
             content: content,
@@ -175,12 +213,32 @@ export default function StudyPlanner(){
         handleCloseDialog();
     };
 
+    const handleSubjectFilterChange = (subjectId: string) => {
+        console.log(subjectId)
+        setSelectedSubjectId(subjectId)
+
+        if (selectedSubjectId){
+            setFilteredEvents(selectedSubjectId)
+        } else {
+            setFilteredEvent([])
+        }
+        refresh()
+    }
+
+    const handleSubjectChange = (subjectId: string) => {
+        console.log(subjectId)
+        if (subjectId){
+            setSubId(subjectId)
+        }
+    }
+
     return (
     <div className="studyPlanner" style={{marginTop: "3rem", marginLeft: "4rem"}}>
         <div className="title" style={{display: "flex", flexDirection: "row"}}>
             <h1 className="text-large-title-bold" style={{width: "40vw"}}>User&#39;s Study Planner</h1>
-            <button style={{float: "right", marginLeft: "10vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw", height: "5vh", width: "10vw"}} className="text-title3-bold">Select Filter</button>
-            <Link href="../calendar" style={{float: "right", marginLeft: "2vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw", paddingTop: "1vh", height: "5vh", width: "10vw", textAlign: "center"}} className="text-title3-bold">Calendar View</Link>
+            <Combobox academicCourseId={academicCourseId} onSubjectChange={handleSubjectFilterChange}/>
+            {/* <button style={{float: "right", marginLeft: "10vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"1vw", paddingRight: "1vw", height: "5vh", width: "10vw"}} className="text-title3-bold">Select Filter</button> */}
+            <Link href="../calendar" style={{float: "right", marginLeft: "0.5vw", background: "var(--background-prime)", color: "var(--background)", paddingLeft:"0.5vw", paddingRight: "0.5vw", paddingTop: "1vh", height: "5vh", width: "2.5vw", borderRadius: "1vw", textAlign: "left"}} className="text-title3-bold">📆</Link>
         </div>
         <br />
         <h3 className="text-title3">Last updated: DD/MM/YYYY</h3>
@@ -223,72 +281,6 @@ export default function StudyPlanner(){
                         </div>
                     </li>
                     ))}
-                    {/* <li>
-                        <div className={styles.todoCard}>
-                            <div style={{display: "flex", flexDirection: "row", marginTop: "1vw", marginLeft: "1vw", paddingTop: "0.6vw"}} className="text-body1-semibold">
-                                <h2 style={{paddingRight: "0.5vw"}}>1</h2>
-                                <h2 style={{paddingRight: "0.5vw"}}>|</h2>
-                                <h2>Study Task</h2>
-                            </div>
-                            <h3 className="text-body1" style={{opacity: 0.7, fontSize: "0.8rem", marginLeft: "3vw"}}>Deadline: MM/DD/YYYY</h3>
-                            <div>
-                            <button style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "0.6vw", width: "4.5vw", height: "1.8vw", marginTop: "-1vh"}} className="text-body1">Start</button>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div className={styles.todoCard}>
-                            <div style={{display: "flex", flexDirection: "row", marginTop: "1vw", marginLeft: "1vw", paddingTop: "0.6vw"}} className="text-body1-semibold">
-                                <h2 style={{paddingRight: "0.5vw"}}>1</h2>
-                                <h2 style={{paddingRight: "0.5vw"}}>|</h2>
-                                <h2>Study Task</h2>
-                            </div>
-                            <h3 className="text-body1" style={{opacity: 0.7, fontSize: "0.8rem", marginLeft: "3vw"}}>Deadline: MM/DD/YYYY</h3>
-                            <div>
-                            <button style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "0.6vw", width: "4.5vw", height: "1.8vw", marginTop: "-1vh"}} className="text-body1">Start</button>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div className={styles.todoCard}>
-                            <div style={{display: "flex", flexDirection: "row", marginTop: "1vw", marginLeft: "1vw", paddingTop: "0.6vw"}} className="text-body1-semibold">
-                                <h2 style={{paddingRight: "0.5vw"}}>1</h2>
-                                <h2 style={{paddingRight: "0.5vw"}}>|</h2>
-                                <h2>Study Task</h2>
-                            </div>
-                            <h3 className="text-body1" style={{opacity: 0.7, fontSize: "0.8rem", marginLeft: "3vw"}}>Deadline: MM/DD/YYYY</h3>
-                            <div>
-                            <button style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "0.6vw", width: "4.5vw", height: "1.8vw", marginTop: "-1vh"}} className="text-body1">Start</button>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div className={styles.todoCard}>
-                            <div style={{display: "flex", flexDirection: "row", marginTop: "1vw", marginLeft: "1vw", paddingTop: "0.6vw"}} className="text-body1-semibold">
-                                <h2 style={{paddingRight: "0.5vw"}}>1</h2>
-                                <h2 style={{paddingRight: "0.5vw"}}>|</h2>
-                                <h2>Study Task</h2>
-                            </div>
-                            <h3 className="text-body1" style={{opacity: 0.7, fontSize: "0.8rem", marginLeft: "3vw"}}>Deadline: MM/DD/YYYY</h3>
-                            <div>
-                            <button style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "0.6vw", width: "4.5vw", height: "1.8vw", marginTop: "-1vh"}} className="text-body1">Start</button>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div className={styles.todoCard}>
-                            <div style={{display: "flex", flexDirection: "row", marginTop: "1vw", marginLeft: "1vw", paddingTop: "0.6vw"}} className="text-body1-semibold">
-                                <h2 style={{paddingRight: "0.5vw"}}>1</h2>
-                                <h2 style={{paddingRight: "0.5vw"}}>|</h2>
-                                <h2>Study Task</h2>
-                            </div>
-                            <h3 className="text-body1" style={{opacity: 0.7, fontSize: "0.8rem", marginLeft: "3vw"}}>Deadline: MM/DD/YYYY</h3>
-                            <div>
-                            <button style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "0.6vw", width: "4.5vw", height: "1.8vw", marginTop: "-1vh"}} className="text-body1">Start</button>
-                            </div>
-                        </div>
-                    </li>
-                    <br /> */}
                 </ul>
                 </div>
             </div>
@@ -301,9 +293,6 @@ export default function StudyPlanner(){
                 <h1 className="text-large-title-bold" style={{color: "var(--background)", marginTop: "3vh", marginLeft: "2vw"}}>In-progress</h1>
                 </div>
                 <br />
-                {/* <div className="createTo-do" style={{paddingBottom: "0.5rem"}}>
-                    <button style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "1.5vw", width: "5.3vw", height: "2vw", marginTop:"2vh", opacity: 0}}>New +</button>
-                </div> */}
                 <div className={styles.todoList2} style={{height: "57.5vh"}}>
                 <ul style={{marginLeft: "1rem", marginTop: "3rem"}}>
                 {inProgressEvent.length <= 0 && (
@@ -327,47 +316,6 @@ export default function StudyPlanner(){
                         </div>
                     </li>
                     ))}
-                    {/* <li>
-                        <div className={styles.todoCard}>
-                            <div style={{display: "flex", flexDirection: "row", marginTop: "1vw", marginLeft: "1vw", paddingTop: "0.6vw"}} className="text-body1-semibold">
-                                <h2 style={{paddingRight: "0.5vw"}}>1</h2>
-                                <h2 style={{paddingRight: "0.5vw"}}>|</h2>
-                                <h2>Study Task</h2>
-                            </div>
-                            <h3 className="text-body1" style={{opacity: 0.7, fontSize: "0.8rem", marginLeft: "3vw"}}>Deadline: MM/DD/YYYY</h3>
-                            <div>
-                            <button style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "0.6vw", width: "4.5vw", height: "1.8vw", marginTop: "-1vh"}} className="text-body1">Done</button>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div className={styles.todoCard}>
-                            <div style={{display: "flex", flexDirection: "row", marginTop: "1vw", marginLeft: "1vw", paddingTop: "0.6vw"}} className="text-body1-semibold">
-                                <h2 style={{paddingRight: "0.5vw"}}>1</h2>
-                                <h2 style={{paddingRight: "0.5vw"}}>|</h2>
-                                <h2>Study Task</h2>
-                            </div>
-                            <h3 className="text-body1" style={{opacity: 0.7, fontSize: "0.8rem", marginLeft: "3vw"}}>Deadline: MM/DD/YYYY</h3>
-                            <div>
-                            <button style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "0.6vw", width: "4.5vw", height: "1.8vw", marginTop: "-1vh"}} className="text-body1">Done</button>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div className={styles.todoCard}>
-                            <div style={{display: "flex", flexDirection: "row", marginTop: "1vw", marginLeft: "1vw", paddingTop: "0.6vw"}} className="text-body1-semibold">
-                                <h2 style={{paddingRight: "0.5vw"}}>1</h2>
-                                <h2 style={{paddingRight: "0.5vw"}}>|</h2>
-                                <h2>Study Task</h2>
-                            </div>
-                            <h3 className="text-body1" style={{opacity: 0.7, fontSize: "0.8rem", marginLeft: "3vw"}}>Deadline: MM/DD/YYYY</h3>
-                            <div>
-                            <button style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "0.6vw", width: "4.5vw", height: "1.8vw", marginTop: "-1vh"}} className="text-body1">Done</button>
-                            </div>
-                        </div>
-                    </li>
-                    
-                    <br /> */}
                 </ul>
                 </div>
             </div>
@@ -380,9 +328,6 @@ export default function StudyPlanner(){
                 <h1 className="text-large-title-bold" style={{color: "var(--background)", marginTop: "3vh", marginLeft: "2vw"}}>Completed</h1>
                 </div>
                 <br />
-                {/* <div className="createTo-do" style={{paddingBottom: "0.5rem"}}>
-                    <button style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "1.5vw", width: "5.3vw", height: "2vw", marginTop:"2vh", opacity: 0}}>New +</button>
-                </div> */}
                 <div className={styles.todoList2} style={{height: "57.5vh"}}>
                 <ul style={{marginLeft: "1rem", marginTop: "3rem"}}>
                 {completedEvent.length <= 0 && (
@@ -405,34 +350,6 @@ export default function StudyPlanner(){
                         </div>
                     </li>
                     ))}
-
-                {/* <li>
-                        <div className={styles.todoCard}>
-                            <div style={{display: "flex", flexDirection: "row", marginTop: "1vw", marginLeft: "1vw", paddingTop: "0.6vw"}} className="text-body1-semibold">
-                                <h2 style={{paddingRight: "0.5vw"}}>1</h2>
-                                <h2 style={{paddingRight: "0.5vw"}}>|</h2>
-                                <h2>Study Task</h2>
-                            </div>
-                            <h3 className="text-body1" style={{opacity: 0.7, fontSize: "0.8rem", marginLeft: "3vw"}}>Deadline: MM/DD/YYYY</h3>
-                            <div>
-                            <button style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "0.6vw", width: "4.5vw", height: "1.8vw", marginTop: "-1vh"}} className="text-body1">Delete</button>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div className={styles.todoCard}>
-                            <div style={{display: "flex", flexDirection: "row", marginTop: "1vw", marginLeft: "1vw", paddingTop: "0.6vw"}} className="text-body1-semibold">
-                                <h2 style={{paddingRight: "0.5vw"}}>1</h2>
-                                <h2 style={{paddingRight: "0.5vw"}}>|</h2>
-                                <h2>Study Task</h2>
-                            </div>
-                            <h3 className="text-body1" style={{opacity: 0.7, fontSize: "0.8rem", marginLeft: "3vw"}}>Deadline: MM/DD/YYYY</h3>
-                            <div>
-                            <button style={{float: "right", background: "var(--button-inactive)", color: "var(--background)", borderRadius: "1rem", marginRight: "0.6vw", width: "4.5vw", height: "1.8vw", marginTop: "-1vh"}} className="text-body1">Delete</button>
-                            </div>
-                        </div>
-                    </li>
-                    <br /> */}
                 </ul>
                 </div>
             </div>
@@ -461,25 +378,13 @@ export default function StudyPlanner(){
                             setEndDate(newDate)
                         }}/>
                     </div>
+                    <br />
                     <div className="tags" style={{display: "flex", flexDirection: "row"}}>
-                        <label style={{marginLeft: "0.9vw", paddingRight: "1.5vw"}}>Tags: </label>
-                        <input type="text" name="deadline" /> {/*placeholder for now*/}
+                        <label style={{marginLeft: "0.9vw", paddingRight: "1.5vw", marginTop: "1vh"}}>Subject: </label>
+                        <ComboboxForm academicCourseId={academicCourseId} onSubjectChange={handleSubjectChange}/>
                     </div>
+                    <br />
                     <hr style={{width: "93%", marginLeft: "1vw", height: "1px", background: "black", opacity: 0.8}}/>
-                    {/* <div className="to-do-table" style={{paddingTop: "1vh", display: "flex", flexDirection: "column"}}> */}
-                    {/* <label style={{marginLeft:"0.9vw", fontSize: "1.2rem", fontWeight: "bold"}}>To-do</label>
-                        <ul style={{marginLeft:"1vw", opacity: 0.6}}>
-                            <li>
-                                <input type="checkbox" /> 
-                                <label style={{paddingLeft: "1vw"}}>To-do task 1</label>
-                            </li>
-                        </ul>
-                        <br />
-                        <textarea name="to-do" placeholder="New to-do..." style={{marginLeft:"1vw", opacity: 0.6, width: "97%", borderBottom: "solid 3px gray"}}></textarea>
-                        <input type="button" value="+" className="bg-green-500 text-white p-3 mt-5 rounded-md" style={{marginLeft: "1vw", marginTop: "1vh", background: "var(--background-prime)"}} />
-                    </div> */}
-                    {/* <br />
-                    <hr style={{width: "93%", marginLeft: "1vw", height: "1px", background: "black", opacity: 0.8}}/> */}
                     <button className="text-white p-3 mt-5 rounded-md" style={{width: "92%", color: "var(--foreground)", background: "(var(--background-prime)", border: "solid 1px var(--background-prime)", marginLeft: "1vw"}} type="submit">Save</button>
                 </form>
             </DialogContent>
@@ -500,10 +405,20 @@ export default function StudyPlanner(){
                     <textarea placeholder="Description(optional) (150 characters max)" className="p-3" style={{height: "10vh", wordWrap: "break-word", textWrap: "balance"}} maxLength={150} value={content} onChange={(e) => {
                         setContent(e.target.value)
                     }}/>
-                    <div className="tags" style={{display: "flex", flexDirection: "row"}}>
-                        <label style={{marginLeft: "0.9vw", paddingRight: "1.5vw"}}>Tags: currently unavailable</label>
-                        <input type="text" name="deadline" /> {/*placeholder for now*/}
+                    {/* <div className="due-date" style={{display: "flex", flexDirection: "row"}}>
+                        <label style={{marginLeft: "0.9vw", paddingRight: "1.5vw"}}>Due Date: </label>
+                        <input type="date" name="deadline" required onChange={(e) => {
+                            const date = e.target.value;
+                            const newDate = new Date(date)
+                            setEndDate(newDate)
+                        }}/>
                     </div>
+                    <br /> */}
+                    <div className="tags" style={{display: "flex", flexDirection: "row"}}>
+                        <label style={{marginLeft: "0.9vw", paddingRight: "1.5vw", marginTop: "1vh"}}>Subject: </label>
+                        <ComboboxForm academicCourseId={academicCourseId} onSubjectChange={handleSubjectChange}/>
+                    </div>
+                    <br />
                     <hr style={{width: "93%", marginLeft: "1vw", height: "1px", background: "black", opacity: 0.8}}/>
                     <button className="text-white p-3 mt-5 rounded-md" style={{width: "92%", color: "var(--background-prime)", background: "(var(--foreground)", border: "solid 1px var(--background-prime)", marginLeft: "1vw"}} type="submit">Save</button>
                     <button className="text-white p-3 mt-5 rounded-md" style={{width: "92%", color: "var(--background-prime)", background: "(var(--foreground)", border: "solid 1px var(--background-prime)", marginLeft: "1vw"}} onClick={() => {
@@ -519,6 +434,8 @@ export default function StudyPlanner(){
                 </form>
             </DialogContent>
         </Dialog>
+
+        
 
     </div>
     )

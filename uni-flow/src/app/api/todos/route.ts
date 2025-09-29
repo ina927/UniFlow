@@ -22,6 +22,7 @@ export async function POST(request: { json: () => PromiseLike<{ newToDo: any; }>
         return NextResponse.json(savedToDo, {status: 201})
     } catch (error){
         console.log(error)
+        return NextResponse.json(error, {status: 500})
     }
 }
 
@@ -34,5 +35,6 @@ export async function GET(req: NextRequest) {
         return NextResponse.json(toDos, {status: 200})
     } catch (error){
         console.log(error)
+        return NextResponse.json(error, {status: 500})
     }
 }
