@@ -3,7 +3,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/shared/generated/prisma"
 }
 
 datasource db {
@@ -50,12 +49,11 @@ model User {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   version   Int        @default(1)
-  
+
   // Relations
   academicCourses AcademicCourse[]
-  todos ToDo[]
-  timerSessions TimerSession[]
-  auditEntries  AuditLog[] @relation("AuditLogTargetUser")
+  todos          ToDo[]
+  timerSessions  TimerSession[]
 }
 
 model Instructor {
@@ -179,13 +177,8 @@ model TimerSession {
 }
 
 model AuditLog {
-  id            String      @id @default(uuid())
-  actor         String
-  action        AuditAction
-  targetUserId  String?
-  targetUser    User?       @relation("AuditLogTargetUser", fields: [targetUserId], references: [id], onDelete: SetNull)
-  targetEmail   String
-  details       String?
-  statusAfter   UserStatus?
-  createdAt     DateTime    @default(now())
+  id      String   @id @default(uuid())
+  actor   String
+  action  AuditAction
+  details String?
 }
