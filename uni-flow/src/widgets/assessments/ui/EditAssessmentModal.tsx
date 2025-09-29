@@ -16,7 +16,7 @@ type Props = {
   currentTotalWeight: number;
 };
 
-export const EditAssessmentModal = ({ open, onOpenChange, subjectId, initial }: Props) => {
+export const EditAssessmentModal = ({ open, onOpenChange, subjectId, initial, currentTotalWeight }: Props) => {
   const ref = React.useRef<AssessmentFormHandle>(null);
   const [canSave, setCanSave] = React.useState(false); 
   const update = useUpdateAssessment(subjectId);

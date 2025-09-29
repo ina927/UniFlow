@@ -3,7 +3,7 @@
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "@/shared/ui";
 import { AssessmentRow } from "@/features/assessments/ui";
 import { Assessment, Grade } from "@/entities/assessments";
-import { overallPercent, requiredMarksPerRemaining, isGraded, neededToReach, remainingWeightSum } from "@/features/assessments/utils";
+import { overallPercent, requiredMarksPerRemaining, isGraded, neededToReach, remainingWeightSum } from "@/features/assessments/grade-logics";
 
 import styles from "./AssessmentTable.module.css";
 

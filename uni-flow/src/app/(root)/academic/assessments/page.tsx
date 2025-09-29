@@ -19,7 +19,7 @@ import {
   useEnterScore,
 } from "@/features/assessments/hooks";
 import { useSubjectDetailQuery } from "@/features/academics/hooks";
-import { letterFromPercent } from "@/features/assessments/utils";
+import { letterFromPercent } from "@/features/assessments/grade-logics";
 
 import styles from "./page.module.css";
 
@@ -27,11 +27,10 @@ import styles from "./page.module.css";
 /**
  * AssessmentsPage
  * Main page for displaying all assessments of a subject.
- * Combines header, controls, table, summary, and modals into one view.
  * Uses ?subjectId=... query param (no route change required)
  */
 export default function AssessmentsPage(){
-    // Read subjectId from query string: /assessments?subjectId=subj-41026
+    // Read subjectId from query string: academic/assessments?subjectId=subj-41026
     const searchParams = useSearchParams();
     const subjectId = searchParams.get("subjectId") ?? "";
 
@@ -39,7 +38,7 @@ export default function AssessmentsPage(){
     const { data: subject } = useSubjectDetailQuery(subjectId);
 
     // Assessments query/mutations
-    const { data: items = [] } = useAssessmentsQuery(subjectId);
+    const { data: items = [] } = useAssessmentsQuery(subjectId);    
     const currentTotalWeight = useMemo(
         () => items.reduce((acc, it) => acc + (it.weight || 0), 0),
         [items]
