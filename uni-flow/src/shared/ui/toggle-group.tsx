@@ -15,7 +15,6 @@ const ToggleGroupContext = React.createContext<
 })
 
 function ToggleGroup({
-  className,
   variant,
   size,
   children,
@@ -38,7 +37,6 @@ function ToggleGroup({
 }
 
 function ToggleGroupItem({
-  className,
   children,
   variant,
   size,
