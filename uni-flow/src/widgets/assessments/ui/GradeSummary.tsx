@@ -16,7 +16,6 @@ import styles from "./GradeSummary.module.css";
 type Props = {
   goal: Grade;          
   items: Assessment[];
-  whatIfMode?: boolean;
 };
 
 function fmtPct(p: number) {
@@ -24,7 +23,7 @@ function fmtPct(p: number) {
   return `${n}`;
 }
 
-export const GradeSummary = ({ goal, items, whatIfMode }: Props) => {
+export const GradeSummary = ({ goal, items}: Props) => {
   const completedPct = completedWeightedPercent(items);     
   const completedLetter = letterFromPercent(completedPct); 
 

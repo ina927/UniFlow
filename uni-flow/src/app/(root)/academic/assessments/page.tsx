@@ -140,7 +140,6 @@ export default function AssessmentsPage(){
                     key={`${mode}-${whatIfRev}`}
                     goal={goal}
                     items={displayItems}
-                    whatIfMode={mode === "whatif"}
                 />            
                 </div> 
 
