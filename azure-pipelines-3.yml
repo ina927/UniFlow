@@ -1,0 +1,33 @@
+# Pipeline for Ina's feature branch only: feature/F105-assessment
+# Runs Vitest unit tests with coverage in the uni-flow subproject
+
+trigger:
+  branches:
+    include:
+      - feature/F105-assessment
+  paths:
+    include:
+      - 'uni-flow/**'
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  WORKDIR: 'uni-flow'
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '20.x'
+    displayName: 'Use Node.js 20'
+
+  - checkout: self
+    persistCredentials: true
+
+  - script: npm ci
+    workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+    displayName: 'Install dependencies (npm ci)'
+
+  - script: npm run test:ci
+    workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+    displayName: 'Run unit tests (Vitest + coverage)'
