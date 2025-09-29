@@ -40,6 +40,10 @@ export default function AssessmentsPage(){
 
     // Assessments query/mutations
     const { data: items = [] } = useAssessmentsQuery(subjectId);
+    const currentTotalWeight = useMemo(
+        () => items.reduce((acc, it) => acc + (it.weight || 0), 0),
+        [items]
+    );
     const createAssessment = useCreateAssessment(subjectId);
     const enterScore = useEnterScore(subjectId);
     
