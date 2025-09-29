@@ -3,7 +3,7 @@
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "@/shared/ui";
 import { AssessmentRow } from "@/features/assessments/ui";
 import { Assessment, Grade } from "@/entities/assessments";
-import { overallPercent, requiredMarksPerRemaining, isGraded, neededToReach, remainingWeightSum } from "@/features/assessments/utils";
+import { overallPercent, requiredMarksPerRemaining, isGraded, neededToReach, remainingWeightSum } from "@/features/assessments/grade-logics";
 
 import styles from "./AssessmentTable.module.css";
 
@@ -27,6 +27,7 @@ export const AssessmentTable = ({
     const gradedCount = items.filter(i => i.score !== undefined && i.score !== null).length;
     const totalWeight = items.reduce((acc, it) => acc + (it.weight || 0), 0);
     const reqMap = requiredMarksPerRemaining(items, goal);
+    const EPS = 1e-6;
 
     return(
         <div className={styles.wrapper}>
@@ -72,7 +73,7 @@ export const AssessmentTable = ({
                                 <span className="text-body1 text-primary">
                                     { overallPercent(items).toFixed(1)} /{" "}                                </span>
                                 <span className="text-body1-bold primary-light">{totalWeight.toFixed(1)} %</span>
-                                {totalWeight !== 100 && (
+                                {(totalWeight < 100 - EPS) && (
                                     <span className={styles.weightWarning}>
                                         Total weight is not 100%. <br></br>
                                         Please add all assessments for accurate calculation.

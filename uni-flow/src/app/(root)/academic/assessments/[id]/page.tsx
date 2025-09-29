@@ -33,6 +33,10 @@ export default function AssessmentDetailPage() {
   // subject + assessments
   const { data: subject } = useSubjectDetailQuery(subjectId);
   const { data: list = [], isLoading } = useAssessmentsQuery(subjectId);
+  const totalWeight = useMemo(
+    () => list.reduce((acc, it) => acc + (Number(it.weight) || 0), 0),
+    [list]
+  );
 
   const item = useMemo(() => list.find((i) => i.id === id) ?? null, [list, id]);
 
@@ -59,7 +63,7 @@ export default function AssessmentDetailPage() {
           <div className="text-lg font-semibold text-primary">Assessment not found</div>
           <button
             className="text-sm underline text-primary"
-            onClick={() => router.push(`/assessments?subjectId=${subjectId}`)}
+            onClick={() => router.push(`/academic/assessments?subjectId=${subjectId}`)}
           >
             ← Back to list
           </button>
@@ -99,7 +103,7 @@ export default function AssessmentDetailPage() {
         description={item.description ?? ""}
         score={item.score}
         percent={percent}
-        onBack={() => router.push(`/assessments?subjectId=${subjectId}`)}
+        onBack={() => router.push(`/academic/assessments?subjectId=${subjectId}`)}
         onEdit={() => setOpenEdit(true)}
         onDelete={() => setOpenDelete(true)}
       />
@@ -110,6 +114,7 @@ export default function AssessmentDetailPage() {
         onOpenChange={setOpenEdit}
         subjectId={subjectId}
         initial={item}
+        currentTotalWeight={totalWeight}
       />
 
       {/* Delete confirm */}
@@ -121,7 +126,7 @@ export default function AssessmentDetailPage() {
         confirmText={del.isPending ? "Deleting..." : "Delete"}
         onConfirm={() =>
           del.mutate(item.id, {
-            onSuccess: () => router.push(`/assessments?subjectId=${subjectId}`),
+            onSuccess: () => router.push(`/academic/academic/assessments?subjectId=${subjectId}`),
           })
         }
       />
