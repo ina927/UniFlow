@@ -9,7 +9,7 @@ import {
   letterFromPercent,
   neededToReach,
   GRADE_THRESHOLDS,
-} from "@/features/assessments/ui/grade-logics";
+} from "@/features/assessments/grade-logics";
 
 import type { Assessment } from "@/entities/assessments";
 

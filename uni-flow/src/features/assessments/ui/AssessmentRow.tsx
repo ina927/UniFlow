@@ -6,7 +6,7 @@ import styles from "@/widgets/assessments/AssessmentTable.module.css";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Assessment, Grade } from "@/entities/assessments";
-import { isGraded, weightedContribution } from "@/features/assessments/ui/grade-logics";
+import { isGraded, weightedContribution } from "@/features/assessments/grade-logics";
 
 type Props = {
     item: Assessment;

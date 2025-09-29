@@ -4,7 +4,7 @@ import styles from "./AssessmentTable.module.css";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "@/components/ui/table";
 import AssessmentRow from "@/features/assessments/ui/AssessmentRow";
 import { Assessment, Grade } from "@/entities/assessments";
-import { overallPercent, requiredMarksPerRemaining, isGraded, neededToReach, remainingWeightSum } from "@/features/assessments/ui/grade-logics";
+import { overallPercent, requiredMarksPerRemaining, isGraded, neededToReach, remainingWeightSum } from "@/features/assessments/grade-logics";
 
 type Props = {
     items: Assessment[];
