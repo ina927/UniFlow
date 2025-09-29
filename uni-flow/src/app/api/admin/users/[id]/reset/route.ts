@@ -28,6 +28,10 @@ export async function POST(
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
+  if (user.role === Role.ADMIN) {
+    return NextResponse.json({ error: "Cannot reset admin accounts" }, { status: 403 });
+  }
+
   const tempPassword = generateTempPassword();
   const hash = await bcrypt.hash(tempPassword, 10);
 
@@ -49,7 +53,11 @@ export async function POST(
       name: true,
       role: true,
       status: true,
+      hash: true,
+      dob: true,
       updatedAt: true,
+      createdAt: true,
+      version: true,
     },
   });
 
@@ -57,10 +65,7 @@ export async function POST(
     data: {
       actor: requester.actorLabel,
       action: "USER_RESET",
-      targetUserId: resetUser.id,
-      targetEmail: resetUser.email,
-      statusAfter: resetUser.status,
-      details: "Account reset to default state",
+      details: `Account reset to default state for ${resetUser.email}`,
     },
   });
 
