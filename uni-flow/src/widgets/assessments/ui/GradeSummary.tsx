@@ -8,7 +8,7 @@ import {
   letterFromPercent,
   neededToReach,
   GRADE_THRESHOLDS,
-} from "@/features/assessments/utils/grade-logics";
+} from "@/features/assessments/grade-logics";
 import type { Assessment } from "@/entities/assessments";
 
 import styles from "./GradeSummary.module.css";
