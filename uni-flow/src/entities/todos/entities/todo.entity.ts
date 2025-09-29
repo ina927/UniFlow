@@ -8,11 +8,6 @@ export interface ToDoEntity{
     description: String,
     startDate: Date,
     endDate: Date,
-    status: { 
-      type: String, 
-      enum: ToDoStatus, 
-      default: ToDoStatus.PENDING, 
-      required: true 
-    }
+    status: ToDoStatus
   }
   
