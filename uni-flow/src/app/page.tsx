@@ -18,8 +18,23 @@ export default function LoginPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password: pwd }),
     });
-    const data = await res.json();
-    if (!res.ok) return setMsg(data?.error || "Sign in failed");
+
+    const raw = await res.text();
+    let data: unknown = null;
+    if (raw) {
+      try {
+        data = JSON.parse(raw);
+      } catch (err) {
+        console.warn("login response not JSON", err);
+      }
+    }
+
+    const payload =
+      data && typeof data === "object" ? (data as { error?: string }) : null;
+    if (!res.ok) {
+      const message = payload?.error || raw || `Sign in failed (${res.status})`;
+      return setMsg(message);
+    }
 
     router.push("/home"); // ⬅️ go to landing page
   }

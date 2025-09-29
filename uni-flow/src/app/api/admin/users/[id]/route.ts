@@ -34,6 +34,10 @@ export async function PATCH(
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
+  if (user.role === Role.ADMIN) {
+    return NextResponse.json({ error: "Cannot modify other admins" }, { status: 403 });
+  }
+
   const updates: { name?: string; role?: Role; status?: UserStatus } = {};
   const changed: string[] = [];
 
@@ -66,7 +70,11 @@ export async function PATCH(
       name: true,
       role: true,
       status: true,
+      hash: true,
+      dob: true,
       updatedAt: true,
+      createdAt: true,
+      version: true,
     },
   });
 
@@ -80,10 +88,7 @@ export async function PATCH(
     data: {
       actor: requester.actorLabel,
       action,
-      targetUserId: updated.id,
-      targetEmail: updated.email,
-      statusAfter: updated.status,
-      details: `Updated ${changed.join(", ")}`,
+      details: `Updated ${changed.join(", ")} for ${updated.email}`,
     },
   });
 

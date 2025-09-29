@@ -17,12 +17,15 @@ const roleLabels: Record<Role, string> = {
 
 type AdminUser = {
   id: string;
-  email: string;
-  name: string | null;
+  name: string;
   role: Role;
+  email: string;
+  hash: string;
+  dob: string | null;
   status: UserStatus;
   createdAt: string;
   updatedAt: string;
+  version: number;
 };
 
 type AuditAction =
@@ -36,10 +39,8 @@ type AuditEntry = {
   id: string;
   actor: string;
   action: AuditAction;
-  targetEmail: string;
-  statusAfter: UserStatus | null;
   details: string | null;
-  createdAt: string;
+  createdAt?: string | null;
 };
 
 type DashboardResponse = {
@@ -55,72 +56,20 @@ const actionIcons: Record<AuditAction, string> = {
   USER_RESET: "🔁",
 };
 
-function formatTimestamp(value: string) {
+function formatTimestamp(value: string | null | undefined) {
+  if (!value) return "—";
   return new Intl.DateTimeFormat(undefined, {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(value));
 }
 
-const fallbackUsers: AdminUser[] = [
-  {
-    id: "sample-1",
-    email: "bob.anderson@gmail.com",
-    name: "Bob Anderson",
-    role: Role.ADMIN,
-    status: UserStatus.ACTIVE,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "sample-2",
-    email: "maria.felicia@outlook.com",
-    name: "Maria Felicia",
-    role: Role.TEACHER,
-    status: UserStatus.INACTIVE,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "sample-3",
-    email: "fernAlicio@gmail.com",
-    name: "Fern Alicio",
-    role: Role.STUDENT,
-    status: UserStatus.ACTIVE,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
-
-const fallbackAudits: AuditEntry[] = [
-  {
-    id: "audit-1",
-    actor: "System",
-    action: "USER_CREATED",
-    targetEmail: "bob.anderson@gmail.com",
-    statusAfter: UserStatus.ACTIVE,
-    details: null,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "audit-2",
-    actor: "System",
-    action: "USER_CREATED",
-    targetEmail: "maria.felicia@outlook.com",
-    statusAfter: UserStatus.ACTIVE,
-    details: null,
-    createdAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
-  },
-  {
-    id: "audit-3",
-    actor: "Michael",
-    action: "USER_DEACTIVATED",
-    targetEmail: "maria.felicia@outlook.com",
-    statusAfter: UserStatus.INACTIVE,
-    details: "Admin deactivated account",
-    createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-  },
-];
+function formatDate(value: string | null) {
+  if (!value) return "—";
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+  }).format(new Date(value));
+}
 
 export default function AdminDashboardPage() {
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -136,16 +85,21 @@ export default function AdminDashboardPage() {
         setLoading(true);
         const res = await fetch("/api/admin/dashboard", { cache: "no-store" });
         if (!res.ok) {
-          throw new Error(`Request failed (${res.status})`);
+          const errorBody = await res.json().catch(() => null);
+          const reason =
+            (errorBody && typeof errorBody.message === "string" && errorBody.message) ||
+            `Request failed (${res.status})`;
+          throw new Error(reason);
         }
         const data = (await res.json()) as DashboardResponse;
         setUsers(data.users);
         setAudits(data.audits);
       } catch (err) {
-        console.warn("Admin dashboard API unavailable, falling back to sample data.", err);
-        setUsers(fallbackUsers);
-        setAudits(fallbackAudits);
-        setBanner("Showing sample data while the API is unavailable.");
+        const details = err instanceof Error ? err.message : "Unknown error";
+        console.error("Failed to load admin dashboard data", err);
+        setUsers([]);
+        setAudits([]);
+        setBanner(`Unable to load admin dashboard. ${details}`);
       } finally {
         setLoading(false);
       }
@@ -173,7 +127,7 @@ export default function AdminDashboardPage() {
   async function saveEdit(user: AdminUser) {
     if (!editForm) return;
     const payload: Partial<typeof editForm> = {};
-    if (editForm.name.trim() !== (user.name || "")) payload.name = editForm.name;
+    if (editForm.name.trim() !== user.name) payload.name = editForm.name;
     if (editForm.role !== user.role) payload.role = editForm.role;
     if (editForm.status !== user.status) payload.status = editForm.status;
     if (!Object.keys(payload).length) {
@@ -272,10 +226,16 @@ export default function AdminDashboardPage() {
               <table className="admin-table">
                 <thead>
                   <tr>
+                    <th>ID</th>
                     <th>Email</th>
                     <th>Name</th>
                     <th>Role</th>
                     <th>Status</th>
+                    <th>Date of Birth</th>
+                    <th>Password Hash</th>
+                    <th>Created</th>
+                    <th>Updated</th>
+                    <th>Version</th>
                     <th className="actions">Actions</th>
                   </tr>
                 </thead>
@@ -284,6 +244,7 @@ export default function AdminDashboardPage() {
                     const isEditing = editingId === user.id;
                     return (
                       <tr key={user.id} className={user.status !== UserStatus.ACTIVE ? "inactive" : undefined}>
+                        <td className="mono">{user.id}</td>
                         <td>
                           <a href={`mailto:${user.email}`} className="admin-link">
                             {user.email}
@@ -301,7 +262,7 @@ export default function AdminDashboardPage() {
                               }
                             />
                           ) : (
-                            user.name || "—"
+                            user.name
                           )}
                         </td>
                         <td>
@@ -317,11 +278,13 @@ export default function AdminDashboardPage() {
                                 )
                               }
                             >
-                              {Object.values(Role).map((role) => (
-                                <option key={role} value={role}>
-                                  {roleLabels[role]}
-                                </option>
-                              ))}
+                              {Object.values(Role)
+                                .filter((role) => role !== Role.ADMIN)
+                                .map((role) => (
+                                  <option key={role} value={role}>
+                                    {roleLabels[role]}
+                                  </option>
+                                ))}
                             </select>
                           ) : (
                             roleLabels[user.role]
@@ -355,6 +318,15 @@ export default function AdminDashboardPage() {
                             </span>
                           )}
                         </td>
+                        <td>{formatDate(user.dob)}</td>
+                        <td className="mono">
+                          {user.hash.length > 14
+                            ? `${user.hash.slice(0, 10)}…${user.hash.slice(-4)}`
+                            : user.hash}
+                        </td>
+                        <td>{formatTimestamp(user.createdAt)}</td>
+                        <td>{formatTimestamp(user.updatedAt)}</td>
+                        <td className="mono">{user.version}</td>
                         <td className="actions">
                           {isEditing ? (
                             <div className="admin-actions">
@@ -417,10 +389,7 @@ export default function AdminDashboardPage() {
                   <span className="timestamp">{formatTimestamp(entry.createdAt)}</span>
                   <span className="actor">{entry.actor}</span>
                   <span className="action">{entry.action.replace("USER_", "")}</span>
-                  <span className="target">{entry.targetEmail}</span>
-                  <span className="status">
-                    {entry.statusAfter ? statusLabels[entry.statusAfter] : "—"}
-                  </span>
+                  <span className="details">{entry.details ?? "No details recorded."}</span>
                 </div>
               ))}
               {!auditLogRows.length && <p className="text-secondary">No audit activity yet.</p>}
@@ -437,8 +406,9 @@ export default function AdminDashboardPage() {
                   <span className="icon">{actionIcons[entry.action]}</span>
                   <div>
                     <p>
-                      {entry.actor} • {entry.action.replace("USER_", "")}: {entry.targetEmail}
+                      {entry.actor} • {entry.action.replace("USER_", "")}
                     </p>
+                    <small>{entry.details ?? "No extra details."}</small>
                     <small>{formatTimestamp(entry.createdAt)}</small>
                   </div>
                 </li>

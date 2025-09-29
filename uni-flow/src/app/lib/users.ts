@@ -44,10 +44,9 @@ export async function createUser(email: string, password: string, name?: string)
     data: {
       actor: "System",
       action: "USER_CREATED",
-      targetUserId: created.id,
-      targetEmail: created.email,
-      statusAfter: created.status,
-      details: normalizedName ? `Account created for ${normalizedName}` : undefined,
+      details: normalizedName
+        ? `Account created for ${normalizedName} (${created.email})`
+        : `Account created for ${created.email}`,
     },
   });
 
