@@ -36,5 +36,5 @@ stages:
       displayName: 'Unit Testings (Calendar and Planner)'
       inputs:
         script: |
-          npm run test:ci
+          npm run test:ui
         workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
