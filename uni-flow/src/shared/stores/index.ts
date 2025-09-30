@@ -1,2 +1,7 @@
 export { useAuthStore, useUserId } from "./authStore";
-export { useAcademicStore, useSelectedTermId } from "./academicStore";
+export { 
+  useAcademicStore, 
+  useSelectedTermId, 
+  useAcademicCourseId, 
+  useTerms 
+} from "./academicStore";
