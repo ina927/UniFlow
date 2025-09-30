@@ -42,14 +42,14 @@ describe('CRUD Operations - Todos API', () => {
 
       const requestBody = {
         newToDo: {
-          userId: 'user-456',
-          subjectId: 'subject-789',
-          assessmentId: null,
-          title: 'Testing trial 1',
-          description: 'Vi test API-1',
-          startDate: new Date('2024-01-01'),
-          endDate: new Date('2024-01-15'),
-          status: ToDoStatus.PENDING
+            userId: 'user-456',
+            subjectId: 'subject-789',
+            assessmentId: null,
+            title: 'Testing trial 1',
+            description: 'Vi test API-1',
+            startDate: new Date('2024-01-01'),
+            endDate: new Date('2024-01-15'),
+            status: ToDoStatus.PENDING
         }
       };
 
@@ -87,8 +87,8 @@ describe('CRUD Operations - Todos API', () => {
           userId: 'user-456',
           subjectId: 'subject-789',
           assessmentId: 'assessment-999',
-          title: 'Study for exam',
-          description: '',
+          title: 'Testing trial please',
+          description: 'Testing testing',
           startDate: new Date(),
           endDate: new Date(),
           status: ToDoStatus.PENDING
