@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 import {
   Table,
@@ -11,30 +13,50 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Button } from "@/shared/ui/button";
-import { SubjectRow } from "@/features/academics";
+import { getSubjects, SubjectRow } from "@/features/academics";
 import { AddSubjectModal } from "./AddSubjectModal";
-
-const mockSubjects: SubjectRow[] = [
-  { id: "1", code: "41026", title: "Advanced Software Development", credits: 6, term: "Spring 2025" },
-  { id: "2", code: "41026", title: "Advanced Software Development", credits: 6, term: "Spring 2025" },
-  { id: "3", code: "41026", title: "Advanced Software Development", credits: 6, term: "Spring 2025" },
-  { id: "4", code: "41026", title: "Advanced Software Development", credits: 6, term: "July 2025" },
-  { id: "5", code: "41026", title: "Advanced Software Development", credits: 6, term: "Autumn 2025" },
-  { id: "6", code: "41026", title: "Advanced Software Development", credits: 6, term: "Autumn 2025" },
-  { id: "7", code: "41026", title: "Advanced Software Development", credits: 6, term: "Autumn 2025" },
-  { id: "8", code: "41026", title: "Advanced Software Development", credits: 6, term: "Autumn 2025" },
-];
+import { EditSubjectModal } from "./EditSubjectModal";
+import { useAcademicStore } from "@/shared/stores";
 
 interface Props {
   className?: string;
 }
 
 export const SubjectTable = (props: Props) => {
+  const router = useRouter();
+
   const [page, setPage] = useState(1);
+  const { academicCourseId, selectedTermId } = useAcademicStore();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
 
-  const subjects = mockSubjects;
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ["subjects", selectedTermId, academicCourseId],
+    queryFn: () => getSubjects(academicCourseId!, selectedTermId ?? undefined),
+    enabled: !!academicCourseId,
+  });
 
-  const totalCredits = subjects.reduce((sum, s) => sum + s.credits, 0);
+  const subjects: SubjectRow[] = data?.data?.data || [];
+
+  const totalCredits = subjects.reduce((sum, s) => sum + s.credits, 0) || 0;
+
+  if (isLoading) return <div>Loading...</div>
+  if (isError) return <div>Error!</div>
+
+  const gotoAssessments = (subjectId: string) => {
+    router.push(`/academic/assessments?subjectId=${subjectId}`);
+  };
+
+  const handleEditClick = (subjectId: string) => {
+    setSelectedSubjectId(subjectId);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditModalClose = () => {
+    setIsEditModalOpen(false);
+    setSelectedSubjectId(null);
+    refetch();
+  };
 
   return (
     <div className="w-full mt-4">
@@ -57,11 +79,23 @@ export const SubjectTable = (props: Props) => {
           <TableBody>
             {subjects.map((subject) => (
               <TableRow key={subject.id}>
-                <TableCell className="font-bold">{subject.code}</TableCell>
-                <TableCell>{subject.title}</TableCell>
-                <TableCell>{subject.credits}</TableCell>
-                <TableCell>{subject.term}</TableCell>
-                <TableCell className="text-right">⋮</TableCell>
+                <TableCell onClick={() => gotoAssessments(subject.id)} className="font-bold">{subject.code}</TableCell>
+                <TableCell onClick={() => gotoAssessments(subject.id)}>{subject.title}</TableCell>
+                <TableCell onClick={() => gotoAssessments(subject.id)}>{subject.credits}</TableCell>
+                <TableCell onClick={() => gotoAssessments(subject.id)}>{subject.term.title}</TableCell>
+                <TableCell className="text-right">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEditClick(subject.id);
+                    }}
+                    className="hover:bg-transparent hover:text-primary p-1 h-auto"
+                  >
+                    ⋮
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -92,6 +126,21 @@ export const SubjectTable = (props: Props) => {
           </Button>
         </div>
       </div>
+      
+      {/* 
+        Note: The EditSubjectModal component doesn't exist yet.
+        You'll need to create it similar to AddSubjectModal but for editing.
+        For now, we'll just show a placeholder.
+      */}
+      {selectedSubjectId && (
+        <div className={`fixed inset-0 bg-black/50 flex items-center justify-center ${isEditModalOpen ? 'block' : 'hidden'}`}>
+          <EditSubjectModal 
+            isOpen={isEditModalOpen}
+            onClose={handleEditModalClose}
+            subjectId={selectedSubjectId}
+          />
+        </div>
+      )}
     </div>
   );
 }

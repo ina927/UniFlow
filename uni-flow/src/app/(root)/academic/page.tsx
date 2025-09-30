@@ -6,17 +6,26 @@ import { Link } from "lucide-react";
 import { getAcademicCourses } from "@/features";
 import { Button } from "@/shared/ui/button";
 import { AcademicHeader, SubjectTable, TermSelector } from "@/widgets/academics";
+import { useAcademicStore } from "@/shared/stores/academicStore";
+import { AcademicCourse } from "@/shared/generated/prisma";
 
 export default function AcademicPage() { 
+  const { academicCourseId, setAcademicCourseId } = useAcademicStore();
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ["academic-courses"],
     queryFn: () => getAcademicCourses(),
+    enabled: !academicCourseId,
   });
 
   if (isLoading) return <div>Loading...</div>
   if (isError) return <div>Error!</div>
 
-  const academicCourse = data?.data?.data[4];
+  if (!academicCourseId && data?.data?.data) {
+    setAcademicCourseId(data?.data?.data[4].id);
+  }
+
+  const academicCourse = data?.data?.data.find((course: AcademicCourse) => course.id === academicCourseId);
 
   if (!academicCourse) return (
     <section className="flex flex-col items-center justify-center h-full">
@@ -32,7 +41,7 @@ export default function AcademicPage() {
   return (
     <section className="p-4 max-w-[calc(100vw-94px)]">
       <AcademicHeader academicCourse={academicCourse} />
-      <TermSelector academicCourseId={academicCourse?.id} />
+      <TermSelector />
       <SubjectTable />
     </section>
   );

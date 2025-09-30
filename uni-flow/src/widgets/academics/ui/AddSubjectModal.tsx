@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+
 import {
   Dialog,
   DialogContent,
@@ -13,27 +14,28 @@ import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { Label } from "@/shared/ui/label";
+import { useAcademicStore } from "@/shared/stores";
+import { createSubject } from "@/features/academics";
+import { CreateSubjectDto } from "@/entities";
 
-type FormValues = {
-  term: string;
-  code: string;
-  title: string;
-  credit: number;
-  goalGrade: string;
-  tutorName?: string;
-  tutorEmail?: string;
-  coordinatorName?: string;
-  coordinatorEmail?: string;
-};
+interface Props {
+  className?: string;
+}
 
-export function AddSubjectModal() {
+export function AddSubjectModal(props: Props) {
+  const { terms } = useAcademicStore();
+
   const [open, setOpen] = useState(false);
-  const { register, handleSubmit, setValue, reset } = useForm<FormValues>();
+  const { register, handleSubmit, setValue, reset } = useForm<CreateSubjectDto>();
 
-  const onSubmit = (data: FormValues) => {
-    console.log("Form submitted:", data);
-    setOpen(false);
-    reset();
+  const onSubmit = async (data: CreateSubjectDto) => {
+    try {
+      await createSubject(data);
+      reset();
+      setOpen(false);
+    } catch (e) {
+      console.error("create subject failed", e);
+    }
   };
 
   return (
@@ -41,7 +43,7 @@ export function AddSubjectModal() {
       <Button variant="outline" onClick={() => setOpen(true)}>+ Add Subject</Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-3xl" aria-describedby="Add subject details">
           <DialogHeader>
             <DialogTitle>Add Subject</DialogTitle>
           </DialogHeader>
@@ -51,13 +53,16 @@ export function AddSubjectModal() {
             <div className="space-y-4">
               <div>
                 <Label>Term *</Label>
-                <Select onValueChange={(v) => setValue("term", v)}>
+                <Select onValueChange={(v) => setValue("termId", v)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select term" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="spring-2025">Spring 2025</SelectItem>
-                    <SelectItem value="autumn-2025">Autumn 2025</SelectItem>
+                    {terms?.map((term) => (
+                      <SelectItem key={term.id} value={term.id}>
+                        {term.title}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -77,7 +82,7 @@ export function AddSubjectModal() {
                 <Input
                   type="number"
                   placeholder="Enter credit point"
-                  {...register("credit", { required: true, valueAsNumber: true })}
+                  {...register("credits", { required: true, valueAsNumber: true })}
                 />
               </div>
             </div>
@@ -86,7 +91,10 @@ export function AddSubjectModal() {
             <div className="space-y-4">
               <div>
                 <Label>Goal Grade</Label>
-                <Select onValueChange={(v) => setValue("goalGrade", v)}>
+                <Select onValueChange={(v) => {
+                  const gradeMap: { [key: string]: number } = { 'HD': 85, 'D': 75, 'C': 65, 'P': 50 };
+                  setValue("goalGrade", gradeMap[v]);
+                }}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select goal grade" />
                   </SelectTrigger>
@@ -95,17 +103,20 @@ export function AddSubjectModal() {
                     <SelectItem value="D">D</SelectItem>
                     <SelectItem value="C">C</SelectItem>
                     <SelectItem value="P">P</SelectItem>
-                    <SelectItem value="F">F</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div>
-                <Label>Instructor</Label>
-                <Input placeholder="Enter tutor name" {...register("tutorName")} />
-                <Input placeholder="Enter tutor email" className="mt-2" {...register("tutorEmail")} />
-                <Input placeholder="Enter coordinator name" className="mt-2" {...register("coordinatorName")} />
-                <Input placeholder="Enter coordinator email" className="mt-2" {...register("coordinatorEmail")} />
+                <Label>Tutor</Label>
+                <Input placeholder="Enter name" {...register("labTutorName")} />
+                <Input placeholder="Enter email" className="mt-2" {...register("labTutorEmail")} />
+              </div>
+
+              <div>
+                <Label>Coordinator</Label>
+                <Input placeholder="Enter name" className="mt-2" {...register("coordinatorName")} />
+                <Input placeholder="Enter email" className="mt-2" {...register("coordinatorEmail")} />
               </div>
             </div>
 

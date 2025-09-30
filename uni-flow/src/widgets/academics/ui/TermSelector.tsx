@@ -6,27 +6,29 @@ import { useQuery } from '@tanstack/react-query';
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { getTerms } from '@/features/academics';
-import { TermEntity } from '@/entities';
-import { useAcademicStore } from '@/shared/stores';
+import { useAcademicStore, } from '@/shared/stores';
 import { ManageTermModal } from './ManageTermModal';
 
 interface TermSelectorProps {
   className?: string;
-  academicCourseId: string;
 }
 
 export const TermSelector = (props: TermSelectorProps) => {
-  const { academicCourseId } = props;
+  const { academicCourseId, terms, setTerms, selectedTermId, setSelectedTermId } = useAcademicStore();
   const [placeholderText, setPlaceholderText] = useState("Select Term");
-  const { selectedTermId, setSelectedTermId } = useAcademicStore();
 
   const { data, isError, isLoading } = useQuery({
     queryKey: ["terms", academicCourseId],
-    queryFn: () => getTerms(academicCourseId),
+    queryFn: () => getTerms(academicCourseId!),
     enabled: !!academicCourseId,
   });
 
-  const terms: TermEntity[] = data?.data?.data;
+  // Update terms in store when data changes
+  useEffect(() => {
+    if (data?.data?.data) {
+      setTerms(data.data.data);
+    }
+  }, [data?.data?.data, setTerms]);
 
   useEffect(() => {
     if (isLoading) {
@@ -54,6 +56,9 @@ export const TermSelector = (props: TermSelectorProps) => {
           <SelectValue placeholder={placeholderText} />
         </SelectTrigger>
         <SelectContent>
+          <SelectItem key={"all"} value={"all"}>
+            {"All Terms"}
+          </SelectItem>
           {terms?.map((term) => (
             <SelectItem key={term.id} value={term.id}>
               {term.title}
