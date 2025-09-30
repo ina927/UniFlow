@@ -46,10 +46,10 @@ describe('CRUD Operations - Todos API', () => {
           subjectId: 'subject-789',
           assessmentId: null,
           title: 'Testing trial 1',
-          content: 'Vi test API-1',
+          description: 'Vi test API-1',
           startDate: new Date('2024-01-01'),
           endDate: new Date('2024-01-15'),
-          taskStatus: ToDoStatus.PENDING
+          status: ToDoStatus.PENDING
         }
       };
 
@@ -72,10 +72,10 @@ describe('CRUD Operations - Todos API', () => {
             subjectId: 'subject-789',
             assessmentId: null,
             title: 'Testing trial 1',
-            content: 'Vi test API-1',
+            description: 'Vi test API-1',
             startDate: new Date('2024-01-01'),
             endDate: new Date('2024-01-15'),
-            taskStatus: ToDoStatus.PENDING
+            status: ToDoStatus.PENDING
           }
       });
     });
@@ -208,7 +208,7 @@ describe('CRUD Operations - Todos API', () => {
               title: 'Updated Title',
               description: 'Updated Description',
               endDate: new Date('2024-02-01'),
-              status: ToDoStatus.DONE, // ← match the request body
+              status: ToDoStatus.DONE,
               subjectId: 'new-subject-id',
             },
           });
