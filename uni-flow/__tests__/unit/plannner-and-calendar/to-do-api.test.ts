@@ -34,10 +34,10 @@ describe('CRUD Operations - Todos API', () => {
         subjectId: 'subject-789',
         assessmentId: null,
         title: 'Testing trial 1',
-        description: 'Vi test API-1',
+        content: 'Vi test API-1',
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-15'),
-        status: ToDoStatus.PENDING
+        taskStatus: ToDoStatus.PENDING
       };
 
       const requestBody = {
@@ -46,10 +46,10 @@ describe('CRUD Operations - Todos API', () => {
             subjectId: 'subject-789',
             assessmentId: null,
             title: 'Testing trial 1',
-            description: 'Vi test API-1',
+            content: 'Vi test API-1',
             startDate: new Date('2024-01-01'),
             endDate: new Date('2024-01-15'),
-            status: ToDoStatus.PENDING
+            taskStatus: ToDoStatus.PENDING
         }
       };
 
