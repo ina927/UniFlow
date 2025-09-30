@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "@/shared/lib/prisma";
-import { Role, UserStatus } from "@/entities/users/enums";
+import { Role, UserStatus } from "@/shared/generated/prisma";
 
 export type PublicUser = {
   id: string;
@@ -26,31 +26,62 @@ const toPublicUser = (user: PrismaUserSnapshot): PublicUser => ({
   status: user.status,
 });
 
-export async function createUser(email: string, password: string, name?: string): Promise<PublicUser> {
-  const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) throw new Error("Email already registered");
+interface CreateUserParams {
+  email: string;
+  password: string;
+  name?: string;
+}
 
-  const hash = await bcrypt.hash(password, 10);
+export async function createUser({ email, password, name }: CreateUserParams): Promise<PublicUser> {
+  // Input validation
+  if (!email || !email.includes('@')) {
+    throw new Error('Invalid email address');
+  }
+  
+  if (!password || password.length < 8) {
+    throw new Error('Password must be at least 8 characters long');
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
   const normalizedName = name?.trim();
-  const created = await prisma.user.create({
-    data: {
-      email,
-      name: normalizedName && normalizedName.length > 0 ? normalizedName : email,
-      hash,
-    },
-  });
 
-  await prisma.auditLog.create({
-    data: {
-      actor: "System",
-      action: "USER_CREATED",
-      details: normalizedName
-        ? `Account created for ${normalizedName} (${created.email})`
-        : `Account created for ${created.email}`,
-    },
-  });
+  return await prisma.$transaction(async (tx) => {
+    // Check for existing user within transaction
+    const existing = await tx.user.findUnique({ 
+      where: { email: normalizedEmail } 
+    });
+    
+    if (existing) {
+      throw new Error('Email already registered');
+    }
 
-  return toPublicUser(created);
+    // Hash password
+    const hash = await bcrypt.hash(password, 12);
+    
+    // Create user and audit log in a single transaction
+    const created = await tx.user.create({
+      data: {
+        email: normalizedEmail,
+        name: normalizedName || "Unknown", // Use undefined instead of null for optional fields
+        hash,
+        status: 'ACTIVE' as UserStatus,
+        role: 'USER' as Role,
+      },
+    });
+
+    // Create audit log entry
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (tx as any).auditLog.create({
+      data: {
+        actor: 'System',
+        action: 'USER_CREATED',
+        details: `Account created for ${normalizedName || 'user'} (${normalizedEmail})`,
+        userId: created.id,
+      },
+    });
+
+    return toPublicUser(created);
+  });
 }
 
 export async function verifyUser(email: string, password: string): Promise<PublicUser | null> {
