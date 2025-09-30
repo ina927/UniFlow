@@ -88,10 +88,10 @@ describe('CRUD Operations - Todos API', () => {
           subjectId: 'subject-789',
           assessmentId: 'assessment-999',
           title: 'Study for exam',
-          content: '',
+          description: '',
           startDate: new Date(),
           endDate: new Date(),
-          taskStatus: ToDoStatus.PENDING
+          status: ToDoStatus.PENDING
         }
       };
 
@@ -208,7 +208,7 @@ describe('CRUD Operations - Todos API', () => {
               title: 'Updated Title',
               description: 'Updated Description',
               endDate: new Date('2024-02-01'),
-              status: ToDoStatus.DONE,
+              status: ToDoStatus.IN_PROGRESS,
               subjectId: 'new-subject-id',
             },
           });
