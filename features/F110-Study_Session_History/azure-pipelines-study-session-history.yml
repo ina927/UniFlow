@@ -1,24 +1,34 @@
 trigger:
-  branches:G:\Uni\Advanced Software Development\UniFlow\features\F110-Study_Session_History\azure-pipelines-study-session-history.ym
+  branches:
+    include: [ features/F110-Study_Session_History ]
+  paths:
     include:
-      - features/110-Study_Session_History
+      - 'uni-flow/**'
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: ubuntu-latest
+
+variables:
+  WORKDIR: 'uni-flow'
 
 steps:
   - task: NodeTool@0
     inputs:
       versionSpec: '20.x'
-    displayName: 'Install Node.js'
+    displayName: 'Use Node.js 20'
 
   - script: |
-      cd uni-flow
-      npm install
+      npm ci
+    workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+    displayName: 'Install deps (npm ci)'
+
+  - script: |
+      export NEXT_TELEMETRY_DISABLED=1
       npm run build
-    displayName: 'Install and Build'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+    displayName: 'Build Next.js'
 
   - script: |
-      cd uni-flow
-      npm test --if-present
-    displayName: 'Run Tests'
+      npm run test --if-present
+    workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+    displayName: 'Run tests'
