@@ -1,15 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   createAssessment,
-  getAssessment,
   enterScore,
-  updateAssessment,
-  listAssessments,
   deleteAssessment,
 } from "@/entities/assessments/services/assessment.service";
 import { AssessmentType } from "@/entities/assessments/enums/AssessmentType";
 
 // In-memory store simulating Prisma
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const store = new Map<string, any>();
 let idSeq = 1;
 

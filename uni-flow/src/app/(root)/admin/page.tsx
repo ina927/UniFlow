@@ -1,7 +1,7 @@
 "use client";
 
+import { Role, UserStatus } from "@/shared/generated/prisma";
 import { useEffect, useMemo, useState } from "react";
-import { Role, UserStatus } from "@/entities";
 
 const statusLabels: Record<UserStatus, string> = {
   [UserStatus.ACTIVE]: "Active",

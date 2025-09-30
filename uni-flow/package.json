@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "db:test": "ts-node --project tsconfig.test.json -r tsconfig-paths/register __tests__/scripts/db-test.ts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -79,7 +78,6 @@
     "eslint-config-next": "15.4.6",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.7.0",
-    "prisma": "^6.15.0",
     "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.12",
