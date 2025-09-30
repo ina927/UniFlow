@@ -206,6 +206,9 @@ export default function Calendar(){
         if (!selectedEventArg) return;
 
         console.log(selectedEventId)
+        if (newEventTitle === ""){
+            setNewEventTitle("New Task")
+        }
         
         await Axios.put(`/api/todos/${selectedEventArg.event.id}`, {
             title: newEventTitle,
@@ -244,6 +247,10 @@ export default function Calendar(){
         // };
 
         setEndDate(selectedDate.end)
+
+        if (newEventTitle === ""){
+            setNewEventTitle("New Task")
+        }
 
         // this is for the database
         

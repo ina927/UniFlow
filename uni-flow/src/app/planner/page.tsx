@@ -164,6 +164,10 @@ export default function StudyPlanner(){
     const updateDialog = async (e: React.FormEvent) => {
         e.preventDefault();
         console.log(selectedEvent)
+
+        if (newEventTitle === ""){
+            setNewEventTitle("New Task")
+        }
         
         if (selectedEvent){
         await Axios.put(`/api/todos/${selectedEvent.id}`, {
@@ -202,6 +206,11 @@ export default function StudyPlanner(){
     const handleAddEvent = async (e: React.FormEvent) => {
         e.preventDefault();
         // this is for the database
+
+        if (newEventTitle === ""){
+            setNewEventTitle("New Task")
+        }
+
         const newToDo = {
             userId: 'baacd6fe-1729-4505-9b83-d9f4fd47ea1f',
             subjectId: subId,
