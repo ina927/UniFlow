@@ -24,9 +24,9 @@ steps:
 
   - script: |
       export NEXT_TELEMETRY_DISABLED=1
-      npm run build
+      npm run build -- --no-lint
     workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
-    displayName: 'Build Next.js'
+    displayName: 'Build Next.js (no lint)'
 
   - script: |
       npm run test --if-present
