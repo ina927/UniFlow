@@ -29,7 +29,23 @@ apiClient.interceptors.request.use(
   },
   (error) => {
     if (process.env.NODE_ENV === 'development') {
-      console.error('API Request ERROR:', error);
+      apiClient.interceptors.response.use(
+        res => res,
+        err => {
+          if (err.response) {
+            console.error("API Response ERROR:", {
+              status: err.response.status,
+              data: err.response.data,
+              headers: err.response.headers,
+            });
+          } else if (err.request) {
+            console.error("No response received:", err.request);
+          } else {
+            console.error("Axios error:", err.message);
+          }
+          return Promise.reject(err);
+        }
+      );
     }
     return Promise.reject(error);
   }
