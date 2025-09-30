@@ -2,7 +2,7 @@ import type { Config } from 'jest';
 
 const config: Config = {
   preset: 'ts-jest',
-  testEnvironment: 'node', // Changed from jsdom to node for backend tests
+  testEnvironment: 'jsdom', // Changed from jsdom to node for backend tests
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^.+\\.(css|less|scss|svg)$': 'identity-obj-proxy',
