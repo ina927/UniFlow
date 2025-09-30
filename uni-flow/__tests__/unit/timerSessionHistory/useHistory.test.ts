@@ -1,5 +1,5 @@
-import { renderHook, act } from "@testing-library/react";
-import { useHistory } from "./useHistory";
+import { renderHook, act, waitFor } from "@testing-library/react";
+import { useHistory } from "../../../src/features/history/hooks/useHistory";
 
 // Mock fetch for timer sessions
 global.fetch = jest.fn(() =>
@@ -27,10 +27,12 @@ global.fetch = jest.fn(() =>
 
 describe("useHistory", () => {
   it("counts completed Pomodoro sessions", async () => {
-    const { result, waitForNextUpdate } = renderHook(() => useHistory());
+    const { result } = renderHook(() => useHistory());
 
     // Wait for useEffect to fetch and set history
-    await waitForNextUpdate();
+    await waitFor(() => {
+      expect(result.current.history.length).toBe(2);
+    });
 
     expect(result.current.totalPomodoros).toBe(2);
     expect(result.current.history.length).toBe(2);

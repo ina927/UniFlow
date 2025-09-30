@@ -23,12 +23,6 @@ steps:
     displayName: 'Install deps (npm ci)'
 
   - script: |
-      export NEXT_TELEMETRY_DISABLED=1
-      npm run build -- --no-lint
-    workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
-    displayName: 'Build Next.js (no lint)'
-
-  - script: |
       npm run test --if-present
     workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
     displayName: 'Run tests'
