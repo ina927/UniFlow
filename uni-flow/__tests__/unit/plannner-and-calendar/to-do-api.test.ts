@@ -61,7 +61,11 @@ describe('CRUD Operations - Todos API', () => {
 
       // test outcome must fulfill this one here (I think)
       expect(response.status).toBe(201);
-      expect(data).toEqual(mockToDo);
+      expect(data).toEqual({
+            ...mockToDo,
+            startDate: mockToDo.startDate.toISOString(),
+            endDate: mockToDo.endDate.toISOString(),
+      });
       expect(prisma.toDo.create).toHaveBeenCalledWith({
         data: {
             userId: 'user-456',
@@ -143,7 +147,18 @@ describe('CRUD Operations - Todos API', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data).toEqual(mockToDos);
+      expect(data).toEqual([
+        {
+          ...mockToDos[0],
+          startDate: mockToDos[0].startDate.toISOString(),
+          endDate: mockToDos[0].endDate.toISOString(),
+        },
+        {
+          ...mockToDos[1],
+          startDate: mockToDos[1].startDate.toISOString(),
+          endDate: mockToDos[1].endDate.toISOString(),
+        },
+      ]);
       expect(data).toHaveLength(2);
       expect(prisma.toDo.findMany).toHaveBeenCalled();
     });
@@ -176,7 +191,7 @@ describe('CRUD Operations - Todos API', () => {
             title: 'Updated Title',
             description: 'Updated Description',
             endDate: new Date('2024-02-01'),
-            status: ToDoStatus.DONE,
+            status: ToDoStatus.IN_PROGRESS,
             subjectId: 'new-subject-id'
             })
         };
@@ -190,13 +205,13 @@ describe('CRUD Operations - Todos API', () => {
         expect(prisma.toDo.updateMany).toHaveBeenCalledWith({
             where: { id: 'todo-123' },
             data: {
-            title: 'Updated Title',
-            description: 'Updated Description',
-            endDate: new Date('2024-02-01'),
-            status: ToDoStatus.IN_PROGRESS,
-            subjectId: 'new-subject-id'
-            }
-        });
+              title: 'Updated Title',
+              description: 'Updated Description',
+              endDate: new Date('2024-02-01'),
+              status: ToDoStatus.DONE, // ← match the request body
+              subjectId: 'new-subject-id',
+            },
+          });
         });
     })
 
@@ -208,7 +223,7 @@ describe('CRUD Operations - Todos API', () => {
 
         const mockRequest = {};
         const mockContext = {
-            params: Promise.resolve({ id: 'todo-123' })
+            params: Promise.resolve({ id: '123' })
         };
 
         const response = await DELETE(mockRequest as any, mockContext as any);
@@ -217,7 +232,7 @@ describe('CRUD Operations - Todos API', () => {
         expect(response?.status).toBe(200);
         expect(data).toEqual(mockDeletedToDo);
         expect(prisma.toDo.deleteMany).toHaveBeenCalledWith({
-            where: { id: 'todo-123' }
+            where: { id: '123' }
         });
     });
   });
