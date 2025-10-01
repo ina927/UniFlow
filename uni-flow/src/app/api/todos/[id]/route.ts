@@ -1,4 +1,3 @@
-import { ToDo } from "@/shared/models/ToDo";
 import { NextRequest, NextResponse } from "next/server";
 import {prisma} from "@/shared/lib/"
 import { ToDoStatus } from "@/entities/enums/ToDoStatus";

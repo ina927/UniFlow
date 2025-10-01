@@ -38,12 +38,12 @@
     flex-direction: column;
     gap: 2px; 
 }
-
 /* ----- Button ----- */
 .enterBtn {
     border-radius: 12px;
     padding: 6px 10px;
     background: var(--components-fill);
+    border: 1px solid var(--border, #E5E7EB);
     cursor: pointer;
     color: var(--primary-light);
     font-weight: 600;
@@ -52,14 +52,6 @@
 }
 .enterBtn:hover {
     filter: brightness(0.97);
-}
-.enterBtnWhatIf { 
-    border-radius: 12px;
-    cursor: pointer;
-    color: var(--text-tertiary);
-    font-weight: 600;
-    font-family: var(--font-inter);
-    font-size: 14px;
 }
 
 /* ----- Footer ----- */
@@ -88,29 +80,6 @@
     font-size: 12px;
     color: var(--destructive);
     font-weight: 500;
-}
-
-.scoreBlock {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 2px;
-}
-
-.requiredNote {
-    color: var(--destructive);
-    font-size: 12px;
-    line-height: 1.2;
-    font-weight: 600;
-}
-.goalWarn { 
-    margin-right: 60px;
-    font-size: 13px;
-    color: var(--destructive);
-    white-space: nowrap;
-    display: flex;
-    justify-content: flex-end;
-    font-weight: 600;
 }
 
 @media (max-width: 720px) {

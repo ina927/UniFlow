@@ -1,1 +1,1 @@
-export { withDB } from "./with-db";
+export { controller } from "./controller";
