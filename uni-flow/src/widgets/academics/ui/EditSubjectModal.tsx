@@ -56,7 +56,13 @@ export function EditSubjectModal(props: Props) {
 
   const handleDelete = async () => {
     try {
-      await deleteSubject(subjectId);
+      const result = await deleteSubject(subjectId);
+
+      if (result.statusCode === 500) {
+        alert("There are assessments associated with this subject. Please delete the assessments first.");
+        return;
+      }
+
       onClose();
     } catch (e) {
       console.error("delete subject failed", e);

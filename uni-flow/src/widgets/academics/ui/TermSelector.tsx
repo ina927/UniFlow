@@ -66,7 +66,7 @@ export const TermSelector = (props: TermSelectorProps) => {
           ))}
         </SelectContent>
       </Select>
-      <ManageTermModal terms={terms} />
+      <ManageTermModal />
     </div>
   );
 };
