@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/shared/lib/prisma";
 import { requireAdmin } from "../../_helpers";
-import { Role, UserStatus } from "@/entities";
+import { Role, UserStatus } from "@/shared/generated/prisma";
 
 const allowedRoles = new Set(Object.values(Role));
 const allowedStatuses = new Set(Object.values(UserStatus));
@@ -88,6 +88,7 @@ export async function PATCH(
     data: {
       actor: requester.actorLabel,
       action,
+      targetemail: updated.email,
       details: `Updated ${changed.join(", ")} for ${updated.email}`,
     },
   });
