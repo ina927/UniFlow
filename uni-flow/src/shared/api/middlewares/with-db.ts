@@ -9,9 +9,8 @@ export const withDB = (handler: (req: NextRequest, params?: ApiParams) => Promis
     } catch (error) {
       console.error('Database connection error:', error);
       return NextResponse.json({
-        status: false,
-        statusCode: 500,
-        message: "Internal Server Error",
+        status: 500,
+        data: "Internal Server Error",
       });
     }
   };

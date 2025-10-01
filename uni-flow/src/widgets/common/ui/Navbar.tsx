@@ -10,9 +10,9 @@ interface Props {
 export const Navbar = (props: Props) => {
   
   return (
-    <aside className={clsx(props.className, "bg-primary-light flex items-start justify-center min-w-[90px] h-[100vh]")}>
+    <aside className={clsx(props.className, "bg-primary-light flex items-start justify-center min-w-[90px] min-h-[calc(100vh-108px)] h-auto")}>
       <nav className="flex flex-col items-center w-full">
-        {router.filter((item) => item.group >= NavbarGroup.PROD).map((item, index) => {
+          {router.filter((item) => item.group >= NavbarGroup.PROD).map((item, index) => {
           return (
             <NavItem key={index} item={item} index={index} />
           );

@@ -1,6 +1,6 @@
 "use client";
 
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { ToggleGroup, ToggleGroupItem } from "@/shared/ui/toggle-group";
 
 type Mode = "view" | "whatif";
 type Props = {
@@ -12,7 +12,7 @@ type Props = {
  * AssessmentModeToggle
  * Controlled toggle for switching between "view" and "whatif" modes.
  */
-export default function AssessmentModeToggle({ mode, onChange }: Props){
+export const AssessmentModeToggle = ({ mode, onChange }: Props) => {
     const flip = () => onChange?.(mode === "view" ? "whatif" : "view");
 
     return (

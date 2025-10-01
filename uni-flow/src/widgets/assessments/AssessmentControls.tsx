@@ -7,38 +7,25 @@ import AssessmentModeToggle from "@/features/assessments/ui/AssessmentModeToggle
 import RequiredMarkToggle from "@/features/assessments/ui/RequiredMarkToggle";
 
 type Props = {
-    mode: "view" | "whatif";
-    onModeChange: (m: "view" | "whatif") => void;
-    showRequiredMarks?: boolean;
-    onToggleRequired?: (next: boolean) => void;
-    onAddAssessment?: () => void;
+  onAddAssessment?: () => void;
 };
 
-export default function AssessmentControls({
-    mode,
-    onModeChange,
-    showRequiredMarks = false,
-    onToggleRequired,
-    onAddAssessment,
-}: Props) {    
+export default function AssessmentControls({ onAddAssessment }: Props) {
+    const [mode, setMode] = useState<"view" | "whatif">("view");
+    const [showRequiredMarks, setShowRequiredMarks] = useState(false);
+
     return (
         <div className={styles.container}>
             <div className={styles.topRow}>
-                <AssessmentModeToggle mode={ mode } onChange={onModeChange} />
+                <AssessmentModeToggle mode={ mode } onChange={setMode} />
             </div>
             <div className={styles.bottomRow}>
                 <RequiredMarkToggle
                     checked={showRequiredMarks}
-                    onToggle={onToggleRequired ?? (() => {})}
-                />
+                    onToggle={() => setShowRequiredMarks(!showRequiredMarks)}/>
                 <Button className={styles.addButton} onClick={onAddAssessment}>
                     + Add Assessment</Button>
             </div>
-            {mode === "whatif" && (
-                <span className={styles.simNotice}>
-                    You are on What-if simulation mode: These scores are not saved.
-                </span>
-            )}
         </div>
     );
 
