@@ -2,11 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-<<<<<<<< HEAD:uni-flow/src/app/(root)/page.tsx
-import { Role } from "@/shared/generated/prisma";
-========
 import { Role } from "@/entities/users/enums";
->>>>>>>> ba6d03e ([refectory] F101-user_authentication):uni-flow/src/app/(root)/home/page.tsx
 
 type User = { email: string; name?: string; role?: Role };
 

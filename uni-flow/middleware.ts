@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verify } from "@/features/auth/jwt";
+import { verify } from "@/entities/auth/jwt";
 
 export function middleware(req: NextRequest) {
   const isProtected = req.nextUrl.pathname.startsWith("/profile") || req.nextUrl.pathname.startsWith("/home");

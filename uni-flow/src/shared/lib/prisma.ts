@@ -1,14 +1,3 @@
-import { Prisma, PrismaClient } from '@/shared/generated/prisma';
-
-// Create a type for our extended client
-type ExtendedPrismaClient = ReturnType<typeof createPrismaClient>;
-
-// Create a function to properly type the extended client
-function createPrismaClient() {
-  const baseClient = new PrismaClient(prismaOptions);
-  return baseClient.$extends(versionExtension);
-}
-
 // Declare the global prisma variable with the extended type
 import { Prisma, PrismaClient } from '@/shared/generated/prisma';
 
@@ -24,11 +13,9 @@ function createPrismaClient() {
 // Declare the global prisma variable with the extended type
 declare global {
   var prisma: ExtendedPrismaClient | undefined;
-  var prisma: ExtendedPrismaClient | undefined;
 }
 
 const prismaOptions: Prisma.PrismaClientOptions = {
-  log: process.env.NODE_ENV === 'development' 
   log: process.env.NODE_ENV === 'development' 
     ? ['query', 'warn', 'error']
     : ['error'],
@@ -73,6 +60,5 @@ if (process.env.NODE_ENV !== 'production') {
   globalThis.prisma = prisma;
 }
 
-// Export types
 // Export types
 export type { PrismaClient };

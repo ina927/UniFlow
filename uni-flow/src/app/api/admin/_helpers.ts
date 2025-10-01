@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verify } from "@/features/auth/jwt";
+import { verify } from "@/entities/auth/jwt";
 import { prisma } from "@/shared/lib/prisma";
 import { Role } from "@/shared/generated/prisma/client";
 

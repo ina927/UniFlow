@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createUser as createPublicUser } from "@/features/auth/users";
+import { createUser as createPublicUser } from "@/entities/auth/users";
 
 type RegisterBody = {
   name?: string;
