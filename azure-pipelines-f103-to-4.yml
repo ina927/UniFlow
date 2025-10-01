@@ -3,10 +3,11 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
-trigger:
+trigger:https://github.com/ina927/UniFlow/blob/features/F103-main-nav/azure-pipelines-f103-to-4.yml
   branches:
     include:
       - main
+      - dev
   paths:
     include:
       - 'uni-flow/**'
