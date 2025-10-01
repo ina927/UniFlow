@@ -1,0 +1,39 @@
+# Node.js with React
+# Build a Node.js project that uses React.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+  branches:
+    include: [ dev ]
+  paths:
+    include:
+      - 'uni-flow/**'
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  WORKDIR: 'uni-flow'
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '20.x'
+    displayName: 'Use Node.js 20'
+
+  - script: |
+      npm ci
+    workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+    displayName: 'Install deps (npm ci)'
+
+  - script: |
+      export NEXT_TELEMETRY_DISABLED=1
+      npm run build
+    workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+    displayName: 'Build Next.js'
+
+  - script: |
+      npm run test --if-present
+    workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+    displayName: 'Run tests'

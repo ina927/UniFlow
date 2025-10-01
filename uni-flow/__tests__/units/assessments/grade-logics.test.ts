@@ -8,10 +8,11 @@ import {
   neededToReach,
   remainingWeightSum,
   requiredMarksPerRemaining,
-} from "@/features/assessments/grade-logics";
+} from "@/features/assessments/ui/grade-logics";
 import { Grade } from "@/entities/assessments/enums/Grade";
 
 // Simple helper to create assessment objects with defaults
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function makeAssessment(partial: Partial<any> = {}): any {
   return {
     id: partial.id ?? "a1",

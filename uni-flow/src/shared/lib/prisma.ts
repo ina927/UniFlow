@@ -41,7 +41,6 @@ const versionExtension = Prisma.defineExtension({
           if (current) {
             args.data = {
               ...args.data,
-              version: (current.version || 0) + 1
             };
           }
         }

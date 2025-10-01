@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
+      <body className="antialiased py-[16px]">
         <QueryProviders>
           <Header />
           <div className="flex flex-row">

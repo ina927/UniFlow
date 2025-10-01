@@ -7,7 +7,7 @@ export const getSubjects = async (academicCourseId: string, termId?: string) => 
 };
 
 export const getSubjectDetail = async (subjectId: string): Promise<SubjectDetail | null> => {
-    const res = await apiClient.get(`/api/subjects/${subjectId}/detail`, {
+    const res = await apiClient.get(`${SUBJECTS_API}/${subjectId}/detail`, {
         headers: { "user-id": "dev-user-1" },
     });
     const dto = res?.data;
