@@ -6,7 +6,7 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
-  } from "@/components/ui/dialog"
+  } from "@/shared/ui/dialog"
 import Link from "next/link";
 import styles from "./page.module.css";
 
