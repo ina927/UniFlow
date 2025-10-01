@@ -1,25 +1,40 @@
-# Node.js with React
-# Build a Node.js project that uses React.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
-
 trigger:
-- dev
+  branches:
+    include:
+    - features/F108-calendar
+  paths:
+    include:
+    - 'uni-flow/**'
 
-pool:
-  vmImage: ubuntu-latest
+variables:
+- name: WORKDIR
+  value: 'uni-flow'
 
-steps:
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '20.x'
-    displayName: 'Install Node.js'
+stages:
+- stage: BuildReact
+  displayName: "React.js build"
+  pool:
+    vmImage: ubuntu-latest
+  jobs:
+  - job: Build
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '20.x'
+      displayName: 'Install Node.js'
 
-  - script: |
-      npm ci
-      npm run build
-    displayName: 'Install and Build'
+    - checkout: self
+      persistCredentials: true
 
-  - script: |
-      npm run test --if-present
-    displayName: 'Run tests'
+    - task: CmdLine@2
+      displayName: 'Install and Build'
+      inputs:
+        script: |
+          npm ci
+        workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+    - task: CmdLine@2
+      displayName: 'Unit Testings (Calendar and Planner)'
+      inputs:
+        script: |
+          npm run test:ui
+        workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
