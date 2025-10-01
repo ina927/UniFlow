@@ -6,8 +6,7 @@
 trigger:
   branches:
     include:
-      - features/F103*
-      - features/F104*
+      - main
   paths:
     include:
       - 'uni-flow/**'
