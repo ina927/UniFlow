@@ -48,3 +48,4 @@ steps:
     ArtifactName: 'drop'
     publishLocation: 'Container'
   displayName: 'Publish build artifacts'
+  
