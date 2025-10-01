@@ -24,11 +24,11 @@ import { useEffect } from "react"
 // hard coded 
 const frameworks = [
   {
-    value: "91bc3c52-fe3c-4df8-ad77-284c108730a6", // is the subject ID
-    label: "Advance Software Development", // the name only
+    value: "bf6b6f0a-aeaf-4ab9-8c46-74b24ed90473", // is the subject ID
+    label: "ASD", // the name only
   },
   {
-    value: "4b7c59f7-b102-4515-b5e9-6caa70bebbb2",
+    value: "504667bf-b7af-4f7f-b707-249c135914c3",
     label: "DotNet",
   },
   {
@@ -36,8 +36,8 @@ const frameworks = [
     label: "test",
   },
   {
-    value: "c95718dd-b954-415a-bfda-9b40cbade08d",
-    label: "STQM",
+    value: "c03df0f5-4f21-46c8-acf1-425d6804339a",
+    label: "FID",
   },
 ]
 
