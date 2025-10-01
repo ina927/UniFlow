@@ -2,9 +2,14 @@ import { prisma } from "@/shared/lib/prisma";
 import { CreateAcademicCourseDto, UpdateAcademicCourseDto } from "../dto";
 import { AcademicCourseEntity } from "../entities";
 import { deleteFailed, notFoundError, updateFailed } from "@/shared";
+import { deleteFailed, notFoundError, updateFailed } from "@/shared";
 
 export const getAcademicCourses = async ({ userId }: { userId: string }): Promise<{ data: AcademicCourseEntity[]; count: number }> => {
   const academicCourses = await prisma.academicCourse.findMany({ where: { userId } });
+
+  if (academicCourses.length === 0) {
+    throw notFoundError("Academic Courses");
+  }
 
   if (academicCourses.length === 0) {
     throw notFoundError("Academic Courses");
@@ -17,7 +22,7 @@ export const getAcademicCourse = async ({ id }: { id: string}): Promise<{ data: 
   const academicCourse = await prisma.academicCourse.findUnique({ where: { id } });
 
   if (!academicCourse) {
-    throw notFoundError("Academic Course");
+    throw new Error("Academic course not found", { cause: 404 });
   }
 
   return { data: academicCourse };
@@ -35,10 +40,14 @@ export const updateAcademicCourse = async ({ id, dto }: { id: string, dto: Updat
   const academicCourse = await prisma.academicCourse.findUnique({ where: { id } });
 
   if (!academicCourse) {
-    throw notFoundError("Academic Course");
+    throw new Error("Academic course not found", { cause: 404 });
   }
 
   const updatedAcademicCourse = await prisma.academicCourse.update({ where: { id }, data: dto });
+
+  if (!updatedAcademicCourse) {
+    throw updateFailed("Academic Course");
+  }
 
   if (!updatedAcademicCourse) {
     throw updateFailed("Academic Course");
@@ -50,6 +59,11 @@ export const updateAcademicCourse = async ({ id, dto }: { id: string, dto: Updat
 
 export const deleteAcademicCourse = async ({ id }: { id: string }): Promise<{ data: string }> => {
   const deletedAcademicCourse: AcademicCourseEntity = await prisma.academicCourse.delete({ where: { id } });
+
+  if (!deletedAcademicCourse) {
+    throw deleteFailed("Academic Course");
+  }
+
 
   if (!deletedAcademicCourse) {
     throw deleteFailed("Academic Course");

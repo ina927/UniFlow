@@ -9,7 +9,7 @@ interface Props {
 
 export const Footer = (props: Props) => {
   return (
-    <footer className={clsx(props.className, "bg-[#F9FAFB] flex items-center justify-between w-full h-[48px] px-[16px]")}>
+    <footer className={clsx(props.className, "bg-[#F9FAFB] flex items-center justify-between w-full h-[48px] px-[16px] py-[32px]")}>
       <div className="flex items-center justify-start">
         <Link href="/">
           <Image src={LOGO.src} alt={LOGO.alt} width={56} height={56} />
