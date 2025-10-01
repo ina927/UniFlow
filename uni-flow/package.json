@@ -2,6 +2,10 @@
   "name": "uni-flow",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "db:test": "ts-node --project tsconfig.test.json -r tsconfig-paths/register __tests__/scripts/db-test.ts",
     "dev": "next dev",
