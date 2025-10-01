@@ -1,9 +1,9 @@
-import { Term } from "@/shared/generated/prisma";
+import { TermEntity } from "@/entities";
 
 export type SubjectRow = {
   id: string;
   title: string;
   code: string;
   credits: number;
-  term: Term;
+  term: TermEntity;
 };

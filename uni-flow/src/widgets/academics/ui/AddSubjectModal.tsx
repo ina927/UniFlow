@@ -30,11 +30,15 @@ export function AddSubjectModal(props: Props) {
 
   const onSubmit = async (data: CreateSubjectDto) => {
     try {
+      if (data.credits < 0) {
+        throw new Error("Credit point must be greater than 0");
+      }
+
       await createSubject(data);
       reset();
       setOpen(false);
     } catch (e) {
-      console.error("create subject failed", e);
+      alert(e instanceof Error ? e.message : "Failed to create subject");
     }
   };
 
