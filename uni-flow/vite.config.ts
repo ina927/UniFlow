@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: "jsdom",
-    setupFiles: "./__tests__/utils/jest.setup.ts", // adjust path if needed
+    setupFiles: "./__tests__/utils/vitest.setup.ts", // adjust path if needed
     globals: true,
     coverage: {
       reporter: ["text", "html"],
