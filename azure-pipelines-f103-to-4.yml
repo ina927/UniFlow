@@ -6,19 +6,18 @@
 trigger:
   branches:
     include:
-      - dev
-      - main
       - features/F103*
       - features/F104*
-
-pr:
-  branches:
+  paths:
     include:
-      - dev
-      - main
+      - 'uni-flow/**'
 
 pool:
   vmImage: ubuntu-latest
+
+variables:
+  WORKDIR: 'uni-flow'
+
 
 steps:
 - task: NodeTool@0
@@ -30,17 +29,17 @@ steps:
     npm install
     npm run build
   displayName: 'npm install and build'
-  workingDirectory: ./uni-flow
+  workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
 
 - script: |
     npm run test
   displayName: 'Run vi tests'
-  workingDirectory: ./uni-flow
+  workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
 
 - script: |
     npm run lint
   displayName: 'Lint code'
-  workingDirectory: ./uni-flow
+  workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
 
 - task: PublishBuildArtifacts@1
   inputs:
