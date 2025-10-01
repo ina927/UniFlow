@@ -30,3 +30,11 @@ export const updateSubject = async (subjectId: string, subject: UpdateSubjectDto
 export const deleteSubject = async (subjectId: string) => {
     return await apiClient.delete(`${SUBJECTS_API}/${subjectId}`).then(res => res.data);
 };
+
+export const getSubjectDetail = async (subjectId: string): Promise<SubjectDetail | null> => {
+    const res = await apiClient.get(`${SUBJECTS_API}/${subjectId}/detail`, {
+        headers: { "user-id": "dev-user-1" },
+    });
+    const dto = res?.data;
+    return dto?.data ?? null;
+};

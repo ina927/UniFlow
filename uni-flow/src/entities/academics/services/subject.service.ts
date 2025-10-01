@@ -1,6 +1,7 @@
 import { prisma } from "@/shared/lib/prisma";
 import { CreateSubjectDto, UpdateSubjectDto } from "../dto";
 import { SubjectEntity, SubjectDetail } from "../entities";
+import { SubjectEntity, SubjectDetail } from "../entities";
 
 export const getSubjects = async ({ academicCourseId, termId }: { academicCourseId: string, termId?: string }): Promise<{ data: SubjectEntity[]; count: number }> => {
   let subjects;

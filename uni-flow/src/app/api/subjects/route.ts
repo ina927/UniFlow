@@ -5,7 +5,6 @@ import { getSubjects, createSubject } from "@/entities/academics/services";
 
 export const GET = controller(async (req: NextRequest) => {
   const academicCourseId = req.headers.get('academic-course-id');
-
   if (!academicCourseId) {
     return missingError("Academic course ID");
   }
