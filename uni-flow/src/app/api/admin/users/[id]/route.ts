@@ -89,6 +89,7 @@ export async function PATCH(
       actor: requester.actorLabel,
       action,
       details: `Updated ${changed.join(", ")} for ${updated.email}`,
+      targetemail: updated.email,
     },
   });
 

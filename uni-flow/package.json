@@ -9,8 +9,10 @@
     "lint": "next lint",
     "test": "jest --config=jest.config.ts",
     "test:e2e": "playwright test",
-    "test:vitest": "vitest --run",
-    "test:ci": "vitest --run --coverage"
+    "prisma:generate": "npx prisma generate",
+    "prisma:pull": "npx prisma db pull",
+    "prisma:push": "npx prisma db push",
+    "prisma:migrate": "npx prisma migrate dev"
   },
   "dependencies": {
     "@babel/runtime": "^7.28.4",

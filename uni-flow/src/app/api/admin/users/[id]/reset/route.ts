@@ -66,6 +66,7 @@ export async function POST(
       actor: requester.actorLabel,
       action: "USER_RESET",
       details: `Account reset to default state for ${resetUser.email}`,
+      targetemail: resetUser.email,
     },
   });
 

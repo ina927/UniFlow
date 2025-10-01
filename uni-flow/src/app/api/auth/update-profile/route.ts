@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { updateUser } from "@/app/lib/users";
-import { verify } from "@/app/lib/jwt";
+import { updateUser } from "@/features/auth/users";
+import { verify } from "@/features/auth/jwt";
 
 export async function PUT(req: NextRequest) {
   const token = req.cookies.get("token")?.value;

@@ -1,6 +1,10 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "@/shared/lib/prisma";
+<<<<<<< HEAD:uni-flow/src/app/lib/users.ts
 import { Role, UserStatus } from "@/shared/generated/prisma";
+=======
+import { Role, UserStatus } from "@prisma/client";
+>>>>>>> ba6d03e ([refectory] F101-user_authentication):uni-flow/src/features/auth/users.ts
 
 export type PublicUser = {
   id: string;
@@ -45,6 +49,7 @@ export async function createUser({ email, password, name }: CreateUserParams): P
   const normalizedEmail = email.trim().toLowerCase();
   const normalizedName = name?.trim();
 
+<<<<<<< HEAD:uni-flow/src/app/lib/users.ts
   return await prisma.$transaction(async (tx) => {
     // Check for existing user within transaction
     const existing = await tx.user.findUnique({ 
@@ -54,6 +59,18 @@ export async function createUser({ email, password, name }: CreateUserParams): P
     if (existing) {
       throw new Error('Email already registered');
     }
+=======
+  await prisma.auditLog.create({
+    data: {
+      actor: "System",
+      action: "USER_CREATED",
+      details: normalizedName
+        ? `Account created for ${normalizedName} (${created.email})`
+        : `Account created for ${created.email}`,
+      targetemail: created.email,
+    },
+  });
+>>>>>>> ba6d03e ([refectory] F101-user_authentication):uni-flow/src/features/auth/users.ts
 
     // Hash password
     const hash = await bcrypt.hash(password, 12);

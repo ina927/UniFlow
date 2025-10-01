@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyUser } from "@/app/lib/users";
-import { sign } from "@/app/lib/jwt";
+import { verifyUser } from "@/features/auth/users";
+import { sign } from "@/features/auth/jwt";
 
 export async function POST(req: NextRequest) {
   try {
