@@ -23,6 +23,6 @@ steps:
     displayName: 'Install deps (npm ci)'
 
   - script: |
-      npm run test --if-present
+      npx vitest run
     workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
     displayName: 'Run tests'
