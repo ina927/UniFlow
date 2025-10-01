@@ -1,12 +1,14 @@
 import '@testing-library/jest-dom';
+import React from 'react';
+import { vi } from 'vitest';
 
 // Mock Next.js router
-jest.mock('next/navigation', () => ({
+vi.mock('next/navigation', () => ({
   useRouter() {
     return {
-      push: jest.fn(),
-      replace: jest.fn(),
-      prefetch: jest.fn(),
+      push: vi.fn(),
+      replace: vi.fn(),
+      prefetch: vi.fn(),
     };
   },
   useSearchParams() {
@@ -15,19 +17,18 @@ jest.mock('next/navigation', () => ({
 }));
 
 // Mock next/headers
-jest.mock('next/headers', () => ({
+vi.mock('next/headers', () => ({
   cookies: () => ({
-    get: jest.fn(),
-    set: jest.fn(),
-    delete: jest.fn(),
+    get: vi.fn(),
+    set: vi.fn(),
+    delete: vi.fn(),
   }),
 }));
 
 
-import React from 'react';
 
 // Mock next/image
-jest.mock('next/image', () => ({
+vi.mock('next/image', () => ({
   __esModule: true,
   default: ({
     width,
