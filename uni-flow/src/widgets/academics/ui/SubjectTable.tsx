@@ -17,6 +17,7 @@ import { getSubjects, SubjectRow } from "@/features/academics";
 import { AddSubjectModal } from "./AddSubjectModal";
 import { EditSubjectModal } from "./EditSubjectModal";
 import { useAcademicStore } from "@/shared/stores";
+import { CreditViewer } from "@/features/academics/ui/CreditViewer";
 
 interface Props {
   className?: string;
@@ -37,8 +38,6 @@ export const SubjectTable = (props: Props) => {
   });
 
   const subjects: SubjectRow[] = data?.data?.data || [];
-
-  const totalCredits = subjects.reduce((sum, s) => sum + s.credits, 0) || 0;
 
   if (isLoading) return <div>Loading...</div>
   if (isError) return <div>Error!</div>
@@ -103,9 +102,7 @@ export const SubjectTable = (props: Props) => {
       </div>
 
       <div className="flex items-center justify-between text-sm">
-        <p>
-          <span className="font-medium">total credit point:</span> {totalCredits} / 144
-        </p>
+        <CreditViewer subjects={subjects} />
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
