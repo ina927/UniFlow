@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/shared/generated/prisma"
@@ -11,7 +8,141 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Enums
+model User {
+  id              String           @id @default(uuid())
+  name            String
+  role            Role             @default(STUDENT)
+  email           String           @unique
+  hash            String
+  dob             DateTime?
+  status          UserStatus       @default(ACTIVE)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  version         Int              @default(1)
+  academicCourses AcademicCourse[]
+  AuditLog        AuditLog[]
+  timerSessions   TimerSession[]
+  todos           ToDo[]
+}
+
+model Instructor {
+  id          String    @id @default(uuid())
+  name        String
+  email       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  version     Int       @default(1)
+  subjects    Subject[] @relation("CoordinatedSubjects")
+  labSubjects Subject[] @relation("LabTutorSubjects")
+}
+
+model AcademicCourse {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  version   Int      @default(1)
+  credits   Int
+  degree    String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  terms     Term[]
+}
+
+model Term {
+  id               String         @id @default(uuid())
+  title            String
+  startDate        DateTime?
+  endDate          DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  version          Int            @default(1)
+  academicCourseId String
+  academicYear     Int?
+  subjects         Subject[]
+  academicCourse   AcademicCourse @relation(fields: [academicCourseId], references: [id])
+}
+
+model Subject {
+  id            String       @id @default(uuid())
+  title         String
+  code          String
+  credits       Int
+  goalGrade     Float?
+  actualGrade   Float?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  version       Int          @default(1)
+  termId        String
+  coordinatorId String?
+  labTutorId    String?
+  assessments   Assessment[]
+  coordinator   Instructor?  @relation("CoordinatedSubjects", fields: [coordinatorId], references: [id])
+  labTutor      Instructor?  @relation("LabTutorSubjects", fields: [labTutorId], references: [id])
+  term          Term         @relation(fields: [termId], references: [id])
+  todos         ToDo[]
+}
+
+model Assessment {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  dueDate     DateTime
+  weight      Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  version     Int      @default(1)
+  subjectId   String
+  maxScore    Float
+  score       Float?
+  type        String
+  subject     Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  todos       ToDo[]
+}
+
+model ToDo {
+  id            String         @id @default(uuid())
+  title         String
+  description   String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  version       Int            @default(1)
+  userId        String
+  subjectId     String?
+  status        ToDoStatus     @default(PENDING)
+  assessmentId  String?
+  endDate       DateTime?
+  startDate     DateTime?
+  timerSessions TimerSession[]
+  assessment    Assessment?    @relation(fields: [assessmentId], references: [id])
+  subject       Subject?       @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  user          User           @relation(fields: [userId], references: [id])
+}
+
+model TimerSession {
+  id        String    @id @default(uuid())
+  startTime DateTime
+  endTime   DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  version   Int       @default(1)
+  userId    String
+  todoId    String?
+  todo      ToDo?     @relation(fields: [todoId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+}
+
+model AuditLog {
+  id           String      @id @default(dbgenerated("(gen_random_uuid())::text"))
+  actor        String
+  action       AuditAction
+  targetuserid String?
+  targetemail  String
+  details      String?
+  statusafter  UserStatus?
+  createdat    DateTime    @default(now()) @db.Timestamptz(6)
+  User         User?       @relation(fields: [targetuserid], references: [id], onUpdate: NoAction)
+}
+
 enum Role {
   ADMIN
   TEACHER
@@ -36,152 +167,4 @@ enum AuditAction {
   USER_DEACTIVATED
   USER_REACTIVATED
   USER_RESET
-}
-
-// Models
-model User {
-  id        String     @id @default(uuid())
-  name      String
-  role      Role       @default(STUDENT)
-  email     String     @unique
-  hash      String
-  dob       DateTime?
-  status    UserStatus @default(ACTIVE)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  version   Int        @default(1)
-  
-  // Relations
-  subjects  Subject[] @relation("UserSubjects")
-  assessments Assessment[]
-  todoItems ToDo[]
-  timerSessions TimerSession[]
-}
-
-model Instructor {
-  id        String   @id @default(uuid())
-  name      String
-  email     String?
-  phone     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  version   Int      @default(1)
-  
-  // Relations
-  subjects  Subject[] @relation("CoordinatedSubjects")
-  labSubjects Subject[] @relation("LabTutorSubjects")
-}
-
-model AcademicCourse {
-  id        String   @id @default(uuid())
-  title     String
-  startDate DateTime
-  endDate   DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  version   Int      @default(1)
-  
-  // Relations
-  terms Term[]
-}
-
-model Term {
-  id                String   @id @default(uuid())
-  title             String
-  academicYear      Int?
-  startDate         DateTime?
-  endDate           DateTime?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  version           Int      @default(1)
-  
-  // Relations
-  academicCourseId  String
-  academicCourse    AcademicCourse @relation(fields: [academicCourseId], references: [id])
-  subjects          Subject[]
-}
-
-model Subject {
-  id           String   @id @default(uuid())
-  title        String
-  code         String
-  credits      Int
-  goalGrade    Float?
-  actualGrade  Float?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  version      Int      @default(1)
-  
-  // Relations
-  termId       String
-  term         Term     @relation(fields: [termId], references: [id])
-  coordinatorId String?
-  coordinator  Instructor? @relation("CoordinatedSubjects", fields: [coordinatorId], references: [id])
-  labTutorId    String?
-  labTutor     Instructor? @relation("LabTutorSubjects", fields: [labTutorId], references: [id])
-  assessments  Assessment[]
-  todoItems    ToDo[]
-  users        User[]   @relation("UserSubjects")
-  timerSessions TimerSession[]
-}
-
-model Assessment {
-  id          String   @id @default(uuid())
-  title       String
-  description String?
-  dueDate     DateTime
-  weight      Float
-  grade       Float?
-  status      String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  version     Int      @default(1)
-  
-  // Relations
-  subjectId   String
-  subject     Subject  @relation(fields: [subjectId], references: [id])
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-}
-
-model ToDo {
-  id          String   @id @default(uuid())
-  title       String
-  description String?
-  dueDate     DateTime
-  priority    String
-  status      ToDoStatus @default(PENDING)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  version     Int      @default(1)
-  
-  // Relations
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  subjectId   String?
-  subject     Subject? @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-}
-
-model TimerSession {
-  id          String   @id @default(uuid())
-  startTime   DateTime
-  endTime     DateTime
-  duration    Int      // in minutes
-  notes       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  version     Int      @default(1)
-  
-  // Relations
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  subjectId   String?
-  subject     Subject? @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-}
-
-model AuditLog {
-  id      String   @id @default(uuid())
-  actor   String
-  action  AuditAction
-  details String?
 }

@@ -1,20 +1,33 @@
 "use client";
  
-import styles from "./AssessmentTable.module.css";
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "@/components/ui/table";
-import AssessmentRow from "@/features/assessments/ui/AssessmentRow";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "@/shared/ui";
+import { AssessmentRow } from "@/features/assessments/ui";
 import { Assessment, Grade } from "@/entities/assessments";
-import { overallPercent, requiredMarksPerRemaining, isGraded, neededToReach, remainingWeightSum } from "@/features/assessments/ui/grade-logics";
+import { overallPercent, requiredMarksPerRemaining, isGraded, neededToReach, remainingWeightSum } from "@/features/assessments/grade-logics";
+
+import styles from "./AssessmentTable.module.css";
 
 type Props = {
     items: Assessment[];
     mode: "view" | "whatif";
     onEnterScore?: (id: string) => void;
+    onWhatIfScoreChange?: (id: string, value: number | null) => void;
+    showRequiredMarks?: boolean;
+    goal?: Grade;
 }
 
-export default function AssessmentTable({ items, mode, onEnterScore}: Props){
+export const AssessmentTable = ({ 
+    items, mode, onEnterScore, onWhatIfScoreChange,
+    showRequiredMarks = false,
+    goal = Grade.HD,
+    }: Props) => {
+    const need = neededToReach(items, goal);
+    const left = remainingWeightSum(items);
+    const goalUnreachable = need > left + 1e-9;
     const gradedCount = items.filter(i => i.score !== undefined && i.score !== null).length;
     const totalWeight = items.reduce((acc, it) => acc + (it.weight || 0), 0);
+    const reqMap = requiredMarksPerRemaining(items, goal);
+    const EPS = 1e-6;
 
     return(
         <div className={styles.wrapper}>
@@ -58,10 +71,9 @@ export default function AssessmentTable({ items, mode, onEnterScore}: Props){
                             <div className={styles.footerRight}>
                                 <span className="text-body1-bold text-primary">Total weight:</span>
                                 <span className="text-body1 text-primary">
-                                    {items.reduce((acc,it) => acc + (it.weight || 0), 0).toFixed(1)} / {" "}
-                                </span>
+                                    { overallPercent(items).toFixed(1)} /{" "}                                </span>
                                 <span className="text-body1-bold primary-light">{totalWeight.toFixed(1)} %</span>
-                                {totalWeight !== 100 && (
+                                {(totalWeight < 100 - EPS) && (
                                     <span className={styles.weightWarning}>
                                         Total weight is not 100%. <br></br>
                                         Please add all assessments for accurate calculation.
@@ -69,7 +81,13 @@ export default function AssessmentTable({ items, mode, onEnterScore}: Props){
                                 )}
                             </div>   
                         </TableCell>
-                        <TableCell colSpan={2}></TableCell>
+                        <TableCell colSpan={2}>
+                            {goalUnreachable && (
+                                <span className={styles.goalWarn}>
+                                    Goal unreachable - adjust your goal.
+                                </span>
+                            )}
+                        </TableCell>
                     </TableRow>
                 </TableFooter>
             </Table>          

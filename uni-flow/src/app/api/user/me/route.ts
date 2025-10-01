@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verify } from "@/app/lib/jwt";
-import { getByEmail } from "@/app/lib/users";
+import { verify } from "@/entities/auth/lib/jwt";
+import { getByEmail } from "@/entities/auth/lib/users";
 
 export async function GET(req: NextRequest) {
   const token = req.cookies.get("token")?.value;

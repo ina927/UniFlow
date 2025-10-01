@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/shared/lib/prisma";
 import { requireAdmin } from "../../../_helpers";
-import { Role, UserStatus } from "@/entities";
+import { Role, UserStatus } from "@/shared/generated/prisma";
 
 const TEMP_PASSWORD_PREFIX = "Reset-";
 
@@ -66,6 +66,7 @@ export async function POST(
       actor: requester.actorLabel,
       action: "USER_RESET",
       details: `Account reset to default state for ${resetUser.email}`,
+      targetemail: resetUser.email,
     },
   });
 

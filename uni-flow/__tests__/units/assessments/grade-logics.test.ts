@@ -8,7 +8,7 @@ import {
   neededToReach,
   remainingWeightSum,
   requiredMarksPerRemaining,
-} from "@/features/assessments/grade-logics";
+} from "@/features/assessments/ui/grade-logics";
 import { Grade } from "@/entities/assessments/enums/Grade";
 
 // Simple helper to create assessment objects with defaults
