@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/shared/lib/prisma";
 import { requireAdmin } from "@/app/api/admin/_helpers";
-import { Role } from "@/entities";
+import { Role } from "@/shared/generated/prisma";
 
 export async function GET(req: NextRequest) {
   const auth = await requireAdmin(req);
