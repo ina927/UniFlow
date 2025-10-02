@@ -31,10 +31,3 @@ steps:
       npm run test:vitest --if-present
     workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
     displayName: 'Run tests'
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: 'dist'
-      ArtifactName: 'drop'
-      publishLocation: 'Container'
-    displayName: 'Publish build artifacts'
