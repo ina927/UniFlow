@@ -68,21 +68,21 @@ export const SubjectTable = (props: Props) => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Code</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead>Credit</TableHead>
-              <TableHead>Term</TableHead>
+              <TableHead className="text-left px-4 py-3">Code</TableHead>
+              <TableHead className="text-left">Title</TableHead>
+              <TableHead className="text-left">Credit</TableHead>
+              <TableHead className="text-left">Term</TableHead>
               <TableHead />
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody className="px-4">
             {subjects.map((subject) => (
               <TableRow key={subject.id}>
-                <TableCell onClick={() => gotoAssessments(subject.id)} className="font-bold">{subject.code}</TableCell>
-                <TableCell onClick={() => gotoAssessments(subject.id)}>{subject.title}</TableCell>
-                <TableCell onClick={() => gotoAssessments(subject.id)}>{subject.credits}</TableCell>
-                <TableCell onClick={() => gotoAssessments(subject.id)}>{subject.term.title}</TableCell>
-                <TableCell className="text-right">
+                <TableCell onClick={() => gotoAssessments(subject.id)} className="font-bold px-4 py-3 cursor-pointer">{subject.code}</TableCell>
+                <TableCell onClick={() => gotoAssessments(subject.id)} className="cursor-pointer">{subject.title}</TableCell>
+                <TableCell onClick={() => gotoAssessments(subject.id)} className="cursor-pointer">{subject.credits}</TableCell>
+                <TableCell onClick={() => gotoAssessments(subject.id)} className="cursor-pointer">{subject.term.title}</TableCell>
+                <TableCell className="text-right px-4 py-3">
                   <Button 
                     variant="ghost" 
                     size="sm" 
@@ -90,7 +90,7 @@ export const SubjectTable = (props: Props) => {
                       e.stopPropagation();
                       handleEditClick(subject.id);
                     }}
-                    className="hover:bg-transparent hover:text-primary p-1 h-auto"
+                    className="hover:bg-transparent hover:text-primary p-1 h-auto cursor-pointer"
                   >
                     ⋮
                   </Button>
