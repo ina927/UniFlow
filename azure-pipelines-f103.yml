@@ -28,7 +28,7 @@ steps:
     displayName: 'Install deps (npm ci)'
 
   - script: |
-      npm run test --if-present
+      npm run test:vitest --if-present
     workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
     displayName: 'Run tests'
 
