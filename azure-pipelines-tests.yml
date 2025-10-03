@@ -1,31 +1,35 @@
 trigger:
-  branches: [ main, feature/* ]
+  branches:
+    include:
+      - main
+      - feature/*
+      - features/*        # <- covers your branch name from the screenshot
   paths:
     include:
       - uni-flow/**
       - azure-pipelines-tests.yml
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
 steps:
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '20.x'
-    displayName: 'Use Node.js 20'
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.x'
+  displayName: 'Use Node.js 20'
 
-  - script: npm ci
-    workingDirectory: uni-flow
-    displayName: 'Install'
+- script: npm ci
+  workingDirectory: $(System.DefaultWorkingDirectory)/uni-flow
+  displayName: 'Install'
 
-  - script: npm run test:ci
-    workingDirectory: uni-flow
-    displayName: 'Run Vitest (unit/API)'
+- script: npm run test:ci
+  workingDirectory: $(System.DefaultWorkingDirectory)/uni-flow
+  displayName: 'Run Vitest (unit/API)'
 
-  # Optionally publish coverage as an artifact
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: 'uni-flow/coverage'
-      ArtifactName: 'coverage'
-      publishLocation: 'Container'
-    displayName: 'Publish coverage artifact'
+# Optionally publish coverage as an artifact
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/uni-flow/coverage'
+    ArtifactName: 'coverage'
+    publishLocation: 'Container'
+  displayName: 'Publish coverage artifact'
