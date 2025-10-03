@@ -7,13 +7,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest --config=jest.config.ts",
     "test:e2e": "playwright test",
     "prisma:generate": "npx prisma generate",
     "prisma:pull": "npx prisma db pull",
     "prisma:push": "npx prisma db push",
-    "prisma:migrate": "npx prisma migrate dev"
-  },
+    "prisma:migrate": "npx prisma migrate dev",
+    "test": "vitest run",
+    "test:ci": "vitest run --coverage",
+    "test:watch": "vitest"
+},
   "dependencies": {
     "@babel/runtime": "^7.28.4",
     "@hookform/resolvers": "^5.2.1",
