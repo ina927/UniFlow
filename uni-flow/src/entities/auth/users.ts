@@ -8,12 +8,14 @@ export type PublicUser = {
   name?: string;
   role?: Role;
   status?: UserStatus;
+  dob?: string;
 };
 
 type PrismaUserSnapshot = {
   id: string;
   email: string;
   name: string | null;
+  dob: Date | null;
   role?: Role;
   status?: UserStatus;
 };
@@ -24,19 +26,28 @@ const toPublicUser = (user: PrismaUserSnapshot): PublicUser => ({
   name: user.name ?? undefined,
   role: user.role,
   status: user.status,
+  dob: user.dob ? user.dob.toISOString() : undefined,
 });
 
-export async function createUser(email: string, password: string, name?: string): Promise<PublicUser> {
+export async function createUser(email: string, password: string, name?: string, dob?: string): Promise<PublicUser> {
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) throw new Error("Email already registered");
 
   const hash = await bcrypt.hash(password, 10);
   const normalizedName = name?.trim();
+  let dobValue: Date | null = null;
+  if (dob) {
+    const parsed = new Date(dob);
+    if (!Number.isNaN(parsed.getTime())) {
+      dobValue = parsed;
+    }
+  }
   const created = await prisma.user.create({
     data: {
       email,
       name: normalizedName && normalizedName.length > 0 ? normalizedName : email,
       hash,
+      dob: dobValue,
     },
   });
 

@@ -4,21 +4,21 @@ import { prisma } from "@/shared/lib/prisma";
 import { requireAdmin } from "../../../_helpers";
 import { Role, UserStatus } from "@/entities";
 
-const TEMP_PASSWORD_PREFIX = "Reset-";
+type RouteContext<T extends Record<string, string | string[] | undefined>> = {
+  params: Promise<T>;
+};
 
-function generateTempPassword() {
-  return `${TEMP_PASSWORD_PREFIX}${Math.random().toString(36).slice(-8)}`;
-}
+const DEFAULT_RESET_PASSWORD = "password";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: RouteContext<{ id: string }>
 ) {
   const auth = await requireAdmin(req);
   if (!auth.ok) return auth.response;
   const { requester } = auth;
 
-  const id = params.id;
+  const { id } = await params;
   if (!id) {
     return NextResponse.json({ error: "missing user id" }, { status: 400 });
   }
@@ -32,7 +32,7 @@ export async function POST(
     return NextResponse.json({ error: "Cannot reset admin accounts" }, { status: 403 });
   }
 
-  const tempPassword = generateTempPassword();
+  const tempPassword = DEFAULT_RESET_PASSWORD;
   const hash = await bcrypt.hash(tempPassword, 10);
 
   await prisma.timerSession.deleteMany({ where: { userId: id } });
@@ -67,6 +67,7 @@ export async function POST(
       action: "USER_RESET",
       details: `Account reset to default state for ${resetUser.email}`,
       targetemail: resetUser.email,
+      statusafter: resetUser.status,
     },
   });
 
