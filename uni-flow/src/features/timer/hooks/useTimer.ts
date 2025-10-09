@@ -29,16 +29,16 @@ export const useTimer = ({
   // Subject hook
   const { subjects } = useSubjects();
 
-  const hasStarted = useRef(false); // ✅ Step 1: Add a hasStarted ref
+  const hasStarted = useRef(false); 
 
-  // 👉 Helper to compute next break time
+  //  Helper to compute next break time
   const getNextBreakTime = () => {
     return (completedPomodoros + 1) % longBreakInterval === 0
       ? longBreakTime
       : shortBreakTime;
   };
 
-  // 👉 Handle when a session ends
+  //  Handle when a session ends
   const handleSessionEnd = () => {
     setIsActive(false);
     setShowNotification(true);
@@ -95,10 +95,10 @@ export const useTimer = ({
     }
   };
 
-  // 👉 Control functions
+  //  Control functions
   const toggle = () => {
     if (!isActive) {
-      hasStarted.current = true; // ✅ Step 2: Mark as started on first start
+      hasStarted.current = true; 
     }
     setIsActive((prev) => !prev);
   };
@@ -123,7 +123,6 @@ export const useTimer = ({
 
   // ⏱ Update secondsLeft when timer settings change (only if stopped and never started)
   useEffect(() => {
-    // ✅ Step 3: Only reset if timer has never started
     if (!isActive && !hasStarted.current) {
       setSecondsLeft(isWorkTime ? workTime : getNextBreakTime());
     }
@@ -136,7 +135,6 @@ export const useTimer = ({
     isActive,
   ]);
 
-  // ⏳ Timer countdown (cleaner)
   useEffect(() => {
     if (!isActive) return; // Do nothing if not active
 
@@ -150,7 +148,6 @@ export const useTimer = ({
     return () => clearInterval(interval); // Clear interval on pause or unmount
   }, [isActive]);
 
-  // ⏰ Handle session end when timer reaches zero
   useEffect(() => {
     if (secondsLeft === 0 && isActive) {
       handleSessionEnd();
@@ -158,7 +155,6 @@ export const useTimer = ({
   }, [secondsLeft, isActive]);
 
   return {
-    // Timer config
     workTime,
     setWorkTime,
     shortBreakTime,
