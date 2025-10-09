@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createUser as createPublicUser } from "@/entities/auth/lib/users";
+import { createUser as createPublicUser } from "@/entities/auth/users";
 
 type RegisterBody = {
   name?: string;
   email: string;
   password: string;
+  dob?: string;
 };
 
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as RegisterBody;
-    const { name, email, password } = body;
+    const { name, email, password, dob } = body;
 
     if (!email || !password) {
       return NextResponse.json(
@@ -19,7 +20,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const createdUser = await createPublicUser(email, password, name);
+    if (!email.includes("@")) {
+      return NextResponse.json(
+        { error: "Please provide a valid email address" },
+        { status: 400 }
+      );
+    }
+
+    const createdUser = await createPublicUser(email, password, name, dob);
 
     return NextResponse.json({
       status: true,

@@ -1,61 +1,58 @@
-'use client';
+"use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import Image from "next/image";
 
+import { AcademicCourseEntity } from "@/entities/academics/entities";
 import { getAcademicCourses } from "@/features/academics";
-import { ACADEMIC_COURSES_QUERY_KEY } from "@/shared/consts";
-import { AcademicHeader } from "@/widgets/academics";
 import { useAcademicStore } from "@/shared/stores/academicStore";
+import { AcademicHeader, SubjectTable, TermSelector } from "@/widgets/academics";
+import { Button } from "@/shared/ui/button";
 
-export default function Academic() {
-  const { academicCourse, setAcademicCourse } = useAcademicStore();
-  
-  const { 
-    data: academicCoursesData, 
-    isPending: academicCoursesIsPending, 
-    isError: academicCoursesIsError, 
-    error: academicCoursesError 
-  } = useQuery({
-    queryKey: [ACADEMIC_COURSES_QUERY_KEY],
+export default function AcademicPage() { 
+  const { academicCourseId, setAcademicCourseId } = useAcademicStore();
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["academic-courses"],
     queryFn: () => getAcademicCourses(),
-    enabled: true,
+    staleTime: 5 * 60 * 1000,
   });
 
-  // Move useEffect to the top level of the component
+  const academicCourses = useMemo(() => data?.data?.data || [], [data]);
+  const hasCourses = academicCourses.length > 0;
+
   useEffect(() => {
-    if (academicCoursesData?.data?.data?.[0]) {
-      setAcademicCourse(academicCoursesData.data.data[0]);
+    if (hasCourses && !academicCourseId) {
+      setAcademicCourseId(academicCourses[0].id);
     }
-  }, [academicCoursesData, setAcademicCourse]);
+  }, [hasCourses, academicCourseId, academicCourses, setAcademicCourseId]);
 
-  if (academicCoursesIsPending) {
-    return <div className="flex justify-center items-center h-screen">Loading courses...</div>;
+  if (isLoading || (hasCourses && !academicCourseId)) {
+    return <div>Loading...</div>;
+  }
+  
+  if (isError) {
+    return <div>Error loading academic courses</div>;
   }
 
-  if (academicCoursesIsError) {
-    return <div className="flex justify-center items-center h-screen">Error loading courses: {academicCoursesError?.message}</div>;
-  }
+  const academicCourse = academicCourses.find((course: AcademicCourseEntity) => course.id === academicCourseId);
+
+  if (!academicCourse) return (
+    <section className="flex flex-col items-center justify-center h-full">
+      <h3 className="text-title2-bold">Academic course not found</h3>
+      <Link href="/academic/create">
+        <Button variant="ghost" size="lg">
+          Add Academic Course
+        </Button>
+      </Link>
+    </section>
+  );
 
   return (
     <section className="p-4 max-w-[calc(100vw-94px)]">
-      <AcademicHeader academicCourse={academicCourse!} />
-
-      <div className="flex flex-row items-center mb-4">
-        <h3 className="font-bold">Terms: </h3>
-        {/* <TermSeletor
-          className="ml-2 w-48 cursor-pointer"
-        /> */}
-        <Image
-          src="/settings.svg"
-          alt="Setting"
-          width={20}
-          height={20}
-          className="ml-2 cursor-pointer"
-          onClick={() => {}}
-        />
-      </div>
+      <AcademicHeader academicCourse={academicCourse} />
+      <TermSelector />
+      <SubjectTable />
     </section>
   );
 }

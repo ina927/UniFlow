@@ -7,6 +7,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ========= Root variables & theme ========= */
 :root {
   /* Font */
   --font-pretendard: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -258,16 +259,19 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
+
   }
-  
   body {
     @apply bg-background text-foreground;
+
   }
+
 }
 
 /* ========= Login page ========= */
@@ -389,9 +393,23 @@
   padding: 24px;
 }
 
+.profile-grid {
+  width: 100%;
+  display: grid;
+  gap: 24px;
+  max-width: 1024px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 768px) {
+  .profile-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: flex-start;
+  }
+}
+
 .profile-card {
   width: 100%;
-  max-width: 480px;
   background: #fff;
   border-radius: 16px;
   padding: 24px;
@@ -426,6 +444,21 @@
 .profile-msg.error {
   background: #fee2e2;
   color: #991b1b;
+}
+
+.profile-summary {
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.profile-detail {
+  margin: 0;
+}
+
+.profile-summary strong {
+  color: #111827;
 }
 
 /* ========= Admin dashboard ========= */
@@ -645,3 +678,58 @@
   gap: 12px;
   margin-top: 8px;
 }
+
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+  body {
+    @apply bg-background text-foreground;
+
+  }
+
+}
+/* NAVBAR SETTINGS */
+/* div.navbar {
+  display: flex;
+  flex-direction: column;
+  justify-content:space-evenly;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+div.navbar a{
+  margin-top: 0.5rem;
+} */
+
+/* STUDY PLANNER SETTINGS */
+/* div.to-doList{
+  display: flex;
+  flex-direction: row;
+}
+
+div.list{
+  width: 23.5vw;
+  height: 65vh;
+  background: var(--background-prime);
+  border-radius: 1vw;
+}
+
+div.todoList2{
+  width: 23.5vw;
+  height: 53vh;
+  margin-top: -1vw;
+  border-radius: 1rem;
+  background: var(--background-prime);
+  overflow-y: auto;
+}
+
+div.to-doCard{
+  background: var(--background);
+  border-radius: 1rem;
+  width: 20.5vw;
+  height: 10vh;
+  color: var(--background-prime);
+} */

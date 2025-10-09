@@ -1,9 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import AssessmentForm, { AssessmentFormHandle } from "@/features/assessments/ui/AssessmentForm";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/shared/ui/dialog";
+import { Button } from "@/shared/ui/button";
+import { AssessmentForm, AssessmentFormHandle } from "@/features/assessments/ui/AssessmentForm";
 import { useCreateAssessment } from "@/features/assessments/hooks/useAssessmentsQuery";
 import styles from "./AddAssessmentModal.module.css";
 

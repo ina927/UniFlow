@@ -17,7 +17,7 @@ export const getAcademicCourse = async ({ id }: { id: string}): Promise<{ data: 
   const academicCourse = await prisma.academicCourse.findUnique({ where: { id } });
 
   if (!academicCourse) {
-    throw notFoundError("Academic Course");
+    throw new Error("Academic course not found", { cause: 404 });
   }
 
   return { data: academicCourse };
@@ -35,7 +35,7 @@ export const updateAcademicCourse = async ({ id, dto }: { id: string, dto: Updat
   const academicCourse = await prisma.academicCourse.findUnique({ where: { id } });
 
   if (!academicCourse) {
-    throw notFoundError("Academic Course");
+    throw new Error("Academic course not found", { cause: 404 });
   }
 
   const updatedAcademicCourse = await prisma.academicCourse.update({ where: { id }, data: dto });

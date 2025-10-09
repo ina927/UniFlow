@@ -1,0 +1,67 @@
+trigger:
+  branches: 
+    include: [ features/F108-calendar ]
+  paths:
+    include:
+      - 'uni-flow/**'
+
+variables:
+  WORKDIR: 'uni-flow'
+
+stages:
+  - stage: BuildReact
+    displayName: "React.js build"
+    pool:
+      vmImage: ubuntu-latest
+
+    jobs:
+      - job: Build
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '20.x'
+            displayName: 'Install Node.js'
+
+          - script: |
+              npm install
+              npm run build
+            displayName: 'Install and Build'
+            workingDirectory: $(WORKDIR)
+    
+  - stage: DownloadComponents
+    displayName: "Component download"
+    pool:
+      vmImage: ubuntu-latest
+
+    jobs:
+      - job: Download
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '20.x'
+            displayName: 'Install Node.js'
+            
+          - task: CmdLine@2
+            inputs:
+              script: |
+                npm install @fullcalendar/core @fullcalendar/daygrid @fullcalendar/timegrid @fullcalendar/list @fullcalendar/react @fullcalendar/interaction
+            displayName: 'Calendar component download'
+            workingDirectory: $(WORKDIR)
+      
+  - stage: Test
+    displayName: "Run Tests"
+    pool:
+      vmImage: ubuntu-latest
+
+    jobs:
+      - job: RunTests
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '20.x'
+            displayName: 'Install Node.js'
+          
+          - script: |
+              npm run test --if-present
+            displayName: 'Run tests'
+            workingDirectory: $(WORKDIR)

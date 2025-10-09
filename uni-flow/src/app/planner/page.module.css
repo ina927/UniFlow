@@ -1,0 +1,29 @@
+/* STUDY PLANNER SETTINGS */
+div.todoList{
+    display: flex;
+    flex-direction: row;
+}
+
+div.list{
+    width: 22vw;
+    height: 65vh;
+    background: var(--primary-light);
+    border-radius: 1vw;
+}
+
+div.todoList2{
+    width: 22vw;
+    height: 53vh;
+    margin-top: -1vw;
+    border-radius: 1rem;
+    background: var(--primary-light);
+    overflow-y: auto;
+}
+
+div.todoCard{
+    background: var(--background);
+    border-radius: 1rem;
+    width: 19.5vw;
+    height: 11vh;
+    color: var(--primary-light);
+}

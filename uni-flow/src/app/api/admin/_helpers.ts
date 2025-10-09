@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verify } from "@/entities/auth/lib/jwt";
+import { verify } from "@/entities/auth/jwt";
 import { prisma } from "@/shared/lib/prisma";
-import { Role } from "@/shared/generated/prisma";
+import { Role } from "@/shared/generated/prisma/client";
 
 export type AdminRequester = {
   id: string;
