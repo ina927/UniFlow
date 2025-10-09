@@ -1,21 +1,37 @@
 import { prisma } from "@/shared/lib/prisma";
 import { CreateSubjectDto, UpdateSubjectDto } from "../dto";
 import { SubjectEntity, SubjectDetail } from "../entities";
+import { SubjectEntity, SubjectDetail } from "../entities";
 
 export const getSubjects = async ({ academicCourseId, termId }: { academicCourseId: string, termId?: string }): Promise<{ data: SubjectEntity[]; count: number }> => {
+  let subjects;
+
   if (!termId) {
-    const subjects = await prisma.subject.findMany({
-      where: { term: { academicCourseId } },
+    subjects = await prisma.subject.findMany({
+      where: { 
+        term: { academicCourseId } 
+      },
+      include: {
+        term: true,
+      },
     });
-    return { data: subjects, count: subjects.length };
+  } else {
+    subjects = await prisma.subject.findMany({ 
+      where: { termId },
+      include: {
+        term: true,
+      },
+    });
   }
 
-  const subjects = await prisma.subject.findMany({ where: { termId } });
   return { data: subjects, count: subjects.length };
 };
 
 export const getSubject = async ({ id }: { id: string}): Promise<{ data: SubjectEntity }> => {
-  const subject = await prisma.subject.findUnique({ where: { id } });
+  const subject = await prisma.subject.findUnique({ 
+    where: { id }, 
+    include: { term: true, coordinator: true, labTutor: true } 
+  });
 
   if (!subject) {
     throw new Error("Subject not found");
@@ -43,10 +59,13 @@ export const createSubject = async ({ termId, dto }: {
 
   const newSubject: SubjectEntity = await prisma.subject.create({ 
     data: { 
-      ...dto, 
+      code: dto.code,
+      title: dto.title,
+      credits: dto.credits,
+      goalGrade: dto.goalGrade,
       termId, 
       coordinatorId, 
-      labTutorId 
+      labTutorId
     }
   });
   
@@ -54,7 +73,9 @@ export const createSubject = async ({ termId, dto }: {
 };
 
 export const updateSubject = async ({ id, dto }: { id: string, dto: UpdateSubjectDto }): Promise<{ data: SubjectEntity }> => {
-  const subject = await prisma.subject.findUnique({ where: { id } });
+  const subject = await prisma.subject.findUnique({ 
+    where: { id }
+  });
 
   if (!subject) {
     throw new Error("Subject not found");
@@ -76,7 +97,11 @@ export const updateSubject = async ({ id, dto }: { id: string, dto: UpdateSubjec
   const updatedSubject = await prisma.subject.update({ 
     where: { id }, 
     data: { 
-      ...dto, 
+      code: dto.code,
+      title: dto.title,
+      credits: dto.credits,
+      goalGrade: dto.goalGrade,
+      termId: dto.termId,
       coordinatorId, 
       labTutorId 
     } 

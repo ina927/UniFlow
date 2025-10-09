@@ -8,6 +8,7 @@ export default function RegisterPage() {
   const [name, setName]   = useState("");
   const [email, setEmail] = useState("");
   const [pwd, setPwd]     = useState("");
+  const [dob, setDob]     = useState("");;
   const [msg, setMsg]     = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -19,11 +20,11 @@ export default function RegisterPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password: pwd }),
+        body: JSON.stringify({ name, email, password: pwd, dob }),
       });
       const data = await res.json();
       if (!res.ok) { setMsg(data?.error || "Sign up failed"); return; }
-      router.push("/home"); // ⬅️ go to landing page
+      router.push("/academic"); // send new users straight to the academic hub
     } finally { setLoading(false); }
   }
 
@@ -43,6 +44,15 @@ export default function RegisterPage() {
           <label className="login-label">
             <span>Password</span>
             <input className="login-input" type="password" value={pwd} onChange={e=>setPwd(e.target.value)} />
+          </label>
+          <label className="login-label">
+            <span>Date of Birth</span>
+            <input
+              className="login-input"
+              type="date"
+              value={dob}
+              onChange={(e) => setDob(e.target.value)}
+            />
           </label>
           {msg && <p className="login-msg error">{msg}</p>}
           <div className="login-actions">

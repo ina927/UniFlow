@@ -1,10 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  webpack: (config) => {
-    config.cache = false
-    return config
-  },
+  serverExternalPackages: ["@tanstack/react-query", "clsx"],
+  transpilePackages: ["@tanstack/react-table"],
 };
 
 export default nextConfig;
