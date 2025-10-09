@@ -3,8 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Role } from "@/entities/users/enums";
+import { AcademicCourseEntity } from "@/entities/academics";
 
 type User = {
+  id: string;
   email: string;
   name?: string;
   role?: Role;
@@ -22,6 +24,8 @@ export default function ProfilePage() {
   const [msg, setMsg] = useState<string | null>(null); // "ok: ..." | "error: ..."
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
+  const [courses, setCourses] = useState<AcademicCourseEntity[]>([]);
+  const [coursesMsg, setCoursesMsg] = useState<string | null>(null);
   const formRef = useRef<HTMLDivElement | null>(null);
   const nameInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -36,10 +40,14 @@ export default function ProfilePage() {
           return;
         }
         const data = await res.json();
-        setUser(data.user || null);
-        setName(data.user?.name || "");
-        setEmailInput(data.user?.email || "");
-        setDobInput(data.user?.dob ? data.user.dob.slice(0, 10) : "");
+        if (data.user) {
+          setUser(data.user);
+          setName(data.user.name || "");
+          setEmailInput(data.user.email || "");
+          setDobInput(data.user.dob ? data.user.dob.slice(0, 10) : "");
+        } else {
+          setUser(null);
+        }
       } catch {
         setMsg("error: failed to load user");
       } finally {
@@ -47,6 +55,33 @@ export default function ProfilePage() {
       }
     })();
   }, [router]);
+
+  useEffect(() => {
+    const fetchCourses = async (userId: string) => {
+      try {
+        setCoursesMsg(null);
+        const res = await fetch("/api/academic-courses", {
+          headers: { "user-id": userId },
+        });
+        if (!res.ok) {
+          const payload = await res.json().catch(() => null);
+          setCoursesMsg(payload?.error || "Failed to load academic course");
+          return;
+        }
+        const data = await res.json();
+        const list = (data?.data?.data as AcademicCourseEntity[] | undefined) ?? [];
+        setCourses(list);
+      } catch (error) {
+        setCoursesMsg("Failed to load academic course");
+      }
+    };
+
+    if (user?.id) {
+      fetchCourses(user.id);
+    } else {
+      setCourses([]);
+    }
+  }, [user?.id]);
 
   // Save profile; on 401, redirect back to login
   async function save() {
@@ -260,6 +295,30 @@ export default function ProfilePage() {
               </div>
             )}
           </div>
+        </section>
+
+        <section className="profile-card">
+          <h2 className="profile-title">Academic Course</h2>
+          <p className="profile-sub">Overview of your current course.</p>
+
+          {coursesMsg && <p className="profile-msg error">{coursesMsg}</p>}
+
+          {courses.length === 0 && !coursesMsg && (
+            <p className="profile-empty">No academic course on file yet.</p>
+          )}
+
+          {courses.length > 0 && (
+            <ul className="profile-course-list">
+              {courses.map((course) => (
+                <li key={course.id} className="profile-course-item">
+                  <p className="profile-detail"><strong>Degree:</strong> {course.degree}</p>
+                  <p className="profile-detail"><strong>Total Credits:</strong> {course.credits}</p>
+                  <p className="profile-detail"><strong>Created:</strong> {new Date(course.createdAt).toLocaleDateString()}</p>
+                  <p className="profile-detail"><strong>Last Updated:</strong> {new Date(course.updatedAt).toLocaleDateString()}</p>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       </div>
     </main>

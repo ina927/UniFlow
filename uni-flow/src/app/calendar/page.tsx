@@ -8,7 +8,7 @@ import {
     DialogHeader,
     DialogTitle,
   } from "@/shared/ui/dialog"
-import { DateSelectArg, EventApi, EventClickArg, EventInput, formatDate } from "@fullcalendar/core/index.js";
+import { DateSelectArg, EventApi, EventClickArg, EventInput, formatDate } from "@fullcalendar/core";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";

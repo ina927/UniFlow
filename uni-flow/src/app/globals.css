@@ -385,6 +385,75 @@
   font-size: 13px;
 }
 
+.required {
+  color: #dc2626;
+  margin-left: 4px;
+}
+
+.register-grid {
+  width: 100%;
+  display: grid;
+  gap: 24px;
+  max-width: 960px;
+  align-items: start;
+}
+
+@media (min-width: 768px) {
+  .register-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+  }
+}
+
+.register-user-card {
+  padding-bottom: 32px;
+}
+
+.register-academic-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: 65px; 
+}
+
+.register-card-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.register-card-sub {
+  margin: 8px 0 32px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.register-academic-card .login-form {
+  margin-top: -30px;
+}
+
+.register-academic-card .login-label:first-of-type {
+  margin-top: 24px;
+}
+
+.register-actions {
+  margin-top: 24px;
+  width: 100%;
+  max-width: 960px;
+  justify-content: flex-end;
+}
+
+.register-actions .pill-btn {
+  min-width: 140px;
+}
+
+.register-error {
+  margin-top: 16px;
+  max-width: 960px;
+  width: 100%;
+  text-align: center;
+}
+
 /* ========= Profile / Home cards ========= */
 .profile-wrap {
   min-height: calc(100vh - var(--header-h));
@@ -451,6 +520,10 @@
   gap: 8px;
   font-size: 14px;
   color: #4b5563;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
 }
 
 .profile-detail {
@@ -459,6 +532,32 @@
 
 .profile-summary strong {
   color: #111827;
+}
+
+.profile-course-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+}
+
+.profile-course-item {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  display: grid;
+  gap: 8px;
+}
+
+.profile-course-item strong {
+  color: #1f2937;
+}
+
+.profile-empty {
+  color: #6b7280;
+  font-size: 14px;
 }
 
 /* ========= Admin dashboard ========= */
