@@ -1,3 +1,4 @@
+// Declare the global prisma variable with the extended type
 import { Prisma, PrismaClient } from '@/shared/generated/prisma';
 
 // Create a type for our extended client

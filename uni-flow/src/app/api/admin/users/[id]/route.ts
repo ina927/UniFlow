@@ -1,25 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/shared/lib/prisma";
 import { requireAdmin } from "../../_helpers";
-import { Role, UserStatus } from "@/shared/generated/prisma";
+import { Role, UserStatus } from "@/entities";
+
+type RouteContext<T extends Record<string, string | string[] | undefined>> = {
+  params: Promise<T>;
+};
 
 const allowedRoles = new Set(Object.values(Role));
 const allowedStatuses = new Set(Object.values(UserStatus));
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: RouteContext<{ id: string }>
 ) {
   const auth = await requireAdmin(req);
   if (!auth.ok) return auth.response;
 
   const { requester } = auth;
-  const id = params.id;
+  const { id } = await params;
   if (!id) {
     return NextResponse.json({ error: "missing user id" }, { status: 400 });
   }
 
-  const body = await req.json().catch(() => null) as {
+  const body = (await req.json().catch(() => null)) as {
     name?: string;
     role?: Role;
     status?: UserStatus;
@@ -88,8 +92,9 @@ export async function PATCH(
     data: {
       actor: requester.actorLabel,
       action,
-      targetemail: updated.email,
       details: `Updated ${changed.join(", ")} for ${updated.email}`,
+      targetemail: updated.email,
+      statusafter: updated.status,
     },
   });
 
