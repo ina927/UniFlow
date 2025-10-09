@@ -78,26 +78,68 @@ export async function getByEmail(email: string): Promise<PublicUser | null> {
   return user ? toPublicUser(user) : null;
 }
 
+type UpdateUserInput = {
+  name?: string;
+  password?: string;
+  email?: string;
+  dob?: string | null;
+};
+
 export async function updateUser(
-  email: string,
-  data: { name?: string; password?: string }
+  currentEmail: string,
+  data: UpdateUserInput
 ): Promise<PublicUser | null> {
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({ where: { email: currentEmail } });
   if (!user) return null;
 
-  const updates: { name?: string; hash?: string } = {};
-  if (typeof data.name === "string") {
-    const trimmed = data.name.trim();
-    if (trimmed.length === 0) {
-      updates.name = user.email;
-    } else {
-      updates.name = trimmed;
+  const updates: {
+    name?: string;
+    hash?: string;
+    email?: string;
+    dob?: Date | null;
+  } = {};
+
+  if (typeof data.email === "string") {
+    const normalizedEmail = data.email.trim();
+    if (normalizedEmail.length === 0) {
+      throw new Error("Email cannot be empty");
+    }
+    if (normalizedEmail !== user.email) {
+      const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
+      if (existing) {
+        throw new Error("Email already registered");
+      }
+      updates.email = normalizedEmail;
     }
   }
-  if (typeof data.password === "string") updates.hash = await bcrypt.hash(data.password, 10);
 
-  if (Object.keys(updates).length === 0) return toPublicUser(user);
+  if (typeof data.name === "string") {
+    const trimmed = data.name.trim();
+    updates.name =
+      trimmed.length === 0 ? (updates.email ?? user.email) : trimmed;
+  }
 
-  const updated = await prisma.user.update({ where: { email }, data: updates });
+  if (typeof data.password === "string" && data.password.length > 0) {
+    updates.hash = await bcrypt.hash(data.password, 10);
+  }
+
+  if (data.dob !== undefined) {
+    const dobInput = data.dob;
+    if (!dobInput) {
+      updates.dob = null;
+    } else {
+      const parsed = new Date(dobInput);
+      if (Number.isNaN(parsed.getTime())) {
+        throw new Error("Invalid date of birth");
+      }
+      updates.dob = parsed;
+    }
+  }
+
+  if (Object.keys(updates).length === 0) {
+    return toPublicUser(user);
+  }
+
+  const updated = await prisma.user.update({ where: { email: currentEmail }, data: updates });
   return toPublicUser(updated);
 }

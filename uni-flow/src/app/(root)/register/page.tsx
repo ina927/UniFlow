@@ -24,7 +24,7 @@ export default function RegisterPage() {
       });
       const data = await res.json();
       if (!res.ok) { setMsg(data?.error || "Sign up failed"); return; }
-      router.push("/home"); // ⬅️ go to landing page
+      router.push("/academic"); // send new users straight to the academic hub
     } finally { setLoading(false); }
   }
 

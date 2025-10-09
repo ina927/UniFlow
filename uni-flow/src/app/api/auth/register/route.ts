@@ -20,6 +20,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (!email.includes("@")) {
+      return NextResponse.json(
+        { error: "Please provide a valid email address" },
+        { status: 400 }
+      );
+    }
+
     const createdUser = await createPublicUser(email, password, name, dob);
 
     return NextResponse.json({

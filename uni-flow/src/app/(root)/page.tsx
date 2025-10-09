@@ -36,7 +36,7 @@ export default function LoginPage() {
       return setMsg(message);
     }
 
-    router.push("/home"); // ⬅️ go to landing page
+    router.push("/academic"); // match post-signup redirect
   }
 
   return (
