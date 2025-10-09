@@ -61,7 +61,7 @@ export const SubjectTable = (props: Props) => {
     <div className="w-full mt-4">
       <div className="flex items-center justify-between">
         <label className="text-title3">Subject</label>
-        <AddSubjectModal />
+        <AddSubjectModal refetch={refetch} />
       </div>
 
       <div className="rounded-md border mt-2 mb-2">
@@ -76,7 +76,7 @@ export const SubjectTable = (props: Props) => {
             </TableRow>
           </TableHeader>
           <TableBody className="px-4">
-            {subjects.map((subject) => (
+            {subjects.sort((a, b) => a.code.localeCompare(b.code)).map((subject) => (
               <TableRow key={subject.id}>
                 <TableCell onClick={() => gotoAssessments(subject.id)} className="font-bold px-4 py-3 cursor-pointer">{subject.code}</TableCell>
                 <TableCell onClick={() => gotoAssessments(subject.id)} className="cursor-pointer">{subject.title}</TableCell>
