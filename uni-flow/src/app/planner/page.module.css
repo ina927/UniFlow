@@ -6,14 +6,14 @@ div.todoList{
 
 div.list{
     width: 22vw;
-    height: 65vh;
+    height: 60vh;
     background: var(--primary-light);
     border-radius: 1vw;
 }
 
 div.todoList2{
     width: 22vw;
-    height: 53vh;
+    height: 48vh;
     margin-top: -1vw;
     border-radius: 1rem;
     background: var(--primary-light);

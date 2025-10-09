@@ -7,7 +7,7 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
-  } from "@/components/ui/dialog"
+  } from "@/shared/ui/dialog"
 import { DateSelectArg, EventApi, EventClickArg, EventInput, formatDate } from "@fullcalendar/core/index.js";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -358,7 +358,7 @@ export default function Calendar(){
     }}
 
     return (
-    <div className="studyPlanner" style={{marginTop: "3rem", marginLeft: "4rem", overflow: "hidden"}}>
+    <div className="studyPlanner" style={{marginTop: "3rem", marginLeft: "5rem", overflowX: "hidden"}}>
         <div className="title" style={{display: "flex", flexDirection: "row"}}>
             <h1 className="text-large-title-bold" style={{width: "40vw"}}>User&#39;s Study Planner</h1>
             <Combobox academicCourseId={academicCourseId} onSubjectChange={handleSubjectFilterChange}/>

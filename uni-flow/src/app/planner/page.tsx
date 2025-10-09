@@ -6,7 +6,7 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
-  } from "@/components/ui/dialog"
+  } from "@/shared/ui/dialog"
 import Link from "next/link";
 import styles from "./page.module.css";
 
@@ -278,7 +278,7 @@ export default function StudyPlanner(){
     }
 
     return (
-    <div className="studyPlanner" style={{marginTop: "3rem", marginLeft: "4rem"}}>
+    <div className="studyPlanner" style={{marginTop: "3rem", marginLeft: "8rem"}}>
         <div className="title" style={{display: "flex", flexDirection: "row"}}>
             <h1 className="text-large-title-bold" style={{width: "40vw"}}>User&#39;s Study Planner</h1>
             <Combobox academicCourseId={academicCourseId} onSubjectChange={handleSubjectFilterChange}/>
@@ -338,7 +338,7 @@ export default function StudyPlanner(){
                 <h1 className="text-large-title-bold" style={{color: "var(--background)", marginTop: "3vh", marginLeft: "2vw"}}>In-progress</h1>
                 </div>
                 <br />
-                <div className={styles.todoList2} style={{height: "57.5vh"}}>
+                <div className={styles.todoList2} style={{height: "53vh"}}>
                 <ul style={{marginLeft: "1rem", marginTop: "3rem"}}>
                 {inProgressEvent.length <= 0 && (
                         <div className="italic text-center text-gray-400">
@@ -373,7 +373,7 @@ export default function StudyPlanner(){
                 <h1 className="text-large-title-bold" style={{color: "var(--background)", marginTop: "3vh", marginLeft: "2vw"}}>Completed</h1>
                 </div>
                 <br />
-                <div className={styles.todoList2} style={{height: "57.5vh"}}>
+                <div className={styles.todoList2} style={{height: "53vh"}}>
                 <ul style={{marginLeft: "1rem", marginTop: "3rem"}}>
                 {completedEvent.length <= 0 && (
                         <div className="italic text-center text-gray-400">

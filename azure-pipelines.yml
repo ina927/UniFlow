@@ -30,6 +30,7 @@ stages:
       displayName: 'Install and Build'
       inputs:
         script: |
+          npm install
           npm ci
         workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
     - task: CmdLine@2

@@ -15,7 +15,7 @@
     "prisma:generate": "npx prisma generate",
     "prisma:pull": "npx prisma db pull",
     "prisma:push": "npx prisma db push",
-    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:migrate": "npx prisma migrate dev"
   },
   "dependencies": {
     "@babel/runtime": "^7.28.4",
