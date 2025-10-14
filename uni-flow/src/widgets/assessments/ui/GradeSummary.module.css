@@ -31,3 +31,23 @@
 .required{
     margin-top: 20px;
 }
+
+.editButton {
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  margin-left: 4px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background-color: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.editButton:hover {
+  background-color: var(--muted);
+  color: var(--text-primary);
+}

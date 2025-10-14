@@ -10,6 +10,7 @@ import {
   GRADE_THRESHOLDS,
 } from "@/features/assessments/grade-logics";
 import type { Assessment } from "@/entities/assessments";
+import { Pencil } from "lucide-react";  
 
 import styles from "./GradeSummary.module.css";
 
@@ -38,6 +39,13 @@ export const GradeSummary = ({ goal, items}: Props) => {
       <div>
         <span className="text-body1-bold text-primary">Goal Grade:</span>
         <span className={`text-title2-bold primary-light ${styles.goal}`}>{goal}</span>
+        <button
+            type="button"
+            className={styles.editButton}
+            aria-label="Edit subject info"
+        >
+            <Pencil size={18} />
+        </button>
       </div>
 
       <div className={styles.block}>
