@@ -1,3 +1,5 @@
+import "server-only"
+
 // Declare the global prisma variable with the extended type
 import { Prisma, PrismaClient } from '@/shared/generated/prisma';
 

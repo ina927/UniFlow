@@ -22,8 +22,7 @@ import { SubjectEntity } from "@/entities"
 
 export function ComboboxForm({ academicCourseId, subjectId, onSubjectChange }: { academicCourseId: string; subjectId: string; onSubjectChange: (subjectId: string) => void; }) {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
-  const [defaultValue, setDefaultValue] = React.useState("");
+  const [value, setValue] = React.useState(subjectId);
 
   const { data } = useQuery({
     queryKey: ["subjects", academicCourseId],
@@ -32,18 +31,10 @@ export function ComboboxForm({ academicCourseId, subjectId, onSubjectChange }: {
   });
   
   const subjects = data?.data?.data || [];
-  if (subjects && subjectId.trim() !== ""){
-    for (let i = 0; i < subjects.length; i += 1){
-      if (subjects[i].value === subjectId){
-        setDefaultValue(subjectId)
-      }
-    }
-  }
 
   return (
-    <div style={{display: "flex", flexDirection: "row",float: "right", marginLeft: "5vw", paddingLeft:"1vw", paddingRight: "1vw"}} className="text-title3-bold">
+    <div style={{display: "flex", flexDirection: "row",float: "right", marginLeft: "-1vw", marginTop: "-1vh", paddingLeft:"1vw", paddingRight: "1vw"}} className="text-title3-bold">
         <Popover open={open} onOpenChange={setOpen}>
-        <h3 style={{marginTop: "0.8vh", paddingRight: "1vw", marginLeft: "-1vw"}}>Subject: </h3>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -59,7 +50,7 @@ export function ComboboxForm({ academicCourseId, subjectId, onSubjectChange }: {
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput value={defaultValue} placeholder="Search subject..." className="h-9" />
+          <CommandInput placeholder="Search subject..." className="h-9" />
           <CommandList>
             <CommandEmpty>No subject found.</CommandEmpty>
             <CommandGroup>

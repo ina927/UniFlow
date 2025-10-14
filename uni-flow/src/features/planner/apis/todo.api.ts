@@ -1,41 +1,46 @@
 // library
 import { ToDoEntity, ToDoVital } from "@/entities/todos/entities";
 import { ToDoStatus } from "@/entities/enums";
-import { useUserId } from "@/shared/stores";
 
 import Axios from "axios";
 
 // Function reports
-export async function getToDos(): Promise<ToDoEntity[]>{
-    
-        const userId = useUserId();
+export async function getToDos(userId: string): Promise<ToDoEntity[]>{
         const allItems = await fetch('/api/todos', {
             headers: {
-                userId: userId ?? "",
+                userId: "83482f49-8367-48d1-93f0-e98f01010f0f",
             }
         })
 
-        if (!allItems.ok) throw new Error('Failed to fetch to-dos')
+        // if (!allItems.ok) throw new Error('Failed to fetch to-dos')
         
         const fetchEvents = await allItems.json();
         return fetchEvents;
     
 }
 
-export async function getToDosByFilter(subjectId: string): Promise<ToDoEntity[]>{
-    const userId = useUserId();
+export async function getToDosByFilter(subjectId: string, userId: string): Promise<ToDoEntity[]>{
+
     const allItems = await fetch('/api/todos', {
         headers: {
-            userId: userId ?? "",
+            userId: userId,
+            "subjectId": subjectId
         }
     })
 
-    if (!allItems.ok) throw new Error('Failed to fetch to-dos');
+    // if (!allItems.ok) {throw new Error('Failed to fetch to-dos')};
 
     const fetchEvents = await allItems.json();
-    const filteredEvents = fetchEvents.filter((event: ToDoEntity) => {
-        event.subjectId === subjectId
+
+    console.log("fetched:" + fetchEvents)
+
+    const filteredEvents = fetchEvents.filter((event: {subjectId: string}) => {
+        return event.subjectId === subjectId
+        console.log("my subId: " + event.subjectId);
+        console.log("their sub id" + subjectId)
     });
+
+    console.log("filtered: " +filteredEvents);
     return filteredEvents;
 }
 
@@ -53,10 +58,10 @@ export async function getCompletes(events: ToDoEntity[]): Promise<ToDoEntity[]>{
 }
 
 //posting
-export async function postEvents(event: ToDoVital): Promise<void>{
+export async function postEvents(userId: string, event: ToDoVital): Promise<void>{
         // restructuring
         const newToDo = {
-            userId: useUserId(),
+            userId: userId,
             subjectId: event.subjectId,
             assessmentId: event.assessmentId,
             title: event.title,
@@ -90,7 +95,7 @@ export async function deleteToDo(event: ToDoEntity){
 }
 
 export async function updateToDo(event: ToDoEntity){
-    if (!event) return;
+    if (!event) {console.log("update failed"); return};
     await Axios.put(`/api/todos/${event.id}`, {
         title: event.title,
         description: event.description,

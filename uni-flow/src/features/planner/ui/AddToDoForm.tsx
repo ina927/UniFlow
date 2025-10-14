@@ -35,7 +35,7 @@ export default function AddToDoForm({academicCourseId, isOpen, onClose}: addToDo
 
 
     // user data
-    const userId = useUserId()
+    const userId = useUserId() || '83482f49-8367-48d1-93f0-e98f01010f0f';
 
     // use handler
     useEffect(() => {
@@ -102,7 +102,7 @@ export default function AddToDoForm({academicCourseId, isOpen, onClose}: addToDo
         if (endDate !== null && startDate !== null){
             const newToDo = {
                 subjectId: subjectId,
-                assessmentId: "",
+                assessmentId: "1c107379-dfc0-4b04-9fc9-6a9329cd7975", //example
                 title: eventTitle,
                 description: description,
                 startDate: startDate,
@@ -110,16 +110,11 @@ export default function AddToDoForm({academicCourseId, isOpen, onClose}: addToDo
                 status: ToDoStatus.PENDING  // default settings
             }
 
-            postEvents(newToDo);
+            postEvents(userId, newToDo);
         } else {
             console.log("Error in posting")
         }
         onClose();
-        setDescription("");
-        setEventTitle("");
-        setStartDate(null);
-        setEndDate(null);
-        setSubjectId("");
     }
 
     return (
@@ -186,7 +181,7 @@ export default function AddToDoForm({academicCourseId, isOpen, onClose}: addToDo
                     {/* SubjectId Input */}
                     <div className={styles.rowContainer}>
                         <label className={styles.labels}>Subject: </label>
-                        <ComboboxForm 
+                        <ComboboxForm
                             academicCourseId={academicCourseId} 
                             subjectId={subjectId} 
                             onSubjectChange={(subjectId: string) => {

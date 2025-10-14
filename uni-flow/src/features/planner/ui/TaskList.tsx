@@ -3,7 +3,8 @@
 
 import { ToDoEntity } from "@/entities/todos/entities";
 import {useState, useEffect} from "react";
-import styles from "@/app/planner/page.module.css";
+import { useUserId } from "@/shared/stores";
+import styles from "./TaskList.module.css";
 
 // service import
 import {
@@ -18,6 +19,7 @@ import {
 } from "@/features/planner/apis/todo.api"
 import EditToDoForm from "@/features/planner/ui/EditToDoForm";
 import AddToDoForm from "@/features/planner/ui/AddToDoForm";
+import { sub } from "date-fns";
 
 // type setup
 type taskListsProps = {
@@ -33,27 +35,35 @@ export default function TaskLists({academicCourseId, filterBySubjectId}: taskLis
     const [pendings, setPendings] = useState<ToDoEntity[]>([]);
     const [inProgress, setInProgress] = useState<ToDoEntity[]>([]);
     const [completed, setCompleted] = useState<ToDoEntity[]>([]);
+    const [currentFilter, setCurrentFilter] = useState<string>("");
     
 
     const [selectedEvent, setSelectedEvent] = useState<ToDoEntity>();
+    const [selectedSubjectId, setSelectedSubjectId] = useState<string>("");
 
     // for trigger
     const [isEditDialogue, setIsEditDialogue] = useState<boolean>(false);
     const [isAddDialogue, setIsAddDialogue] = useState<boolean>(false);
+
+    const userId = useUserId() || "83482f49-8367-48d1-93f0-e98f01010f0f";
 
     // use handler + refresh rate
 
     const refresh = async () => {
 
         // filter check
+
+        let events;
+        events = await getToDos(userId);
+
         if (filterBySubjectId?.trim() !== "" && filterBySubjectId){
             const subId = filterBySubjectId;
-            const events = await getToDosByFilter(subId);
-            setEvents(events);
-        } else {
-            const events = await getToDos();
-            setEvents(events);
-        }
+            events = await getToDosByFilter(subId, userId);
+        } 
+
+        setEvents(events)
+
+        console.log(events);
 
         // filtering
         const fetchedPen = await getPendings(events);
@@ -74,16 +84,14 @@ export default function TaskLists({academicCourseId, filterBySubjectId}: taskLis
 
     useEffect(() => {
         const listings = async() => {
-            const events = await getToDos();
+            const events = await getToDos(userId);
             setEvents(events ?? []);
         };
         listings();
     }, [])
 
     useEffect(() => {
-        if (events.length > 0 || filterBySubjectId) {
-            refresh();
-        }
+        refresh();
     }, [events, filterBySubjectId]);
 
 
@@ -120,10 +128,10 @@ export default function TaskLists({academicCourseId, filterBySubjectId}: taskLis
                     <button id={styles.addToDo} className="text-body1" onClick={handleAddButton}>New +</button>
                 </div>
 
-                <div className={styles.todoList2} style={{marginTop: "-10vw"}}>
-                <ul className={styles.lists}>
+                <div className={styles.todoList2} style={{marginTop: "-5vw", height: "49vh"}}>
+                <ul className={styles.lists} style={{marginTop: "0vh"}}>
                 {pendings.length <= 0 && (
-                        <div className="italic text-center text-gray-400">
+                        <div className="italic text-center text-gray-400" style={{marginTop: "2vh"}}>
                             Nothing in Here Yet..
                         </div>
                     )}
@@ -226,7 +234,7 @@ export default function TaskLists({academicCourseId, filterBySubjectId}: taskLis
         )}
 
         {/* Add component */}
-        {selectedEvent && (
+        {(
             <AddToDoForm academicCourseId={academicCourseId} 
             isOpen={isAddDialogue}
             onClose={handleCloseAdd}

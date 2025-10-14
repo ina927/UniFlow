@@ -28,11 +28,11 @@ export default function EditToDoForm({academicCourseId, event, isOpen, onClose}:
     if (!event) return null;
 
     // form state
-    const [eventTitle, setEventTitle] = useState<string>("");
-    const [description, setDescription] = useState<string>("");
-    const [startDate, setStartDate] = useState<Date | null>(null);
-    const [endDate, setEndDate] = useState<Date | null>(null);
-    const [subjectId, setSubjectId] = useState<string>("");
+    const [eventTitle, setEventTitle] = useState<string>(event.title);
+    const [description, setDescription] = useState<string>(event.description);
+    const [startDate, setStartDate] = useState<Date | null>(event.startDate);
+    const [endDate, setEndDate] = useState<Date | null>(event.endDate);
+    const [subjectId, setSubjectId] = useState<string>(event.subjectId);
     const [error, setError] = useState<string | null>(null);
 
     // user data
@@ -153,7 +153,7 @@ export default function EditToDoForm({academicCourseId, event, isOpen, onClose}:
                     <div className={styles.rowContainer}>
                         <label className={styles.labels}>Start Date: </label>
                         <input type="date" 
-                            value={startDate ? startDate.toISOString().split('T')[0] : ''}
+                            value={startDate ? new Date(startDate).toISOString().split('T')[0] : ''}
                             onChange={(event) => {
                                 const date = event.target.value;
                                 const newDate = new Date(date);
@@ -166,7 +166,7 @@ export default function EditToDoForm({academicCourseId, event, isOpen, onClose}:
                     <div className={styles.rowContainer}>
                         <label className={styles.labels}>Deadline: </label>
                         <input type="date" 
-                            value={endDate ? endDate.toISOString().split('T')[0] : ''}
+                            value={endDate ? new Date(endDate).toISOString().split('T')[0] : ''}
                             onChange={(event) => {
                                 const date = event.target.value;
                                 const newDate = new Date(date);

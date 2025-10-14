@@ -1,3 +1,4 @@
+// Library
 import { useState, useEffect } from "react";
 import { useUserId } from "@/shared";
 
@@ -5,7 +6,7 @@ export const useSubjects = () => {
   const [subjects, setSubjects] = useState<{ id: string; title: string }[]>([]);
 
   const userId = useUserId();
-  // Fetch subjects from the backend
+
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
@@ -23,7 +24,7 @@ export const useSubjects = () => {
                 throw new Error(data.message || "Failed to fetch subjects");
               }
       
-              setSubjects(data.data);
+              setSubjects(data.data.data);
         }} catch (error) {
             console.error("Error fetching subjects:", error);
         }
@@ -31,8 +32,6 @@ export const useSubjects = () => {
 
     fetchSubjects();
   }, []);
-
-
-
+  
   return { subjects };
 };
