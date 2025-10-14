@@ -1,1 +1,1 @@
-export type { ToDoEntity } from "./todo.entity";
+export type { ToDoEntity, ToDoVital } from "./todo.entity";

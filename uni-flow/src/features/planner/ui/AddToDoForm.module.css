@@ -1,0 +1,62 @@
+/* Dialog component settings */
+.container{
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: var(--background);
+    border-radius: large;
+    box-shadow: medium;
+}
+
+.dialogTitle{
+    
+}
+
+/* Form component settings */
+.toDoForm{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.titleInput{
+    margin-left: 2;
+    padding-left: 2;
+    padding-right: 2;
+    padding-top: 1;
+    padding-bottom: 1;
+    width: 100%;
+    border-bottom: solid 3px gray;
+    opacity: 0.6;
+}
+
+.descriptionInput{
+    height: 10vh;
+    word-wrap: break-word;
+    text-wrap: balance;
+    padding: 3;
+}
+
+.rowContainer{
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+}
+
+.dateInputs{
+
+}
+
+.labels{
+    margin-left: 0.9vw;
+    padding-right: 1.5vw;
+}
+
+.handler{
+    color: var(--background);
+    background-color: var(--primary-active-light);
+    padding: 3;
+    margin-top: 5;
+    border-radius: 15%;
+    width: 90%;
+    border: solid 1px;
+}
