@@ -1,11 +1,34 @@
 "use client";
+import { useState, useEffect } from "react";
 import { useHistory } from "@/features/history/hooks/useHistory";
 import HistoryHeader from "@/features/history/ui/HistoryHeader";
 import HistorySummary from "@/features/history/ui/HistorySummary";
 import HistoryList from "@/features/history/ui/HistoryList";
 
 export default function HistoryPage() {
-  const { history, totalFocusHours, totalPomodoros, clearHistory } = useHistory();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("/api/user/me", {
+          credentials: "include",
+          cache: "no-store",
+        });
+        if (res.status === 401) {
+          setUserId(null);
+          return;
+        }
+        const data = await res.json();
+        setUserId(data.user?.id || null);
+      } catch (err) {
+        setUserId(null);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  const { history, totalFocusHours, totalPomodoros, clearHistory } = useHistory(userId ?? "");
 
   return (
     <div className="w-screen min-h-screen flex flex-col items-center justify-center bg-components-fill">

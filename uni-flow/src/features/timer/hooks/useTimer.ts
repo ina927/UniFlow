@@ -3,6 +3,7 @@ import { useSubjects } from "@/features/timer/hooks/useSubjects";
 
 export const useTimer = ({
   currentTask,
+  setCurrentTask,
 }: {
   currentTask: any;
   setCurrentTask: (task: any) => void;
@@ -23,41 +24,64 @@ export const useTimer = ({
   const [autoStartBreaks, setAutoStartBreaks] = useState(false);
   const [autoStartPomodoro, setAutoStartPomodoro] = useState(false);
 
-  const [showNotification, setShowNotification] = useState(false);
-  const alarmRef = useRef<HTMLAudioElement | null>(null);
-
-  // Subject hook
+  // User & subjects
+  const [userId, setUserId] = useState<string | null>(null);
   const { subjects } = useSubjects();
 
-  const hasStarted = useRef(false); 
+  const [showNotification, setShowNotification] = useState(false);
+  const alarmRef = useRef<HTMLAudioElement | null>(null);
+  const hasStarted = useRef(false);
 
-  //  Helper to compute next break time
-  const getNextBreakTime = () => {
-    return (completedPomodoros + 1) % longBreakInterval === 0
+  // ✅ Fetch logged-in user once
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("/api/user/me", {
+          credentials: "include",
+          cache: "no-store",
+        });
+
+        if (res.status === 401) {
+          console.warn("User not logged in");
+          setUserId(null);
+          return;
+        }
+
+        const data = await res.json();
+        setUserId(data.user?.id || null);
+      } catch (err) {
+        console.error("Failed to fetch user:", err);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  // Helper to compute next break time
+  const getNextBreakTime = () =>
+    (completedPomodoros + 1) % longBreakInterval === 0
       ? longBreakTime
       : shortBreakTime;
-  };
 
-  //  Handle when a session ends
+  // Handle when a session ends
   const handleSessionEnd = () => {
     setIsActive(false);
     setShowNotification(true);
-    if (alarmRef.current) {
-      alarmRef.current.play();
-    }
+    if (alarmRef.current) alarmRef.current.play();
 
-    // Save work session to backend
-    if (isWorkTime) {
+    // ✅ Save session only if logged in and it's a work session
+    if (isWorkTime && userId) {
       const endTime = new Date().toISOString();
       const startTime = new Date(Date.now() - workTime * 1000).toISOString();
 
       fetch("/api/timer-sessions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           startTime,
           endTime,
-          userId: "83482f49-8367-48d1-93f0-e98f01010f0f",
+          userId,
           todoId: currentTask?.id || null,
           taskName: currentTask?.id ? currentTask.title : "Study Session",
           subjectName: currentTask?.id
@@ -67,21 +91,17 @@ export const useTimer = ({
             : "Other",
         }),
       })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Failed to save timer session");
-          }
-          return response.json();
+        .then((res) => {
+          if (!res.ok) throw new Error("Failed to save timer session");
+          return res.json();
         })
-        .then((data) => {
-          console.log("Timer session saved:", data);
-        })
-        .catch((error) => {
-          console.error("Error saving timer session:", error);
-        });
+        .then((data) => console.log("Timer session saved:", data))
+        .catch((err) => console.error("Error saving timer session:", err));
+    } else if (!userId) {
+      console.warn("Skipping timer session save — user not logged in");
     }
 
-    // Transition between work and break
+    // Transition between work/break
     if (isWorkTime) {
       setCompletedPomodoros((prev) => prev + 1);
       setIsWorkTime(false);
@@ -95,18 +115,16 @@ export const useTimer = ({
     }
   };
 
-  //  Control functions
+  // Timer control functions
   const toggle = () => {
-    if (!isActive) {
-      hasStarted.current = true; 
-    }
+    if (!isActive) hasStarted.current = true;
     setIsActive((prev) => !prev);
   };
 
   const reset = () => {
     setIsActive(false);
     setCompletedPomodoros(0);
-    hasStarted.current = false; // Reset hasStarted on reset
+    hasStarted.current = false;
     setSecondsLeft(isWorkTime ? workTime : getNextBreakTime());
   };
 
@@ -121,7 +139,7 @@ export const useTimer = ({
     }
   };
 
-  // ⏱ Update secondsLeft when timer settings change (only if stopped and never started)
+  // Update secondsLeft when durations change
   useEffect(() => {
     if (!isActive && !hasStarted.current) {
       setSecondsLeft(isWorkTime ? workTime : getNextBreakTime());
@@ -135,19 +153,18 @@ export const useTimer = ({
     isActive,
   ]);
 
+  // Countdown tick
   useEffect(() => {
-    if (!isActive) return; // Do nothing if not active
+    if (!isActive) return;
 
     const interval = setInterval(() => {
-      setSecondsLeft((prev) => {
-        if (prev > 0) return prev - 1;
-        return 0;
-      });
+      setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
 
-    return () => clearInterval(interval); // Clear interval on pause or unmount
+    return () => clearInterval(interval);
   }, [isActive]);
 
+  // Detect when time runs out
   useEffect(() => {
     if (secondsLeft === 0 && isActive) {
       handleSessionEnd();
@@ -164,7 +181,7 @@ export const useTimer = ({
     longBreakInterval,
     setLongBreakInterval,
 
-    // Auto-start
+    // Auto-start options
     autoStartBreaks,
     setAutoStartBreaks,
     autoStartPomodoro,

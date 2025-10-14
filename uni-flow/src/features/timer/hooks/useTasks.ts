@@ -3,8 +3,8 @@ import { useState, useEffect } from "react";
 export const useTasks = () => {
   const [tasks, setTasks] = useState([]);
   const [currentTask, setCurrentTask] = useState(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [newTodo, setNewTodo] = useState({
-    userId: "83482f49-8367-48d1-93f0-e98f01010f0f",
     subjectId: "",
     assessmentId: "",
     title: "",
@@ -13,19 +13,51 @@ export const useTasks = () => {
     taskStatus: "IN_PROGRESS",
   });
 
-  // Fetch tasks from the backend
+  // ✅ Get logged-in user info first
   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("/api/user/me", {
+          credentials: "include", // ensure cookies/session are sent
+          cache: "no-store",
+        });
+
+        if (res.status === 401) {
+          console.warn("User not logged in");
+          setUserId(null);
+          return;
+        }
+
+        const data = await res.json();
+        setUserId(data.user?.id || null);
+      } catch (err) {
+        console.error("Failed to fetch user:", err);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  // ✅ Fetch tasks after userId is known
+  useEffect(() => {
+    if (!userId) return;
+
     const fetchTasks = async () => {
       try {
-        const response = await fetch("/api/todos");
+        const response = await fetch("/api/todos", {
+          credentials: "include",
+          cache: "no-store",
+        });
+
         const data = await response.json();
 
         if (!response.ok) {
           throw new Error("Failed to fetch tasks");
         }
 
-        // Only include tasks not marked as DONE
-        const inProgressTasks = data.filter((task) => task.taskStatus !== "DONE");
+        const inProgressTasks = data.filter(
+          (task: any) => task.taskStatus !== "DONE"
+        );
         setTasks(inProgressTasks);
       } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -33,19 +65,26 @@ export const useTasks = () => {
     };
 
     fetchTasks();
-  }, []);
+  }, [userId]);
 
-  const deleteTodo = async (taskId) => {
+  const deleteTodo = async (taskId: string) => {
     try {
       const response = await fetch(`/api/todos/${taskId}`, {
         method: "DELETE",
+        credentials: "include",
       });
+
       if (!response.ok) throw new Error("Failed to delete task");
 
-      // Refetch tasks to ensure state is up-to-date
-      const refreshed = await fetch("/api/todos");
+      // Refresh task list
+      const refreshed = await fetch("/api/todos", {
+        credentials: "include",
+        cache: "no-store",
+      });
       const data = await refreshed.json();
-      const inProgressTasks = data.filter((task) => task.taskStatus !== "DONE");
+      const inProgressTasks = data.filter(
+        (task: any) => task.taskStatus !== "DONE"
+      );
       setTasks(inProgressTasks);
     } catch (error) {
       console.error("Error deleting task:", error);
@@ -53,16 +92,23 @@ export const useTasks = () => {
   };
 
   const addTodo = async () => {
+    if (!userId) {
+      console.warn("Cannot add task — user not logged in");
+      return;
+    }
+
     try {
       const formattedEndDate = newTodo.endDate
         ? new Date(newTodo.endDate).toISOString()
         : undefined;
 
       const safeSubjectId =
-        newTodo.subjectId && newTodo.subjectId.trim() !== "" ? newTodo.subjectId : null;
+        newTodo.subjectId && newTodo.subjectId.trim() !== ""
+          ? newTodo.subjectId
+          : null;
 
       const todoWithDates = {
-        userId: newTodo.userId,
+        userId, // ✅ use the logged-in user
         subjectId: safeSubjectId,
         assessmentId: newTodo.assessmentId || null,
         title: newTodo.title.trim(),
@@ -75,6 +121,7 @@ export const useTasks = () => {
       const response = await fetch("/api/todos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ newToDo: todoWithDates }),
       });
 
@@ -84,12 +131,21 @@ export const useTasks = () => {
         throw new Error(data.error || "Failed to add task");
       }
 
-      // Append the new todo
       setTasks((prev) => [...prev, data]);
     } catch (error) {
       console.error("Error adding task:", error);
     }
   };
 
-  return { tasks, setTasks, currentTask, setCurrentTask, deleteTodo, addTodo, newTodo, setNewTodo };
+  return {
+    tasks,
+    setTasks,
+    currentTask,
+    setCurrentTask,
+    deleteTodo,
+    addTodo,
+    newTodo,
+    setNewTodo,
+    userId, // optional: expose if you need it
+  };
 };
