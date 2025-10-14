@@ -1,6 +1,7 @@
 "use client";
 
 import { DonutGauge } from "@/shared/ui/donut-gauge";
+import styles from "./GradeSummary.module.css"
 import { Grade } from "@/entities/assessments";
 import {
   overallPercent,
@@ -11,8 +12,6 @@ import {
 } from "@/features/assessments/grade-logics";
 import type { Assessment } from "@/entities/assessments";
 import { Pencil } from "lucide-react";  
-
-import styles from "./GradeSummary.module.css";
 
 type Props = {
   goal: Grade;          

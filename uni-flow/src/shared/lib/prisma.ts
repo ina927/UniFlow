@@ -1,3 +1,4 @@
+// Declare the global prisma variable with the extended type
 import { Prisma, PrismaClient } from '@/shared/generated/prisma';
 
 // Create a type for our extended client
@@ -41,7 +42,6 @@ const versionExtension = Prisma.defineExtension({
           if (current) {
             args.data = {
               ...args.data,
-              version: (current.version || 0) + 1
             };
           }
         }

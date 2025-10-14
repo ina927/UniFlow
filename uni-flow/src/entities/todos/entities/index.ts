@@ -1,0 +1,1 @@
+export type { ToDoEntity } from "./todo.entity";
