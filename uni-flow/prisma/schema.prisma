@@ -8,6 +8,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Enums
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum ToDoStatus {
+  PENDING
+  IN_PROGRESS
+  DONE
+}
+
+enum AssessmentType {
+  QUIZ
+  EXAM
+  INDV_ASSIGNMENT
+  GROUP_ASSIGNMENT
+  GROUP_INDV_ASSIGNMENT
+  OTHER
+}
+
+// Models
 model User {
   id              String           @id @default(uuid())
   name            String
@@ -85,6 +114,7 @@ model Subject {
 model Assessment {
   id          String   @id @default(uuid())
   title       String
+  type        AssessmentType
   description String?
   dueDate     DateTime
   weight      Float

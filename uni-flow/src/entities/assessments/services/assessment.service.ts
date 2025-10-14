@@ -54,25 +54,19 @@ export async function getAssessment(id: string) {
 
 // POST: create a new assessment
 export async function createAssessment(params: { dto: CreateAssessmentDto }) {
-  try {
-    const response = await fetch(API_BASE_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(params.dto),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to create assessment');
-    }
-
-    const data = await response.json();
-    return toEntity(data);
-  } catch (error) {
-    console.error('Error creating assessment:', error);
-    throw error;
-  }
+  const d = params.dto;
+  const created = await prisma.assessment.create({
+    data: {
+      subjectId: d.subjectId,
+      title: d.title,
+      type: d.type ?? undefined,
+      weight: d.weight,
+      maxScore: d.maxScore,
+      dueDate: d.dueDate ? new Date(d.dueDate) : new Date(),
+      description: d.description ?? null,
+    },
+  });
+  return toEntity(created);
 }
 
 // PATCH: enter/update score
@@ -101,26 +95,19 @@ export async function enterScore(params: { dto: EnterScoreDto }) {
 
 // PATCH: Update assessment
 export async function updateAssessment(params: { id: string; dto: UpdateAssessmentDto }) {
-  try {
-    const { id, dto } = params;
-    const response = await fetch(`${API_BASE_URL}/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(dto),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to update assessment');
-    }
-
-    const data = await response.json();
-    return toEntity(data);
-  } catch (error) {
-    console.error('Error updating assessment:', error);
-    throw error;
-  }
+  const d = params.dto;
+  const updated = await prisma.assessment.update({
+    where: { id: params.id },
+    data: {
+      title: d.title ?? undefined,
+      type: d.type ?? undefined,
+      weight: d.weight ?? undefined,
+      maxScore: d.maxScore ?? undefined,
+      dueDate: d.dueDate ? new Date(d.dueDate) : undefined,
+      description: d.description ?? undefined,
+    },
+  });
+  return toEntity(updated);
 }
 
 // DELETE: Delete assessment
