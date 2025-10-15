@@ -23,7 +23,6 @@ import { letterFromPercent } from "@/features/assessments/grade-logics";
 
 import styles from "./page.module.css";
 
-
 /**
  * AssessmentsPage
  * Main page for displaying all assessments of a subject.
@@ -35,7 +34,7 @@ export default function AssessmentsPage(){
     const subjectId = searchParams.get("subjectId") ?? "";
 
     // Load subject list and pick the current one by id
-    const { data: subject } = useSubjectDetailQuery(subjectId);
+    const { data: subject, refetch } = useSubjectDetailQuery(subjectId);
 
     // Assessments query/mutations
     const { data: items = [] } = useAssessmentsQuery(subjectId);    
@@ -138,8 +137,10 @@ export default function AssessmentsPage(){
                 />
                 <GradeSummary
                     key={`${mode}-${whatIfRev}`}
+                    subjectId={subjectId}
                     goal={goal}
                     items={displayItems}
+                    refetch={refetch}
                 />            
                 </div> 
 

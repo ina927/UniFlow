@@ -11,11 +11,14 @@ import {
   GRADE_THRESHOLDS,
 } from "@/features/assessments/grade-logics";
 import type { Assessment } from "@/entities/assessments";
-import { Pencil } from "lucide-react";  
+
+import { UpdateGoalGrade } from "./UpdateGoalGrade";
 
 type Props = {
+  subjectId: string;
   goal: Grade;          
   items: Assessment[];
+  refetch: () => void;
 };
 
 function fmtPct(p: number) {
@@ -23,7 +26,7 @@ function fmtPct(p: number) {
   return `${n}`;
 }
 
-export const GradeSummary = ({ goal, items}: Props) => {
+export const GradeSummary = ({ subjectId, goal, items, refetch }: Props) => {
   const completedPct = completedWeightedPercent(items);     
   const completedLetter = letterFromPercent(completedPct); 
 
@@ -38,13 +41,7 @@ export const GradeSummary = ({ goal, items}: Props) => {
       <div>
         <span className="text-body1-bold text-primary">Goal Grade:</span>
         <span className={`text-title2-bold primary-light ${styles.goal}`}>{goal}</span>
-        <button
-            type="button"
-            className={styles.editButton}
-            aria-label="Edit subject info"
-        >
-            <Pencil size={18} />
-        </button>
+        <UpdateGoalGrade subjectId={subjectId} goal={goal} refetch={refetch} />
       </div>
 
       <div className={styles.block}>
