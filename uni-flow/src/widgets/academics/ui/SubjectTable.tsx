@@ -61,28 +61,28 @@ export const SubjectTable = (props: Props) => {
     <div className="w-full mt-4">
       <div className="flex items-center justify-between">
         <label className="text-title3">Subject</label>
-        <AddSubjectModal />
+        <AddSubjectModal refetch={refetch} />
       </div>
 
       <div className="rounded-md border mt-2 mb-2">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Code</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead>Credit</TableHead>
-              <TableHead>Term</TableHead>
+              <TableHead className="text-left px-4 py-3">Code</TableHead>
+              <TableHead className="text-left">Title</TableHead>
+              <TableHead className="text-left">Credit</TableHead>
+              <TableHead className="text-left">Term</TableHead>
               <TableHead />
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {subjects.map((subject) => (
+          <TableBody className="px-4">
+            {subjects.sort((a, b) => a.code.localeCompare(b.code)).map((subject) => (
               <TableRow key={subject.id}>
-                <TableCell onClick={() => gotoAssessments(subject.id)} className="font-bold">{subject.code}</TableCell>
-                <TableCell onClick={() => gotoAssessments(subject.id)}>{subject.title}</TableCell>
-                <TableCell onClick={() => gotoAssessments(subject.id)}>{subject.credits}</TableCell>
-                <TableCell onClick={() => gotoAssessments(subject.id)}>{subject.term.title}</TableCell>
-                <TableCell className="text-right">
+                <TableCell onClick={() => gotoAssessments(subject.id)} className="font-bold px-4 py-3 cursor-pointer">{subject.code}</TableCell>
+                <TableCell onClick={() => gotoAssessments(subject.id)} className="cursor-pointer">{subject.title}</TableCell>
+                <TableCell onClick={() => gotoAssessments(subject.id)} className="cursor-pointer">{subject.credits}</TableCell>
+                <TableCell onClick={() => gotoAssessments(subject.id)} className="cursor-pointer">{subject.term.title}</TableCell>
+                <TableCell className="text-right px-4 py-3">
                   <Button 
                     variant="ghost" 
                     size="sm" 
@@ -90,7 +90,7 @@ export const SubjectTable = (props: Props) => {
                       e.stopPropagation();
                       handleEditClick(subject.id);
                     }}
-                    className="hover:bg-transparent hover:text-primary p-1 h-auto"
+                    className="hover:bg-transparent hover:text-primary p-1 h-auto cursor-pointer"
                   >
                     ⋮
                   </Button>

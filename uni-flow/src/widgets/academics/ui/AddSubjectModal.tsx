@@ -20,10 +20,12 @@ import { CreateSubjectDto } from "@/entities";
 
 interface Props {
   className?: string;
+  refetch: () => void;
 }
 
 export function AddSubjectModal(props: Props) {
   const { terms } = useAcademicStore();
+  const { refetch } = props;
 
   const [open, setOpen] = useState(false);
   const { register, handleSubmit, setValue, reset } = useForm<CreateSubjectDto>();
@@ -37,6 +39,7 @@ export function AddSubjectModal(props: Props) {
       await createSubject(data);
       reset();
       setOpen(false);
+      refetch();
     } catch (e) {
       alert(e instanceof Error ? e.message : "Failed to create subject");
     }
