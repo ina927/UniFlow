@@ -35,7 +35,7 @@ export default function AssessmentsPage(){
     const subjectId = searchParams.get("subjectId") ?? "";
 
     // Load subject list and pick the current one by id
-    const { data: subject } = useSubjectDetailQuery(subjectId);
+    const { data: subject, refetch } = useSubjectDetailQuery(subjectId);
 
     // Assessments query/mutations
     const { data: items = [] } = useAssessmentsQuery(subjectId);    
@@ -90,7 +90,7 @@ export default function AssessmentsPage(){
 
     const [openAdd, setOpenAdd] = useState(false);
     const [showRequired, setShowRequired] = useState(false);
-    const goal = subject?.goalGrade != null ? letterFromPercent(subject.goalGrade) : Grade.HD;
+    const goal = letterFromPercent(subject?.goalGrade ?? 85);
 
     // Reset simulation when switching back to view
     const handleModeChange = (next: "view" | "whatif") => {
@@ -138,9 +138,11 @@ export default function AssessmentsPage(){
                 />
                 <GradeSummary
                     key={`${mode}-${whatIfRev}`}
+                    subjectId={subjectId}
                     goal={goal}
                     items={displayItems}
-                />            
+                    refetch={refetch}
+                />           
                 </div> 
 
             {/* Modal for adding a new assessment */}
