@@ -12,7 +12,7 @@ import {
     EnterScoreModal, 
     GradeSummary 
 } from "@/widgets/assessments/ui";
-import { Grade } from "@/entities/assessments";
+import { Grade } from "@/entities/assessments/enums";
 import {
   useAssessmentsQuery,
   useCreateAssessment,

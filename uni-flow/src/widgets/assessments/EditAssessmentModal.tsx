@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/shared/ui/button";
 import { AssessmentForm, AssessmentFormHandle } from "@/features/assessments/ui/AssessmentForm";
 import { useUpdateAssessment } from "@/features/assessments/hooks/useAssessmentsQuery";
-import type { Assessment } from "@/entities/assessments";
+import type { Assessment } from "@/entities/assessments/entities";
 import styles from "./AddAssessmentModal.module.css"
 
 type Props = {

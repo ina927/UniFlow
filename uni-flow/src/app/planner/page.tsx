@@ -14,7 +14,6 @@ import styles from "./page.module.css";
 import Axios from "axios";
 import { ToDoStatus } from "@/entities/enums";
 import { ToDoEntity } from "@/entities/todos/entities";
-import { ToDo } from "@/shared/generated/prisma";
 import { Combobox } from "@/widgets/planner/SetFilterModal";
 import { ComboboxForm } from "@/widgets/planner/SetSubjectModalForm";
 

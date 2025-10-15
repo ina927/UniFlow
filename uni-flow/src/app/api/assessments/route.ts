@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/shared/lib/prisma';
-import { AssessmentType } from '@/entities/assessments';
+import { listAssessments, createAssessment, toAssessmentType } from '@/entities/assessments/services';
+import { Assessment } from '@/entities/assessments/entities';
 
 // GET: List all assessments for a subject
 export async function GET(request: Request) {
@@ -15,15 +15,9 @@ export async function GET(request: Request) {
   }
 
   try {
-    const assessments = await prisma.assessment.findMany({
-      where: { subjectId },
-      orderBy: { dueDate: 'asc' },
-    });
+    const assessments: Assessment[] = await listAssessments({ subjectId });
 
-    return NextResponse.json(assessments.map(a => ({
-      ...a,
-      type: a.type as AssessmentType,
-    })));
+    return NextResponse.json(assessments);
   } catch (error) {
     console.error('Error fetching assessments:', error);
     return NextResponse.json(
@@ -37,9 +31,12 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const assessment = await prisma.assessment.create({
-      data: body,
-    });
+
+    body.type = toAssessmentType(body.type);
+    body.dueDate = body.dueDate ? new Date(body.dueDate) : new Date();
+    body.description = body.description ?? undefined;
+
+    const assessment = await createAssessment({ dto: body });
     
     return NextResponse.json(assessment);
   } catch (error) {

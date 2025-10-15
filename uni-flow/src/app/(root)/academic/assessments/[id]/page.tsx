@@ -8,8 +8,8 @@ import { ConfirmDialog } from "@/widgets/common/ui";
 import {
   useAssessmentsQuery,
   useDeleteAssessment,
-} from "@/features/assessments/hooks/useAssessmentsQuery";
-import { useSubjectDetailQuery } from "@/features/academics/hooks/useSubjectDetailQuery";
+} from "@/features/assessments/hooks";
+import { useSubjectDetailQuery } from "@/features/academics/hooks";
 import styles from "../page.module.css";
 
 function fmtDate(iso?: string) {
