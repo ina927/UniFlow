@@ -22,10 +22,11 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   termId: string;
+  refetch: () => void;
 }
 
 export function EditTermModal(props: Props) {
-  const { isOpen, onClose, termId } = props;
+  const { isOpen, onClose, termId, refetch } = props;
 
   const queryClient = useQueryClient();
   const { data, isLoading, isError } = useQuery({
@@ -64,6 +65,7 @@ export function EditTermModal(props: Props) {
         queryKey: ['subjects']
       });
       reset();
+      refetch();
       onClose();
     } catch (e) {
       console.error("update term failed", e);
@@ -85,6 +87,7 @@ export function EditTermModal(props: Props) {
       await queryClient.invalidateQueries({ 
         queryKey: ['subjects']
       });
+      refetch();
       onClose();
     } catch (e) {
       console.error("delete term failed", e);

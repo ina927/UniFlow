@@ -145,14 +145,14 @@ export function EditSubjectModal(props: Props) {
 
               <div>
                 <Label>Tutor</Label>
-                <Input placeholder={selectedSubject.labTutorName || "Enter name"} {...register("labTutorName")} />
-                <Input placeholder={selectedSubject.labTutorEmail || "Enter email"} className="mt-2" {...register("labTutorEmail")} />
+                <Input value={selectedSubject.labTutor?.name || ""} placeholder="Enter name" {...register("labTutorName")} />
+                <Input value={selectedSubject.labTutor?.email || ""} className="mt-2" placeholder="Enter email" {...register("labTutorEmail")} />
               </div>
 
               <div>
                 <Label>Coordinator</Label>
-                <Input placeholder={selectedSubject.coordinatorName || "Enter name"} className="mt-2" {...register("coordinatorName")} />
-                <Input placeholder={selectedSubject.coordinatorEmail || "Enter email"} className="mt-2" {...register("coordinatorEmail")} />
+                <Input value={selectedSubject.coordinator?.name || ""} placeholder="Enter name" className="mt-2" {...register("coordinatorName")} />
+                <Input value={selectedSubject.coordinator?.email || ""} className="mt-2" placeholder="Enter email" {...register("coordinatorEmail")} />
               </div>
             </div>
 

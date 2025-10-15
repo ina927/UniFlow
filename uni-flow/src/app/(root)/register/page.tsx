@@ -2,18 +2,21 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAcademicStore, useAuthStore } from "@/shared/stores";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [name, setName]   = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [pwd, setPwd]     = useState("");
+  const [pwd, setPwd] = useState("");
   const [confirmPwd, setConfirmPwd] = useState("");
-  const [dob, setDob]     = useState("");;
+  const [dob, setDob] = useState("");
   const [degree, setDegree] = useState("");
   const [credits, setCredits] = useState("");
-  const [msg, setMsg]     = useState<string | null>(null);
+  const [msg, setMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const { setUserId } = useAuthStore();
+  const { setAcademicCourseId } = useAcademicStore();
 
   async function signUp() {
     setMsg(null);
@@ -58,6 +61,9 @@ export default function RegisterPage() {
         setMsg(courseData?.error || "failed to save academic details");
         return;
       }
+
+      setUserId(createdUser.id);
+      setAcademicCourseId((await courseRes.json())?.data?.data?.id);
 
       router.push("/academic"); // send new users straight to the academic hub
     } finally { setLoading(false); }

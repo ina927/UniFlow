@@ -13,7 +13,7 @@ export const Header = (props: HeaderProps) => {
   return (
     <header className={clsx(props.className, "flex flex-row w-full max-h-[60px] items-center px-[16px]")}>
       <div className="flex items-center mr-[8px]">
-        <Link href="/">
+        <Link href="/academic">
           <Image 
             className="dark:filter dark:invert"
             src={LOGO.src}

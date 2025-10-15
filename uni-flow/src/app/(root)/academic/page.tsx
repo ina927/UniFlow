@@ -17,20 +17,22 @@ export default function AcademicPage() {
   });
 
   const academicCourses = useMemo(() => data?.data?.data || [], [data]);
+
+  console.log("academicCourses", academicCourses);
   const hasCourses = academicCourses.length > 0;
 
-  useEffect(() => {
-    if (hasCourses && !academicCourseId) {
-      setAcademicCourseId(academicCourses[0].id);
-    }
-  }, [hasCourses, academicCourseId, academicCourses, setAcademicCourseId]);
-
-  if (isLoading || (hasCourses && !academicCourseId)) {
+  if (isLoading || (!hasCourses && !academicCourseId)) {
     return <div>Loading...</div>;
   }
   
   if (isError) {
     return <div>Error loading academic courses</div>;
+  }
+
+  if (hasCourses && !academicCourseId) {
+    setAcademicCourseId(academicCourses[0].id);
+
+    console.log("academicCourseId", academicCourseId)
   }
 
   const academicCourse = academicCourses.find((course: AcademicCourseEntity) => course.id === academicCourseId);

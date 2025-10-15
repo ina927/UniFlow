@@ -17,7 +17,7 @@ export const TermSelector = (props: TermSelectorProps) => {
   const { academicCourseId, terms, setTerms, selectedTermId, setSelectedTermId } = useAcademicStore();
   const [placeholderText, setPlaceholderText] = useState("Select Term");
 
-  const { data, isError, isLoading } = useQuery({
+  const { data, isError, isLoading, refetch } = useQuery({
     queryKey: ["terms", academicCourseId],
     queryFn: () => getTerms(academicCourseId!),
     enabled: !!academicCourseId,
@@ -66,7 +66,7 @@ export const TermSelector = (props: TermSelectorProps) => {
           ))}
         </SelectContent>
       </Select>
-      <ManageTermModal />
+      <ManageTermModal refetch={refetch}/>
     </div>
   );
 };

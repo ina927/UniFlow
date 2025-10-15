@@ -76,11 +76,18 @@ export const SubjectTable = (props: Props) => {
             </TableRow>
           </TableHeader>
           <TableBody className="px-4">
-            {subjects.sort((a, b) => a.code.localeCompare(b.code)).map((subject) => (
-              <TableRow key={subject.id}>
-                <TableCell onClick={() => gotoAssessments(subject.id)} className="font-bold px-4 py-3 cursor-pointer">{subject.code}</TableCell>
-                <TableCell onClick={() => gotoAssessments(subject.id)} className="cursor-pointer">{subject.title}</TableCell>
-                <TableCell onClick={() => gotoAssessments(subject.id)} className="cursor-pointer">{subject.credits}</TableCell>
+            {subjects.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="h-12 text-center">
+                  No subjects found
+                </TableCell>
+              </TableRow>
+            ) : (
+              subjects.sort((a, b) => a.code.localeCompare(b.code)).map((subject) => (
+                <TableRow key={subject.id}>
+                  <TableCell onClick={() => gotoAssessments(subject.id)} className="font-bold px-4 py-3 cursor-pointer">{subject.code}</TableCell>
+                  <TableCell onClick={() => gotoAssessments(subject.id)} className="cursor-pointer">{subject.title}</TableCell>
+                  <TableCell onClick={() => gotoAssessments(subject.id)} className="cursor-pointer">{subject.credits}</TableCell>
                 <TableCell onClick={() => gotoAssessments(subject.id)} className="cursor-pointer">{subject.term.title}</TableCell>
                 <TableCell className="text-right px-4 py-3">
                   <Button 
@@ -96,7 +103,7 @@ export const SubjectTable = (props: Props) => {
                   </Button>
                 </TableCell>
               </TableRow>
-            ))}
+            )))}
           </TableBody>
         </Table>
       </div>

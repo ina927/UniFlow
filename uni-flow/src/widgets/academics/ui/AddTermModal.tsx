@@ -19,17 +19,20 @@ import { useAcademicStore } from "@/shared/stores";
 
 interface Props {
   className?: string;
+  refetch: () => void;
 }
 
 export function AddTermModal(props: Props) {
+  const { refetch } = props;
   const [open, setOpen] = useState(false);
   const { register, handleSubmit, reset } = useForm<CreateTermDto>();
   const { academicCourseId } = useAcademicStore();
 
   const onSubmit = async (data: Omit<CreateTermDto, "academicCourseId">) => {
     try {
-      await createTerm({ ...data, academicCourseId: academicCourseId! });
+      await createTerm({ term: data, academicCourseId: academicCourseId! });
       reset();
+      refetch();
       setOpen(false);
     } catch (e) {
       console.error("create term failed", e);

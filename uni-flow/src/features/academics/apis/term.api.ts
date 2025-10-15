@@ -10,8 +10,12 @@ export const getTerm = async (termId: string) => {
     return await apiClient.get(`${TERMS_API}/${termId}`).then(res => res.data);
 };
 
-export const createTerm = async (term: CreateTermDto) => {
-    return await apiClient.post(TERMS_API, term).then(res => res.data);
+export const createTerm = async ({term, academicCourseId}: {term: Omit<CreateTermDto, "academicCourseId">, academicCourseId: string}) => {
+    return await apiClient.post(TERMS_API, term, {
+        headers: {
+            "academic-course-id": academicCourseId
+        }
+    }).then(res => res.data);
 };
     
 export const updateTerm = async (termId: string, term: UpdateTermDto) => {

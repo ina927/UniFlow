@@ -18,9 +18,11 @@ import { EditTermModal } from "./EditTermModal";
 
 interface ManageTermModalProps {
   className?: string;
+  refetch: () => void;
 }
 
 export const ManageTermModal = (props: ManageTermModalProps) => {
+  const { refetch } = props;
   const [open, setOpen] = useState(false);
   const { terms } = useAcademicStore();
   const [selectedTermId, setSelectedTermId] = useState<string | null>(null);
@@ -54,7 +56,7 @@ export const ManageTermModal = (props: ManageTermModalProps) => {
           </DialogHeader>
 
           <div className="flex items-center justify-end">
-            <AddTermModal />
+            <AddTermModal refetch={refetch}/>
           </div>
 
           <div className="rounded-md border mb-2 p-2">
@@ -69,7 +71,14 @@ export const ManageTermModal = (props: ManageTermModalProps) => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {terms?.sort((a, b) => a.title.localeCompare(b.title)).map((term) => (
+                {terms?.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-12 text-center">
+                      No terms found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  terms?.sort((a, b) => a.title.localeCompare(b.title)).map((term) => (
                   <TableRow key={term.id}>
                     <TableCell className="font-bold px-4 py-3">{term.title}</TableCell>
                     <TableCell>{term.academicYear}</TableCell>
@@ -77,7 +86,7 @@ export const ManageTermModal = (props: ManageTermModalProps) => {
                     <TableCell>{term.endDate ? new Date(term.endDate).toLocaleDateString() : "-"}</TableCell>
                     <TableCell onClick={() => handleEdit(term.id)} className="text-right cursor-pointer px-4 py-3">⋮</TableCell>
                   </TableRow>
-                ))}
+                )))}
               </TableBody>              
             </Table>
           </div>
@@ -90,6 +99,7 @@ export const ManageTermModal = (props: ManageTermModalProps) => {
             isOpen={isEditModalOpen}
             onClose={handleEditModalClose}
             termId={selectedTermId}
+            refetch={refetch}
           />
         </div>
       )}
