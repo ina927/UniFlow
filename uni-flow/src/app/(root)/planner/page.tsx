@@ -1,7 +1,7 @@
 'use client';
 
 import Axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 // database import
 import { ToDoEntity } from '@/entities/todos/entities';
@@ -25,9 +25,6 @@ export default function StudyPlanner() {
   const [isDialogUpdateOpen, setIsDialogUpdateOpen] = useState<boolean>(false);
 
   // for database control (tags in form is to opt for the subject id)
-  const [endDate, setEndDate] = useState<Date | null>(null);
-  const [newEventTitle, setNewEventTitle] = useState<string>('');
-  const [content, setContent] = useState<string>('');
   const [events, setFetchEvent] = useState<ToDoEntity[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<ToDoEntity>();
   const [allFilter, setAllFilter] = useState<string[]>([]);
@@ -39,77 +36,18 @@ export default function StudyPlanner() {
   const [completedEvent, setCompletedEvent] = useState<ToDoEntity[]>([]);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const handleRefresh = () => {
-    setRefreshKey((prevKey) => prevKey + 1);
-  };
+  const handleRefresh = useCallback(() => {
+    setRefreshKey((prev) => prev + 1);
+    console.log('refreshKey', refreshKey);
+  }, []);
 
   const baseApi = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-  // click handler
-  useEffect(() => {
-    const fetchUser = async () => {
-      // const userResponse = await fetch(`http://localhost:3000/api/users/${userId}`);
-      // const userData = await userResponse.json();
-      setAcademicCourseId(academicCourseId); // hard code
-    };
+  const refresh = useCallback(() => {
     const fetchToDo = async () => {
-      setNewEventTitle('');
-      setContent('');
-      setEndDate(null);
-      getAllFilter();
       const response = await fetch(`${baseApi}/todos`, {
         headers: {
-          userId: userId!,
-        },
-      });
-
-      const fetchEvents = await response.json();
-
-      console.log('fetchEvents', fetchEvents);
-
-      const mappedEvents = fetchEvents.map((event: any) =>
-        mapToToDoEntity(event)
-      );
-
-      setFetchEvent(mappedEvents);
-      console.log('events', events);
-
-      // filtering
-      const pendings = mappedEvents.filter(
-        (event: { status: ToDoStatus }) => event.status === ToDoStatus.PENDING
-      );
-      setPendingEvent(pendings);
-      console.log('pendings', pendingEvent);
-
-      const inProgress = mappedEvents.filter(
-        (event: { status: ToDoStatus }) =>
-          event.status === ToDoStatus.IN_PROGRESS
-      );
-      setInProgressEvent(inProgress);
-      console.log('inProgress', inProgressEvent);
-
-      const dones = mappedEvents.filter(
-        (event: { status: ToDoStatus }) => event.status === ToDoStatus.DONE
-      );
-      setCompletedEvent(dones);
-      console.log('dones', completedEvent);
-    };
-    fetchUser();
-    fetchToDo();
-  }, []); //open json file
-
-  useEffect(() => {
-    refresh();
-  }, [refreshKey]);
-
-  const refresh = () => {
-    const fetchToDo = async () => {
-      setNewEventTitle('');
-      setContent('');
-      setEndDate(null);
-      const response = await fetch(`${baseApi}/todos`, {
-        headers: {
-          userId: userId!,
+          'user-id': userId!,
         },
       });
 
@@ -150,7 +88,56 @@ export default function StudyPlanner() {
       console.log(events);
     };
     fetchToDo();
-  };
+  }, [baseApi, userId]);
+  // click handler
+  useEffect(() => {
+    const fetchToDo = async () => {
+      getAllFilter();
+      const response = await fetch(`${baseApi}/todos`, {
+        headers: {
+          'user-id': userId!,
+        },
+      });
+
+      const fetchEvents = await response.json();
+
+      console.log('fetchEvents', fetchEvents);
+
+      const mappedEvents = fetchEvents.map((event: any) =>
+        mapToToDoEntity(event)
+      );
+
+      setFetchEvent(mappedEvents);
+      console.log('events', events);
+
+      // filtering
+      const pendings = mappedEvents.filter(
+        (event: { status: ToDoStatus }) => event.status === ToDoStatus.PENDING
+      );
+      setPendingEvent(pendings);
+      console.log('pendings', pendingEvent);
+
+      const inProgress = mappedEvents.filter(
+        (event: { status: ToDoStatus }) =>
+          event.status === ToDoStatus.IN_PROGRESS
+      );
+      setInProgressEvent(inProgress);
+      console.log('inProgress', inProgressEvent);
+
+      const dones = mappedEvents.filter(
+        (event: { status: ToDoStatus }) => event.status === ToDoStatus.DONE
+      );
+      setCompletedEvent(dones);
+      console.log('dones', completedEvent);
+    };
+
+    setAcademicCourseId(academicCourseId);
+    fetchToDo();
+  }, []); //open json file
+
+  useEffect(() => {
+    refresh();
+  }, [refreshKey, refresh]);
 
   const getAllFilter = async () => {
     const response = await fetch(`${baseApi}/subjects`);
@@ -180,19 +167,12 @@ export default function StudyPlanner() {
   };
 
   const handleEditButton = (event: ToDoEntity) => {
-    setSelectedEvent(event);
     setIsDialogUpdateOpen(true);
-    setEndDate(event.endDate);
-    setContent(String(event.description));
-    console.log(content);
-    setNewEventTitle(String(event.title));
+    setSelectedEvent(event);
   };
 
   const handleAddButton = () => {
     setIsDialogOpen(true);
-    setNewEventTitle('');
-    setContent('');
-    setEndDate(null);
   };
 
   const handleSubjectFilterChange = async (subjectId: string | null) => {
@@ -463,7 +443,7 @@ export default function StudyPlanner() {
         academicCourseId={academicCourseId!}
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
-        refresh={handleRefresh}
+        refresh={() => handleRefresh()}
       />
 
       <EditToDoForm
@@ -471,7 +451,7 @@ export default function StudyPlanner() {
         event={selectedEvent!}
         isOpen={isDialogUpdateOpen}
         onClose={() => setIsDialogUpdateOpen(false)}
-        refresh={handleRefresh}
+        refresh={() => handleRefresh()}
       />
     </div>
   );

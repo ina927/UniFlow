@@ -1,6 +1,28 @@
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import React from 'react';
 import { vi } from 'vitest';
+
+// Mock any global browser APIs here
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
+// Mock any other browser APIs your tests might need
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
 
 // Mock Next.js router
 vi.mock('next/navigation', () => ({
@@ -24,8 +46,6 @@ vi.mock('next/headers', () => ({
     delete: vi.fn(),
   }),
 }));
-
-
 
 // Mock next/image
 vi.mock('next/image', () => ({

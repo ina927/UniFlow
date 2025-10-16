@@ -1,11 +1,12 @@
-import { Assessment, Grade } from "@/entities/assessments";
+import { Assessment } from '@/entities/assessments/entities';
+import { Grade } from '@/entities/assessments/enums';
 
 export const GRADE_THRESHOLDS: Record<Grade, number> = {
-    [Grade.HD]: 85,
-    [Grade.D ]: 75,
-    [Grade.C ]: 65,
-    [Grade.P ]: 50,
-    [Grade.F ]: 0,
+  [Grade.HD]: 85,
+  [Grade.D]: 75,
+  [Grade.C]: 65,
+  [Grade.P]: 50,
+  [Grade.F]: 0,
 };
 
 /**
@@ -93,30 +94,36 @@ export function requiredMarksPerRemaining(
   items: Assessment[],
   goal: Grade
 ): Record<string, { requiredPctOnItem: number; requiredRawScore: number }> {
-  const remain = neededToReach(items, goal);               // e.g., 29.7
-  const sumRemainW = remainingWeightSum(items);            // e.g., 40
+  const remain = neededToReach(items, goal); // e.g., 29.7
+  const sumRemainW = remainingWeightSum(items); // e.g., 40
 
-  const result: Record<string, { requiredPctOnItem: number; requiredRawScore: number }> = {};
+  const result: Record<
+    string,
+    { requiredPctOnItem: number; requiredRawScore: number }
+  > = {};
   if (sumRemainW <= 0) return result;
 
-  const sharedPct = (remain / sumRemainW) * 100;           // e.g., 29.7/40*100 = 74.25%
+  const sharedPct = (remain / sumRemainW) * 100; // e.g., 29.7/40*100 = 74.25%
 
   for (const it of items) {
-    if (isGraded(it)) continue;                            // show only for ungraded items
+    if (isGraded(it)) continue; // show only for ungraded items
     const w = it.weight || 0;
     const max = it.maxScore || 0;
 
     if (w <= 0 || max <= 0) {
       // Invalid item definition -> mark as impossible so UI can highlight
-      result[it.id] = { requiredPctOnItem: Infinity, requiredRawScore: Infinity };
+      result[it.id] = {
+        requiredPctOnItem: Infinity,
+        requiredRawScore: Infinity,
+      };
       continue;
     }
 
-    const raw = (sharedPct / 100) * max;                   // convert % to raw
+    const raw = (sharedPct / 100) * max; // convert % to raw
     const roundedRaw = Math.ceil(raw * 10) / 10;
     result[it.id] = {
-        requiredPctOnItem: sharedPct,
-        requiredRawScore: roundedRaw,
+      requiredPctOnItem: sharedPct,
+      requiredRawScore: roundedRaw,
     };
   }
 

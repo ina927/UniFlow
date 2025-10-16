@@ -61,7 +61,7 @@ export const EditToDoForm = ({
   }, [event]); // Add dependency array
 
   // event handler
-  const validateSave = () => {
+  const validateSave = async () => {
     if (!event) {
       console.log('Error fetching data');
       return;
@@ -125,18 +125,18 @@ export const EditToDoForm = ({
         status: ToDoStatus.PENDING, // default settings
       };
 
-      updateToDo(newToDo);
+      await updateToDo(newToDo);
+      console.log('Updated event:', newToDo);
+      refresh();
+      onClose(); // Use the onClose prop
+      setDescription('');
+      setEventTitle('');
+      setStartDate(null);
+      setEndDate(null);
+      setSubjectId('');
     } else {
       console.log('Error in posting');
     }
-
-    onClose(); // Use the onClose prop
-    setDescription('');
-    setEventTitle('');
-    setStartDate(null);
-    setEndDate(null);
-    setSubjectId('');
-    refresh();
   };
 
   return (
