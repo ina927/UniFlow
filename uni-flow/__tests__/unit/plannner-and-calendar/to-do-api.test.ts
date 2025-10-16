@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { POST, GET } from '@/app/api/todos/route';
-import { PUT, DELETE } from '@/app/api/todos/[id]/route';
+import { DELETE, PUT } from '@/app/api/todos/[id]/route';
+import { GET, POST } from '@/app/api/todos/route';
+import { ToDoStatus } from '@/entities/todos/enums/ToDoStatus';
 import { prisma } from '@/shared/lib';
-import { ToDoStatus } from '@/entities/enums/ToDoStatus';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock Prisma
 vi.mock('@/shared/lib', () => ({
@@ -11,9 +11,9 @@ vi.mock('@/shared/lib', () => ({
       create: vi.fn(),
       findMany: vi.fn(),
       updateMany: vi.fn(),
-      deleteMany: vi.fn()
-    }
-  }
+      deleteMany: vi.fn(),
+    },
+  },
 }));
 
 describe('CRUD Operations - Todos API', () => {
@@ -37,20 +37,20 @@ describe('CRUD Operations - Todos API', () => {
         content: 'Vi test API-1',
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-15'),
-        taskStatus: ToDoStatus.PENDING
+        taskStatus: ToDoStatus.PENDING,
       };
 
       const requestBody = {
         newToDo: {
-            userId: 'user-456',
-            subjectId: 'subject-789',
-            assessmentId: null,
-            title: 'Testing trial 1',
-            content: 'Vi test API-1',
-            startDate: new Date('2024-01-01'),
-            endDate: new Date('2024-01-15'),
-            taskStatus: ToDoStatus.PENDING
-        }
+          userId: 'user-456',
+          subjectId: 'subject-789',
+          assessmentId: null,
+          title: 'Testing trial 1',
+          content: 'Vi test API-1',
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-15'),
+          taskStatus: ToDoStatus.PENDING,
+        },
       };
 
       (prisma.toDo.create as any).mockResolvedValue(mockToDo);
@@ -62,21 +62,21 @@ describe('CRUD Operations - Todos API', () => {
       // test outcome must fulfill this one here (I think)
       expect(response.status).toBe(201);
       expect(data).toEqual({
-            ...mockToDo,
-            startDate: mockToDo.startDate.toISOString(),
-            endDate: mockToDo.endDate.toISOString(),
+        ...mockToDo,
+        startDate: mockToDo.startDate.toISOString(),
+        endDate: mockToDo.endDate.toISOString(),
       });
       expect(prisma.toDo.create).toHaveBeenCalledWith({
         data: {
-            userId: 'user-456',
-            subjectId: 'subject-789',
-            assessmentId: null,
-            title: 'Testing trial 1',
-            description: 'Vi test API-1',
-            startDate: new Date('2024-01-01'),
-            endDate: new Date('2024-01-15'),
-            status: ToDoStatus.PENDING
-          }
+          userId: 'user-456',
+          subjectId: 'subject-789',
+          assessmentId: null,
+          title: 'Testing trial 1',
+          description: 'Vi test API-1',
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-15'),
+          status: ToDoStatus.PENDING,
+        },
       });
     });
 
@@ -91,11 +91,14 @@ describe('CRUD Operations - Todos API', () => {
           description: 'Testing testing',
           startDate: new Date(),
           endDate: new Date(),
-          status: ToDoStatus.PENDING
-        }
+          status: ToDoStatus.PENDING,
+        },
       };
 
-      (prisma.toDo.create as any).mockResolvedValue({ id: '1', ...requestBody.newToDo });
+      (prisma.toDo.create as any).mockResolvedValue({
+        id: '1',
+        ...requestBody.newToDo,
+      });
 
       const mockRequest = { json: async () => requestBody };
       const response = await POST(mockRequest as any);
@@ -104,8 +107,8 @@ describe('CRUD Operations - Todos API', () => {
       expect(prisma.toDo.create).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({
-            assessmentId: 'assessment-999'
-          })
+            assessmentId: 'assessment-999',
+          }),
         })
       );
     });
@@ -113,7 +116,6 @@ describe('CRUD Operations - Todos API', () => {
 
   // C.R.U.D -> Read (R)
   describe('READ or GET /api/todos', () => {
-
     // if the todo exists
     it('should retrieve all todos', async () => {
       const mockToDos = [
@@ -124,7 +126,7 @@ describe('CRUD Operations - Todos API', () => {
           description: 'Testing testing',
           status: ToDoStatus.PENDING,
           startDate: new Date('2024-01-01'),
-          endDate: new Date('2024-01-15')
+          endDate: new Date('2024-01-15'),
         },
         {
           id: '2',
@@ -133,14 +135,14 @@ describe('CRUD Operations - Todos API', () => {
           description: 'Testing testing 2',
           status: ToDoStatus.IN_PROGRESS,
           startDate: new Date('2024-01-05'),
-          endDate: new Date('2024-01-20')
-        }
+          endDate: new Date('2024-01-20'),
+        },
       ];
 
       (prisma.toDo.findMany as any).mockResolvedValue(mockToDos);
 
       const mockRequest = {
-        headers: { get: vi.fn().mockReturnValue('Admin') }
+        headers: { get: vi.fn().mockReturnValue('Admin') },
       };
 
       const response = await GET(mockRequest as any);
@@ -168,7 +170,7 @@ describe('CRUD Operations - Todos API', () => {
       (prisma.toDo.findMany as any).mockResolvedValue([]);
 
       const mockRequest = {
-        headers: { get: vi.fn().mockReturnValue('Admin') }
+        headers: { get: vi.fn().mockReturnValue('Admin') },
       };
 
       const response = await GET(mockRequest as any);
@@ -177,63 +179,63 @@ describe('CRUD Operations - Todos API', () => {
       expect(response.status).toBe(200);
       expect(data).toEqual([]);
       expect(Array.isArray(data)).toBe(true);
-        });
-    });
-
-    // C.R.U.D -> Update (U) (specific id)
-    describe('UPDATE or PUT  /api/todos/[id]', () => {
-        it('should update multiple fields at once', async () => {
-        const mockUpdatedToDo = { count: 1 };
-        (prisma.toDo.updateMany as any).mockResolvedValue(mockUpdatedToDo);
-
-        const mockRequest = {
-            json: async () => ({
-            title: 'Updated Title',
-            description: 'Updated Description',
-            endDate: new Date('2024-02-01'),
-            status: ToDoStatus.IN_PROGRESS,
-            subjectId: 'new-subject-id'
-            })
-        };
-        const mockContext = {
-            params: Promise.resolve({ id: 'todo-123' })
-        };
-
-        const response = await PUT(mockRequest as any, mockContext as any);
-
-        expect(response.status).toBe(200);
-        expect(prisma.toDo.updateMany).toHaveBeenCalledWith({
-            where: { id: 'todo-123' },
-            data: {
-              title: 'Updated Title',
-              description: 'Updated Description',
-              endDate: new Date('2024-02-01'),
-              status: ToDoStatus.IN_PROGRESS,
-              subjectId: 'new-subject-id',
-            },
-          });
-        });
-    })
-
-    // C.R.U.D -> Delete (D) (specific id)
-    describe('DELETE - DELETE /api/todos/[id]', () => {
-        it('should delete todo by id', async () => {
-        const mockDeletedToDo = { count: 1 };
-        (prisma.toDo.deleteMany as any).mockResolvedValue(mockDeletedToDo);
-
-        const mockRequest = {};
-        const mockContext = {
-            params: Promise.resolve({ id: '123' })
-        };
-
-        const response = await DELETE(mockRequest as any, mockContext as any);
-        const data = await response?.json();
-
-        expect(response?.status).toBe(200);
-        expect(data).toEqual(mockDeletedToDo);
-        expect(prisma.toDo.deleteMany).toHaveBeenCalledWith({
-            where: { id: '123' }
-        });
     });
   });
-})
+
+  // C.R.U.D -> Update (U) (specific id)
+  describe('UPDATE or PUT  /api/todos/[id]', () => {
+    it('should update multiple fields at once', async () => {
+      const mockUpdatedToDo = { count: 1 };
+      (prisma.toDo.updateMany as any).mockResolvedValue(mockUpdatedToDo);
+
+      const mockRequest = {
+        json: async () => ({
+          title: 'Updated Title',
+          description: 'Updated Description',
+          endDate: new Date('2024-02-01'),
+          status: ToDoStatus.IN_PROGRESS,
+          subjectId: 'new-subject-id',
+        }),
+      };
+      const mockContext = {
+        params: Promise.resolve({ id: 'todo-123' }),
+      };
+
+      const response = await PUT(mockRequest as any, mockContext as any);
+
+      expect(response.status).toBe(200);
+      expect(prisma.toDo.updateMany).toHaveBeenCalledWith({
+        where: { id: 'todo-123' },
+        data: {
+          title: 'Updated Title',
+          description: 'Updated Description',
+          endDate: new Date('2024-02-01'),
+          status: ToDoStatus.IN_PROGRESS,
+          subjectId: 'new-subject-id',
+        },
+      });
+    });
+  });
+
+  // C.R.U.D -> Delete (D) (specific id)
+  describe('DELETE - DELETE /api/todos/[id]', () => {
+    it('should delete todo by id', async () => {
+      const mockDeletedToDo = { count: 1 };
+      (prisma.toDo.deleteMany as any).mockResolvedValue(mockDeletedToDo);
+
+      const mockRequest = {};
+      const mockContext = {
+        params: Promise.resolve({ id: '123' }),
+      };
+
+      const response = await DELETE(mockRequest as any, mockContext as any);
+      const data = await response?.json();
+
+      expect(response?.status).toBe(200);
+      expect(data).toEqual(mockDeletedToDo);
+      expect(prisma.toDo.deleteMany).toHaveBeenCalledWith({
+        where: { id: '123' },
+      });
+    });
+  });
+});

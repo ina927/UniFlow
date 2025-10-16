@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { ToDoStatus } from '@/entities/enums';
+import { ToDoStatus } from '@/entities/todos/enums';
 import { prisma } from '@/shared/lib/prisma';
 
 export async function POST(request: NextRequest) {

@@ -1,6 +1,6 @@
 // library
-import { ToDoStatus } from '@/entities/enums';
 import { ToDoEntity, ToDoVital } from '@/entities/todos/entities';
+import { ToDoStatus } from '@/entities/todos/enums';
 import axios from 'axios';
 
 const baseApi = process.env.NEXT_PUBLIC_API_BASE_URL;

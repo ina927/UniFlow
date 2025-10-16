@@ -1,7 +1,7 @@
 // Library
 import { useEffect, useState } from 'react';
 
-import { ToDoStatus } from '@/entities/enums';
+import { ToDoStatus } from '@/entities/todos/enums';
 import {
   Dialog,
   DialogContent,
@@ -17,6 +17,7 @@ type addToDoFormProps = {
   academicCourseId: string;
   isOpen: boolean;
   onClose: () => void;
+  refresh: () => void;
 };
 
 // export function
@@ -24,6 +25,7 @@ export const AddToDoForm = ({
   academicCourseId,
   isOpen,
   onClose,
+  refresh,
 }: addToDoFormProps) => {
   // form state
   const [eventTitle, setEventTitle] = useState<string>('');
@@ -116,6 +118,7 @@ export const AddToDoForm = ({
     setStartDate(null);
     setEndDate(null);
     setSubjectId('');
+    refresh();
   };
 
   return (
@@ -123,7 +126,7 @@ export const AddToDoForm = ({
       open={isOpen}
       onOpenChange={onClose}
     >
-      <DialogContent>
+      <DialogContent aria-describedby={'addToDoForm'}>
         <br />
         <DialogHeader>
           <DialogTitle className='text-title3-bold'>Add New Task</DialogTitle>

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { ToDoStatus } from '@/entities/enums/ToDoStatus';
+import { ToDoStatus } from '@/entities/todos/enums/ToDoStatus';
 import { prisma } from '@/shared/lib/prisma';
 
 export async function PUT(

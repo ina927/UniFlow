@@ -3,8 +3,8 @@
 
 import { useEffect, useState } from 'react';
 
-import { ToDoStatus } from '@/entities/enums';
 import { ToDoEntity } from '@/entities/todos/entities';
+import { ToDoStatus } from '@/entities/todos/enums';
 import {
   Dialog,
   DialogContent,
@@ -21,6 +21,7 @@ type editToDoFormProps = {
   event: ToDoEntity;
   isOpen: boolean; // Add this
   onClose: () => void; // Add this
+  refresh: () => void;
 };
 
 // export function
@@ -29,6 +30,7 @@ export const EditToDoForm = ({
   event,
   isOpen,
   onClose,
+  refresh,
 }: editToDoFormProps) => {
   // if (!event) return null;
 
@@ -134,6 +136,7 @@ export const EditToDoForm = ({
     setStartDate(null);
     setEndDate(null);
     setSubjectId('');
+    refresh();
   };
 
   return (
