@@ -1,40 +1,54 @@
-import { ToDo } from "@/shared/models/ToDo";
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/shared/lib/prisma";
-import { ToDoStatus } from "@/entities/enums/ToDoStatus";
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest){
-    try {
-        const {newToDo} = await request.json()
-        const {userId, subjectId, assessmentId, title, content, startDate, endDate, taskStatus} = newToDo
-        const savedToDo = await prisma.toDo.create({
-            data: {
-                userId: userId, 
-                subjectId: subjectId, 
-                assessmentId: assessmentId, 
-                title: title, 
-                description: content, 
-                startDate: startDate, 
-                endDate: endDate, 
-                status: taskStatus}
-        })
-        // await savedToDo.save()
-        return NextResponse.json(savedToDo, {status: 201})
-    } catch (error){
-        console.log(error)
-        return NextResponse.json(error, {status: 500})
+import { ToDoStatus } from '@/entities/enums';
+import { prisma } from '@/shared/lib/prisma';
+
+export async function POST(request: NextRequest) {
+  try {
+    const { newToDo } = await request.json();
+
+    console.log('newToDo', newToDo);
+
+    // Validate required fields
+    if (!newToDo.title || !newToDo.userId) {
+      return NextResponse.json(
+        { error: 'Title and userId are required' },
+        { status: 400 }
+      );
     }
+
+    const savedToDo = await prisma.toDo.create({
+      data: {
+        userId: newToDo.userId,
+        title: newToDo.title,
+        subjectId: newToDo.subjectId,
+        assessmentId: newToDo.assessmentId || null,
+        description: newToDo.description,
+        startDate: newToDo.startDate,
+        endDate: newToDo.endDate,
+        status: ToDoStatus.PENDING,
+      },
+    });
+
+    return NextResponse.json(savedToDo, { status: 201 });
+  } catch (error) {
+    console.error('Error creating todo:', error);
+    return NextResponse.json(
+      { error: 'Failed to create todo' },
+      { status: 500 }
+    );
+  }
 }
 
 export async function GET(req: NextRequest) {
-    try {
-        const userId = req.headers.get("userId");
+  try {
+    const userId = req.headers.get('user-id');
 
-        const toDos = await prisma.toDo.findMany(); //{where:{userId: {not: null}}}
+    const toDos = await prisma.toDo.findMany(); //{where:{userId: {not: null}}}
 
-        return NextResponse.json(toDos, {status: 200})
-    } catch (error){
-        console.log(error)
-        return NextResponse.json(error, {status: 500})
-    }
+    return NextResponse.json(toDos, { status: 200 });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(error, { status: 500 });
+  }
 }

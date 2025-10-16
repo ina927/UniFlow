@@ -124,7 +124,6 @@ model Assessment {
   subjectId   String
   maxScore    Float
   score       Float?
-  type        String
   subject     Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   todos       ToDo[]
 }
@@ -171,24 +170,6 @@ model AuditLog {
   statusafter  UserStatus?
   createdat    DateTime    @default(now()) @db.Timestamptz(6)
   User         User?       @relation(fields: [targetuserid], references: [id], onUpdate: NoAction)
-}
-
-enum Role {
-  ADMIN
-  TEACHER
-  STUDENT
-}
-
-enum UserStatus {
-  ACTIVE
-  INACTIVE
-  SUSPENDED
-}
-
-enum ToDoStatus {
-  PENDING
-  IN_PROGRESS
-  DONE
 }
 
 enum AuditAction {

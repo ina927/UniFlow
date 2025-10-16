@@ -27,17 +27,17 @@ export default function StudyPlanner() {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [newEventTitle, setNewEventTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
-  const [taskStatus, setTaskStatus] = useState<string>('');
   const [events, setFetchEvent] = useState<ToDoEntity[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<ToDoEntity>();
   const [allFilter, setAllFilter] = useState<string[]>([]);
   const [filteredEvent, setFilteredEvent] = useState<ToDoEntity[]>([]);
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>(''); // filter
-  const [subId, setSubId] = useState<string>('');
 
   const [pendingEvent, setPendingEvent] = useState<ToDoEntity[]>([]);
   const [inProgressEvent, setInProgressEvent] = useState<ToDoEntity[]>([]);
   const [completedEvent, setCompletedEvent] = useState<ToDoEntity[]>([]);
+
+  const baseApi = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   // click handler
   useEffect(() => {
@@ -51,7 +51,7 @@ export default function StudyPlanner() {
       setContent('');
       setEndDate(null);
       getAllFilter();
-      const response = await fetch('http://localhost:3000/api/todos', {
+      const response = await fetch(`${baseApi}/todos`, {
         headers: {
           userId: userId!,
         },
@@ -88,7 +88,7 @@ export default function StudyPlanner() {
       setNewEventTitle('');
       setContent('');
       setEndDate(null);
-      const response = await fetch('http://localhost:3000/api/todos', {
+      const response = await fetch(`${baseApi}/todos`, {
         headers: {
           userId: userId!,
         },
@@ -130,36 +130,21 @@ export default function StudyPlanner() {
   };
 
   const getAllFilter = async () => {
-    const response = await fetch('http://localhost:3000/api/subjects');
+    const response = await fetch(`${baseApi}/subjects`);
     const allFilter = await response.json();
 
     setAllFilter(allFilter);
   };
 
-  const setFilteredEvents = async (subjectId: string) => {
-    const currentEvents = events;
-    if (subjectId) {
-      const filtered = currentEvents.filter(
-        (event: { subjectId: string }) => event.subjectId === subjectId
-      );
-      setFilteredEvent(filtered);
-      refresh();
-    } else {
-      return;
-    }
-  };
-
   const statusChangePending = async (event: ToDoEntity) => {
-    const updated = { ...event, status: ToDoStatus.IN_PROGRESS };
-    await Axios.put(`/api/todos/${event.id}`, {
+    await Axios.put(`${baseApi}/todos/${event.id}`, {
       status: ToDoStatus.IN_PROGRESS,
     });
     refresh();
   };
 
   const statusChangeComplete = async (event: ToDoEntity) => {
-    const updated = { ...event, status: ToDoStatus.DONE };
-    await Axios.put(`/api/todos/${event.id}`, {
+    await Axios.put(`${baseApi}/todos/${event.id}`, {
       status: ToDoStatus.DONE,
     });
     refresh();
@@ -167,29 +152,8 @@ export default function StudyPlanner() {
 
   const deleteToDo = async (event: ToDoEntity) => {
     if (!event) return;
-    await Axios.delete(`/api/todos/${event.id}`);
+    await Axios.delete(`${baseApi}/todos/${event.id}`);
     refresh();
-  };
-
-  const updateDialog = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log(selectedEvent);
-
-    if (newEventTitle === '') {
-      setNewEventTitle('New Task');
-    }
-
-    if (selectedEvent) {
-      await Axios.put(`/api/todos/${selectedEvent.id}`, {
-        title: newEventTitle,
-        description: content,
-        subjectId: subId,
-        endDate: endDate,
-      });
-
-      refresh();
-      setIsDialogUpdateOpen(false);
-    }
   };
 
   const handleEditButton = (event: ToDoEntity) => {
@@ -208,40 +172,10 @@ export default function StudyPlanner() {
     setEndDate(null);
   };
 
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
-    setNewEventTitle('');
-  };
-
-  const handleAddEvent = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // this is for the database
-
-    if (newEventTitle === '') {
-      setNewEventTitle('New Task');
-    }
-
-    const newToDo = {
-      userId: 'baacd6fe-1729-4505-9b83-d9f4fd47ea1f',
-      subjectId: subId,
-      assessmentId: null,
-      title: newEventTitle,
-      content: content,
-      startDate: endDate, //new Date()
-      endDate: endDate,
-      taskStatus: ToDoStatus.PENDING,
-    };
-
-    const response = await Axios.post('/api/todos', { newToDo });
-    console.log(response);
-    refresh();
-    handleCloseDialog();
-  };
-
   const handleSubjectFilterChange = async (subjectId: string | null) => {
     console.log(subjectId);
 
-    const response = await fetch('http://localhost:3000/api/todos', {
+    const response = await fetch(`${baseApi}/todos`, {
       headers: {
         userId: userId!,
       },
@@ -288,13 +222,6 @@ export default function StudyPlanner() {
       setCompletedEvent(
         freshEvents.filter((e: ToDoEntity) => e.status === ToDoStatus.DONE)
       );
-    }
-  };
-
-  const handleSubjectChange = (subjectId: string) => {
-    console.log(subjectId);
-    if (subjectId) {
-      setSubId(subjectId);
     }
   };
 

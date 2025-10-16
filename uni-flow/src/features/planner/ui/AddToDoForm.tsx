@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 
 import { ToDoStatus } from '@/entities/enums';
-import { useUserId } from '@/shared/stores';
 import {
   Dialog,
   DialogContent,
@@ -32,12 +31,7 @@ export const AddToDoForm = ({
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [subjectId, setSubjectId] = useState<string>('');
-
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
-  // user data
-  const userId = useUserId();
 
   // use handler
   useEffect(() => {

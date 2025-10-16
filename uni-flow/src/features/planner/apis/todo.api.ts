@@ -1,14 +1,17 @@
 // library
 import { ToDoStatus } from '@/entities/enums';
 import { ToDoEntity, ToDoVital } from '@/entities/todos/entities';
+import axios from 'axios';
 
-import Axios from 'axios';
+const baseApi = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+const userId = localStorage.getItem('user-id')!;
 
 // Function reports
 export async function getToDos(): Promise<ToDoEntity[]> {
-  const allItems = await fetch('/api/todos', {
+  const allItems = await fetch(`${baseApi}/todos`, {
     headers: {
-      'user-id': localStorage.getItem('user-id')!,
+      'user-id': userId,
     },
   });
 
@@ -21,9 +24,9 @@ export async function getToDos(): Promise<ToDoEntity[]> {
 export async function getToDosByFilter(
   subjectId: string
 ): Promise<ToDoEntity[]> {
-  const allItems = await fetch('/api/todos', {
+  const allItems = await fetch(`${baseApi}/todos`, {
     headers: {
-      'user-id': localStorage.getItem('user-id')!,
+      'user-id': userId,
     },
   });
 
@@ -61,32 +64,34 @@ export async function getCompletes(
 
 //posting
 export async function postEvents(event: ToDoVital): Promise<void> {
+  const assessmentId = event.assessmentId?.trim() || null;
+
   // restructuring
   const newToDo = {
-    userId: localStorage.getItem('user-id')!,
+    userId: userId,
     subjectId: event.subjectId,
-    assessmentId: event.assessmentId,
+    assessmentId: assessmentId,
     title: event.title,
-    content: event.description,
+    description: event.description,
     startDate: event.startDate,
     endDate: event.endDate,
     taskStatus: ToDoStatus.PENDING, // default status
   };
 
-  const res = await Axios.post('/api/todos', { newToDo });
+  const res = await axios.post(`${baseApi}/todos`, { newToDo });
   console.log(res);
 }
 
 export async function statusInProgress(event: ToDoEntity) {
   const updated = { ...event, status: ToDoStatus.IN_PROGRESS };
-  await Axios.put(
-    `/api/todos/${event.id}`,
+  await axios.put(
+    `${baseApi}/todos/${event.id}`,
     {
       status: ToDoStatus.IN_PROGRESS,
     },
     {
       headers: {
-        'user-id': localStorage.getItem('user-id')!,
+        'user-id': userId,
       },
     }
   );
@@ -94,14 +99,14 @@ export async function statusInProgress(event: ToDoEntity) {
 
 export async function statusDone(event: ToDoEntity) {
   const updated = { ...event, status: ToDoStatus.DONE };
-  await Axios.put(
-    `/api/todos/${event.id}`,
+  await axios.put(
+    `${baseApi}/todos/${event.id}`,
     {
       status: ToDoStatus.DONE,
     },
     {
       headers: {
-        'user-id': localStorage.getItem('user-id')!,
+        'user-id': userId,
       },
     }
   );
@@ -109,17 +114,17 @@ export async function statusDone(event: ToDoEntity) {
 
 export async function deleteToDo(event: ToDoEntity) {
   if (!event) return;
-  await Axios.delete(`/api/todos/${event.id}`, {
+  await axios.delete(`${baseApi}/todos/${event.id}`, {
     headers: {
-      'user-id': localStorage.getItem('user-id')!,
+      'user-id': userId,
     },
   });
 }
 
 export async function updateToDo(event: ToDoEntity) {
   if (!event) return;
-  await Axios.put(
-    `/api/todos/${event.id}`,
+  await axios.put(
+    `${baseApi}/todos/${event.id}`,
     {
       title: event.title,
       description: event.description,
@@ -129,7 +134,7 @@ export async function updateToDo(event: ToDoEntity) {
     },
     {
       headers: {
-        'user-id': localStorage.getItem('user-id')!,
+        'user-id': userId,
       },
     }
   );
