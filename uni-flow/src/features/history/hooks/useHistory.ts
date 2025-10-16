@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
+
+import { useMemo } from 'react';
 
 type Session = {
   id: string;
@@ -10,76 +12,80 @@ type Session = {
   endTime: string;
 };
 
-export const useHistory = () => {
+export const useHistory = (userId: string) => {
   const [history, setHistory] = useState<Session[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchTimerSessions = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api/timer-sessions?userId=${userId}`);
+      const data = await response.json();
+
+      if (!response.ok)
+        throw new Error(data.error || 'Failed to fetch timer sessions');
+
+      const sessions = data.timerSessions.map((session: any) => ({
+        id: session.id,
+        subject: session.todo?.subject?.title || 'Other',
+        taskTitle: session.todo?.title || 'Study Session',
+        taskStatus: session.todo?.status || 'UNKNOWN',
+        duration:
+          session.startTime && session.endTime
+            ? (new Date(session.endTime).getTime() -
+                new Date(session.startTime).getTime()) /
+              1000
+            : 0,
+        startTime: session.startTime,
+        endTime: session.endTime,
+      }));
+
+      setHistory(sessions);
+    } catch (err) {
+      setError(err as string);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchTimerSessions = async () => {
-      try {
-        const userId = "83482f49-8367-48d1-93f0-e98f01010f0f"; // Replace with actual user ID
-        const response = await fetch(`/api/timer-sessions?userId=${userId}`);
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || "Failed to fetch timer sessions");
-        }
-
-        const sessions = data.timerSessions.map((session: any) => ({
-          id: session.id,
-          subject: session.todo?.subject?.title || "Other",
-          taskTitle: session.todo?.title || "Study Session",
-          taskStatus: session.todo?.status || "UNKNOWN",
-          duration:
-            (new Date(session.endTime).getTime() -
-              new Date(session.startTime).getTime()) /
-            1000,
-          startTime: session.startTime,
-          endTime: session.endTime,
-        }));
-
-        setHistory(sessions);
-      } catch (error) {
-        console.error("Error fetching timer sessions:", error);
-      }
-    };
-
     fetchTimerSessions();
-  }, []);
+  }, [userId]);
 
-  const totalFocusHours =
-    history.reduce((acc, s) => acc + s.duration, 0) / 3600;
+  const totalFocusHours = useMemo(
+    () => history.reduce((acc, s) => acc + s.duration, 0) / 3600,
+    [history]
+  );
 
-  // Calculate total pomodoros (assuming each session is one pomodoro)
-  const totalPomodoros = history.length;
+  const totalPomodoros = useMemo(() => history.length, [history]);
 
   const clearHistory = async () => {
     try {
-      const response = await fetch("/api/timer-sessions", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId: "83482f49-8367-48d1-93f0-e98f01010f0f" }),
+      const response = await fetch('/api/timer-sessions', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
       });
-
       const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to clear history");
-      }
-
-      console.log("History cleared:", data.message);
-      alert("History cleared successfully!");
+      if (!response.ok)
+        throw new Error(data.error || 'Failed to clear history');
       setHistory([]);
+      alert('History cleared successfully!');
     } catch (error) {
-      console.error("Error clearing history:", error.message);
-      alert("Failed to clear history. Please try again.");
+      console.error('Error clearing history:', error as string);
+      alert('Failed to clear history. Please try again.');
     }
   };
 
   return {
     history,
     totalFocusHours,
-    totalPomodoros, // <-- Add this
+    totalPomodoros,
     clearHistory,
+    fetchTimerSessions,
+    loading,
+    error,
   };
 };
