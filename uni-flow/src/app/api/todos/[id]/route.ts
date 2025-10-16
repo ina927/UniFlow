@@ -1,6 +1,6 @@
 import { ToDo } from "@/shared/models/ToDo";
 import { NextRequest, NextResponse } from "next/server";
-import {prisma} from "@/shared/lib/"
+import { prisma } from "@/shared/lib/prisma"
 import { ToDoStatus } from "@/entities/enums/ToDoStatus";
 
 
@@ -19,6 +19,8 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ id:
 
         const newDue: Date | undefined = update.endDate
 
+        const newStart: Date | undefined = update.startDate
+
         const newSubId: string | undefined = update.subjectId
 
         const updatedToDo = await prisma.toDo.updateMany({
@@ -28,6 +30,7 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ id:
                 ...(newTitle && {title: newTitle}),
                 ...(newContent && {description: newContent}),
                 ...(newDue && {endDate: newDue}),
+                ...(newStart && {startDate: newStart}),
                 ...(newSubId && {subjectId: newSubId})
             }
     })

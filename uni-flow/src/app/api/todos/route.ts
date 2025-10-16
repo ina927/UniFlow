@@ -1,9 +1,9 @@
 import { ToDo } from "@/shared/models/ToDo";
 import { NextRequest, NextResponse } from "next/server";
-import {prisma} from "@/shared/lib/"
+import { prisma } from "@/shared/lib/prisma";
 import { ToDoStatus } from "@/entities/enums/ToDoStatus";
 
-export async function POST(request: { json: () => PromiseLike<{ newToDo: any; }> | { newToDo: any; }; }){
+export async function POST(request: NextRequest){
     try {
         const {newToDo} = await request.json()
         const {userId, subjectId, assessmentId, title, content, startDate, endDate, taskStatus} = newToDo
