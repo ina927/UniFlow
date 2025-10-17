@@ -4,7 +4,7 @@ import { Combobox } from '@/widgets/planner/SetFilterModal';
 
 // type setup
 type PlannerHeaderProps = {
-  academicCourseId: string;
+  academicCourseId: any;
   onSubjectFilterChange: (subjectId: string | null) => void;
 };
 

@@ -4,10 +4,12 @@ import { useState } from "react";
 import { PlannerHeader } from "@/features/planner/ui/PlannerHeader";
 import { TaskLists } from "@/features/planner/ui/TaskLists";
 import styles from "./page.module.css"
+import { useAuthStore, useAcademicStore } from "@/shared/stores";
 
 export default function PlannerPage() {
     const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
-    const academicCourseId = 'dfe52aff-dc38-4b74-8067-95d1786b3c31';
+    const { userId } = useAuthStore();
+    const { academicCourseId, setAcademicCourseId } = useAcademicStore();
 
     const handleSubjectFilterChange = (subjectId: string | null) => {
         

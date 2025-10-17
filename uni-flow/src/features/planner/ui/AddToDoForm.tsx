@@ -48,7 +48,7 @@ export const AddToDoForm = ({
   }, [isOpen]);
 
   // event handler
-  const validateSave = (e: React.FormEvent) => {
+  const validateSave = async (e: React.FormEvent) => {
     // Title validator
     if (eventTitle.trim() === '' || !eventTitle) {
       setError('Empty title is detected');
@@ -112,17 +112,18 @@ export const AddToDoForm = ({
         status: ToDoStatus.PENDING, // default settings
       };
 
-      postEvents(newToDo);
+      await postEvents(newToDo);
+
+      refresh();
+      onClose();
+      setDescription('');
+      setEventTitle('');
+      setStartDate(null);
+      setEndDate(null);
+      setSubjectId('');
     } else {
       console.log('Error in posting');
     }
-    onClose();
-    setDescription('');
-    setEventTitle('');
-    setStartDate(null);
-    setEndDate(null);
-    setSubjectId('');
-    refresh();
   };
 
   return (
