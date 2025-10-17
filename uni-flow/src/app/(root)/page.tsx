@@ -70,13 +70,6 @@ export default function LoginPage() {
               onChange={(e) => setPwd(e.target.value)}
             />
           </label>
-
-          <button
-            className='forgot-btn'
-            disabled
-          >
-            Forgot Password
-          </button>
           {msg && <p className='login-msg error'>{msg}</p>}
 
           <div className='login-actions'>

@@ -1,8 +1,8 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @plugin "tailwindcss-animate";
-@import "pretendard/dist/web/static/pretendard.css";
-@import "tw-animate-css";
+@import 'pretendard/dist/web/static/pretendard.css';
+@import 'tw-animate-css';
 @tailwind utilities;
 
 @custom-variant dark (&:is(.dark *));
@@ -10,39 +10,41 @@
 /* ========= Root variables & theme ========= */
 :root {
   /* Font */
-  --font-pretendard: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --font-inter: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-pretendard: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui,
+    sans-serif;
+  --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, system-ui,
+    sans-serif;
 
   /* Color */
-  --components-fill: #F0EFEF;
+  --components-fill: #f0efef;
   --text-primary: #242426;
-  --text-secondary: #6C6C70;
+  --text-secondary: #6c6c70;
   --text-tertiary: #949494;
-  --text-light: #D9D9D9;
-  --primary-light: #25437C;
-  --primary-dark: #606ACB;
-  --button-active-light: #25437C;
-  --button-active-dark: #606ACB;
-  --button-deactive-light: #6B7280;
-  --button-deactive-dark: #C4C9D0;
-  --button-hover-light: #16294F;
-  --button-hover-dark: #4A54B0;
+  --text-light: #d9d9d9;
+  --primary-light: #25437c;
+  --primary-dark: #606acb;
+  --button-active-light: #25437c;
+  --button-active-dark: #606acb;
+  --button-deactive-light: #6b7280;
+  --button-deactive-dark: #c4c9d0;
+  --button-hover-light: #16294f;
+  --button-hover-dark: #4a54b0;
 
   /* Color for Shadcn */
   --background: #ffffff;
   --foreground: #171717;
   --radius: 0.625rem;
-  --card: #FFFFFF;
+  --card: #ffffff;
   --card-foreground: #242426;
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #25437C;
+  --primary: #25437c;
   --primary-foreground: #ffffff;
   /* --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0); */
-  --muted: #F0EFEF;
+  --muted: #f0efef;
   --muted-foreground: #242426;
-  --accent: #F0EFEF;
+  --accent: #f0efef;
   --accent-foreground: oklch(0.145 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
@@ -61,7 +63,6 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-
 }
 
 @theme inline {
@@ -107,62 +108,62 @@
 /* Text Styles From Figma */
 .text-large-title {
   font-family: var(--font-pretendard);
-  font-weight: 400;        
-  font-size: 32px;        
-  line-height: 39px;       
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 39px;
 }
 
 .text-large-title-bold {
   font-family: var(--font-pretendard);
-  font-weight: 700;        
-  font-size: 32px;        
-  line-height: 39px;       
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 39px;
 }
 
 .text-title1 {
   font-family: var(--font-pretendard);
-  font-weight: 400;        
-  font-size: 26px;        
-  line-height: 32px;       
-  letter-spacing: 1.25%;  
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 32px;
+  letter-spacing: 1.25%;
 }
 
 .text-title1-bold {
   font-family: var(--font-pretendard);
-  font-weight: 700;        
-  font-size: 26px;        
-  line-height: 32px;       
-  letter-spacing: 1.25%;  
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 32px;
+  letter-spacing: 1.25%;
 }
 
 .text-title2 {
   font-family: var(--font-pretendard);
-  font-weight: 400;        
-  font-size: 20px;        
-  line-height: 25px;       
-  letter-spacing: 1.25%;  
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 25px;
+  letter-spacing: 1.25%;
 }
 
 .text-title2-bold {
   font-family: var(--font-pretendard);
-  font-weight: 700;        
-  font-size: 20px;        
-  line-height: 25px;       
-  letter-spacing: 1.25%;  
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 25px;
+  letter-spacing: 1.25%;
 }
 
 .text-title3 {
   font-family: var(--font-inter);
-  font-weight: 400;        
-  font-size: 16px;        
-  line-height: 21px;       
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 21px;
 }
 
 .text-title3-bold {
   font-family: var(--font-inter);
-  font-weight: 700;        
-  font-size: 16px;        
-  line-height: 21px;       
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 21px;
 }
 
 .text-body1 {
@@ -198,34 +199,80 @@
 }
 
 /* ===== Color utility classes (mapped to CSS variables) ===== */
-.primary-light           { color: var(--primary-light); }
+.primary-light {
+  color: var(--primary-light);
+}
 /* Text colors */
-.text-primary      { color: var(--text-primary); }
-.text-secondary    { color: var(--text-secondary); }
-.text-tertiary     { color: var(--text-tertiary); }
-.text-light        { color: var(--text-light); }
+.text-primary {
+  color: var(--text-primary);
+}
+.text-secondary {
+  color: var(--text-secondary);
+}
+.text-tertiary {
+  color: var(--text-tertiary);
+}
+.text-light {
+  color: var(--text-light);
+}
 
 /* Background colors */
-.bg-components-fill   { background-color: var(--components-fill); }
-.bg-primary-light     { background-color: var(--primary-light); }
-.bg-primary-dark      { background-color: var(--primary-dark); }
-.bg-button-active-light  { background-color: var(--button-active-light); }
-.bg-button-active-dark   { background-color: var(--button-active-dark); }
-.bg-button-deactive-light { background-color: var(--button-deactive-light); }
-.bg-button-deactive-dark  { background-color: var(--button-deactive-dark); }
-.bg-button-hover-light    { background-color: var(--button-hover-light); }
-.bg-button-hover-dark     { background-color: var(--button-hover-dark); }
+.bg-components-fill {
+  background-color: var(--components-fill);
+}
+.bg-primary-light {
+  background-color: var(--primary-light);
+}
+.bg-primary-dark {
+  background-color: var(--primary-dark);
+}
+.bg-button-active-light {
+  background-color: var(--button-active-light);
+}
+.bg-button-active-dark {
+  background-color: var(--button-active-dark);
+}
+.bg-button-deactive-light {
+  background-color: var(--button-deactive-light);
+}
+.bg-button-deactive-dark {
+  background-color: var(--button-deactive-dark);
+}
+.bg-button-hover-light {
+  background-color: var(--button-hover-light);
+}
+.bg-button-hover-dark {
+  background-color: var(--button-hover-dark);
+}
 
 /* Border colors */
-.border-components-fill   { border-color: var(--components-fill); }
-.border-primary-light     { border-color: var(--primary-light); }
-.border-primary-dark      { border-color: var(--primary-dark); }
-.border-button-active-light  { border-color: var(--button-active-light); }
-.border-button-active-dark   { border-color: var(--button-active-dark); }
-.border-button-deactive-light { border-color: var(--button-deactive-light); }
-.border-button-deactive-dark  { border-color: var(--button-deactive-dark); }
-.border-button-hover-light    { border-color: var(--button-hover-light); }
-.border-button-hover-dark     { border-color: var(--button-hover-dark); }
+.border-components-fill {
+  border-color: var(--components-fill);
+}
+.border-primary-light {
+  border-color: var(--primary-light);
+}
+.border-primary-dark {
+  border-color: var(--primary-dark);
+}
+.border-button-active-light {
+  border-color: var(--button-active-light);
+}
+.border-button-active-dark {
+  border-color: var(--button-active-dark);
+}
+.border-button-deactive-light {
+  border-color: var(--button-deactive-light);
+}
+.border-button-deactive-dark {
+  border-color: var(--button-deactive-dark);
+}
+.border-button-hover-light {
+  border-color: var(--button-hover-light);
+}
+.border-button-hover-dark {
+  border-color: var(--button-hover-dark);
+}
 
 .dark {
   --background: oklch(0.145 0 0);
@@ -259,19 +306,15 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
-
   }
   body {
     @apply bg-background text-foreground;
-
   }
-
 }
 
 /* ========= Login page ========= */
@@ -319,17 +362,6 @@
 
 .login-input::placeholder {
   color: #9ca3af;
-}
-
-.forgot-btn {
-  width: fit-content;
-  font-size: 12px;
-  color: #6b7280;
-  background: #e5e7eb;
-  border: 0;
-  border-radius: 10px;
-  padding: 4px 8px;
-  cursor: not-allowed;
 }
 
 .login-actions {
@@ -413,7 +445,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding-top: 65px; 
+  padding-top: 65px;
 }
 
 .register-card-title {
@@ -778,7 +810,6 @@
   margin-top: 8px;
 }
 
-
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -786,9 +817,7 @@
   }
   body {
     @apply bg-background text-foreground;
-
   }
-
 }
 /* NAVBAR SETTINGS */
 /* div.navbar {
