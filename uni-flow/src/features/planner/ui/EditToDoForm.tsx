@@ -17,7 +17,7 @@ import styles from './AddToDoForm.module.css';
 
 // type setup
 type editToDoFormProps = {
-  academicCourseId: string;
+  academicCourseId: any;
   event: ToDoEntity;
   isOpen: boolean; // Add this
   onClose: () => void; // Add this

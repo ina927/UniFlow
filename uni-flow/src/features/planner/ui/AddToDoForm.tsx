@@ -14,7 +14,7 @@ import styles from './AddToDoForm.module.css';
 
 // type setup
 type addToDoFormProps = {
-  academicCourseId: string;
+  academicCourseId: any;
   isOpen: boolean;
   onClose: () => void;
   refresh: () => void;
