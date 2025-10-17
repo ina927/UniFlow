@@ -50,11 +50,6 @@ export default function StudyPlanner() {
 
   // click handler
   useEffect(() => {
-    const fetchUser = async () => {
-      // const userResponse = await fetch(`http://localhost:3000/api/users/${userId}`);
-      // const userData = await userResponse.json();
-      setAcademicCourseId(academicCourseId); // hard code
-    };
     const fetchToDo = async () => {
       setNewEventTitle('');
       setContent('');
@@ -62,7 +57,8 @@ export default function StudyPlanner() {
       getAllFilter();
       const response = await fetch(`${baseApi}/todos`, {
         headers: {
-          userId: userId!,
+          'user-id': userId!,
+          'academic-course-id': academicCourseId!,
         },
       });
 
@@ -97,7 +93,6 @@ export default function StudyPlanner() {
       setCompletedEvent(dones);
       console.log('dones', completedEvent);
     };
-    fetchUser();
     fetchToDo();
   }, []); //open json file
 
@@ -112,7 +107,8 @@ export default function StudyPlanner() {
       setEndDate(null);
       const response = await fetch(`${baseApi}/todos`, {
         headers: {
-          userId: userId!,
+          'user-id': userId!,
+          'academic-course-id': academicCourseId!,
         },
       });
 
@@ -203,7 +199,7 @@ export default function StudyPlanner() {
 
     const response = await fetch(`${baseApi}/todos`, {
       headers: {
-        userId: userId!,
+        'user-id': userId!,
       },
     });
 

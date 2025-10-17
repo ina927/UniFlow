@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 
+import { useAcademicStore, useAuthStore } from '@/shared/stores';
+
 export const useTasks = () => {
   const [tasks, setTasks] = useState([]);
   const [currentTask, setCurrentTask] = useState(null);
-  const [userId, setUserId] = useState<string | null>(null);
   const [newTodo, setNewTodo] = useState({
     subjectId: '',
     assessmentId: '',
@@ -12,6 +13,9 @@ export const useTasks = () => {
     endDate: '',
     taskStatus: 'IN_PROGRESS',
   });
+
+  const { userId, setUserId } = useAuthStore();
+  const { academicCourseId } = useAcademicStore();
 
   // ✅ Get logged-in user info first
   useEffect(() => {
@@ -24,12 +28,12 @@ export const useTasks = () => {
 
         if (res.status === 401) {
           console.warn('User not logged in');
-          setUserId(null);
+          setUserId('');
           return;
         }
 
         const data = await res.json();
-        setUserId(data.user?.id || null);
+        setUserId(data.user?.id || '');
       } catch (err) {
         console.error('Failed to fetch user:', err);
       }
@@ -40,13 +44,17 @@ export const useTasks = () => {
 
   // ✅ Fetch tasks after userId is known
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || !academicCourseId) return;
 
     const fetchTasks = async () => {
       try {
         const response = await fetch('/api/todos', {
           credentials: 'include',
           cache: 'no-store',
+          headers: {
+            'user-id': userId,
+            'academic-course-id': academicCourseId,
+          },
         });
 
         const data = await response.json();
@@ -65,7 +73,7 @@ export const useTasks = () => {
     };
 
     fetchTasks();
-  }, [userId]);
+  }, [userId, academicCourseId]);
 
   const deleteTodo = async (taskId: string) => {
     try {
@@ -92,7 +100,7 @@ export const useTasks = () => {
   };
 
   const addTodo = async () => {
-    if (!userId) {
+    if (!userId || !academicCourseId) {
       console.warn('Cannot add task — user not logged in');
       return;
     }
@@ -120,9 +128,13 @@ export const useTasks = () => {
 
       const response = await fetch('/api/todos', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'user-id': userId,
+          'academic-course-id': academicCourseId,
+        },
         credentials: 'include',
-        body: JSON.stringify({ newToDo: todoWithDates }),
+        body: JSON.stringify({ nwToDo: todoWithDates }),
       });
 
       const data = await response.json();
