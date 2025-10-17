@@ -1,10 +1,11 @@
 'use client';
 
-import { AcademicCourseEntity } from '@/entities/academics';
-import { Role } from '@/entities/users/enums';
-import { useAuthStore } from '@/shared/stores/authStore';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+
+import { AcademicCourseEntity } from '@/entities/academics';
+import { Role } from '@/entities/users/enums';
+import { useAcademicStore, useAuthStore } from '@/shared/stores';
 
 type User = {
   id: string;
@@ -31,6 +32,7 @@ export default function ProfilePage() {
   const nameInputRef = useRef<HTMLInputElement | null>(null);
 
   const { setUserId } = useAuthStore();
+  const { clear } = useAcademicStore();
 
   // Prefill from /api/user/me, redirect to login on 401
   useEffect(() => {
@@ -154,6 +156,7 @@ export default function ProfilePage() {
   async function logout() {
     await fetch('/api/auth/logout', { method: 'POST' });
     setUserId('');
+    clear();
     router.push('/');
   }
 

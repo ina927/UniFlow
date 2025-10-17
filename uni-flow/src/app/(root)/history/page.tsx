@@ -4,9 +4,12 @@ import { useHistory } from '@/features/history/hooks/useHistory';
 import HistoryHeader from '@/features/history/ui/HistoryHeader';
 import HistoryList from '@/features/history/ui/HistoryList';
 import HistorySummary from '@/features/history/ui/HistorySummary';
+import { isLogin } from '@/shared/lib/isLogin';
 import { useUserId } from '@/shared/stores';
 
 export default function HistoryPage() {
+  isLogin();
+
   const userId = useUserId();
 
   const { history, totalFocusHours, totalPomodoros, clearHistory } = useHistory(

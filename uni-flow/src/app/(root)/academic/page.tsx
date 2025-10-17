@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 
 import { AcademicCourseEntity } from '@/entities/academics/entities';
 import { getAcademicCourses } from '@/features/academics';
+import { isLogin } from '@/shared/lib/isLogin';
 import { useAcademicStore } from '@/shared/stores/academicStore';
 import {
   AcademicHeader,
@@ -13,6 +14,8 @@ import {
 } from '@/widgets/academics';
 
 export default function AcademicPage() {
+  isLogin();
+
   const { academicCourseId, setAcademicCourseId } = useAcademicStore();
   const { data, isLoading, isError } = useQuery({
     queryKey: ['academic-courses'],
