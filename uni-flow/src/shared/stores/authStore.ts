@@ -13,7 +13,8 @@ interface AuthActions {
 type AuthStore = AuthState & AuthActions;
 
 export const useAuthStore = create<AuthStore>()((set, get) => ({
-  userId: typeof window !== 'undefined' ? localStorage.getItem('user-id') : null,
+  userId:
+    typeof window !== 'undefined' ? localStorage.getItem('user-id') : null,
 
   setUserId: (userId: string) => {
     set({ userId });
