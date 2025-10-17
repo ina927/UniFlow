@@ -1,16 +1,16 @@
-import { describe, it, expect } from 'vitest';
-import {
-  calculateTotalCredits,
-  calculateProgress,
-  getTermCredits,
-  formatCreditDisplay,
-} from '@/widgets/academics/lib/creditUtils';
 import { SubjectRow } from '@/features/academics/types';
+import {
+  calculateProgress,
+  calculateTotalCredits,
+  formatCreditDisplay,
+  getTermCredits,
+} from '@/widgets/academics/lib/creditUtils';
+import { describe, expect, it } from 'vitest';
 
 describe('creditUtils', () => {
   const now = new Date();
-  const mockTerm1 = { 
-    id: 'term1', 
+  const mockTerm1 = {
+    id: 'term1',
     title: 'Term 1',
     academicYear: 2023,
     startDate: now,
@@ -18,19 +18,19 @@ describe('creditUtils', () => {
     createdAt: now,
     updatedAt: now,
     version: 1,
-    academicCourseId: 'course1'
+    academicCourseId: 'course1',
   };
 
-  const mockTerm2 = { 
-    ...mockTerm1, 
-    id: 'term2', 
-    title: 'Term 2' 
+  const mockTerm2 = {
+    ...mockTerm1,
+    id: 'term2',
+    title: 'Term 2',
   };
 
-  const mockTerm3 = { 
-    ...mockTerm1, 
-    id: 'term3', 
-    title: 'Term 3' 
+  const mockTerm3 = {
+    ...mockTerm1,
+    id: 'term3',
+    title: 'Term 3',
   };
 
   const mockSubjects: SubjectRow[] = [
@@ -61,7 +61,7 @@ describe('creditUtils', () => {
       code: 'SUBJ4',
       credits: 2,
       term: mockTerm3,
-    }
+    },
   ] as SubjectRow[];
 
   describe('calculateTotalCredits', () => {
