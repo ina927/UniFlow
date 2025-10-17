@@ -99,16 +99,21 @@ export const EditToDoForm = ({
     }
 
     // for end date
-    if (endDate) {
+    if (endDate && startDate) {
+      const startDateFormat = new Date(startDate);
       const endDateFormat = new Date(endDate);
       if (isNaN(endDateFormat.getTime())) {
         setError('End date is not detected');
         return;
       }
-      if (endDateFormat < now) {
+      endDateFormat.setHours(0, 0, 0, 0);
+      if (endDateFormat < now || endDateFormat < startDateFormat) {
         setError('Please choose the later day');
         return;
       }
+    } else {
+      setError('Choose a day to start and finish');
+      return;
     }
 
     setError(null);
