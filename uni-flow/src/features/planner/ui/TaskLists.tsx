@@ -311,6 +311,7 @@ export const TaskLists = ({
           event={selectedEvent}
           isOpen={isEditDialogue}
           onClose={handleCloseEdit}
+          refresh={refresh}
         />
       )}
 
@@ -320,6 +321,7 @@ export const TaskLists = ({
           academicCourseId={academicCourseId}
           isOpen={isAddDialogue}
           onClose={handleCloseAdd}
+          refresh={refresh}
         />
       }
     </div>

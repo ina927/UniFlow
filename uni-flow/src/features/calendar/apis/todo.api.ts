@@ -1,7 +1,7 @@
 // library
 import { ToDoEntity, ToDoVital } from '@/entities/todos/entities';
 import { ToDoStatus } from '@/entities/todos/enums';
-import { EventApi } from "@fullcalendar/core/index.js"
+import { EventApi, EventClickArg, EventInput } from "@fullcalendar/core/index.js"
 
 import axios from 'axios';
 
@@ -10,7 +10,7 @@ const baseApi = process.env.NEXT_PUBLIC_API_BASE_URL;
 const userId = localStorage.getItem('user-id')!;
 
 // Function reports
-export async function getToDos(): Promise<ToDoEntity[]> {
+export async function getToDos(): Promise<ToDoEntity[]>  {
   const allItems = await fetch(`${baseApi}/todos`, {
     headers: {
       'user-id': userId,
@@ -35,41 +35,35 @@ export async function getToDosByFilter(
   if (!allItems.ok) throw new Error('Failed to fetch to-dos');
 
   const fetchEvents = await allItems.json();
-  const filteredEvents = fetchEvents.filter((event: {subjectId: string}) => {
-    console.log("my subId: " + event.subjectId);
-    console.log("their sub id" + subjectId)
-    return event.subjectId === subjectId
-});
-
-console.log("filtered: " +filteredEvents);
-return filteredEvents;
+  const filteredEvents = fetchEvents.filter((event: ToDoEntity) => {
+    return event.subjectId === subjectId;
+  });
+  return filteredEvents;
 }
 
-// filtering function
-export async function getPendings(events: ToDoEntity[]): Promise<ToDoEntity[]> {
-  return events.filter(
-    (event: { status: ToDoStatus }) => event.status === ToDoStatus.PENDING
-  );
-}
+export async function getToDosById(id: string): Promise<ToDoEntity>{
+  if (!id) throw new Error("Id not found");
 
-export async function getInProgress(
-  events: ToDoEntity[]
-): Promise<ToDoEntity[]> {
-  return events.filter(
-    (event: { status: ToDoStatus }) => event.status === ToDoStatus.IN_PROGRESS
-  );
-}
+  const event = await fetch(`${baseApi}/todos`, {
+    headers: {
+      'user-id': userId,
+    }
+  })
 
-export async function getCompletes(
-  events: ToDoEntity[]
-): Promise<ToDoEntity[]> {
-  return events.filter(
-    (event: { status: ToDoStatus }) => event.status === ToDoStatus.DONE
-  );
+  const allEvents = await event.json()
+  const expectedEvent = allEvents.find((event: ToDoEntity) => {
+    console.log("their id " + event.id);
+    console.log("My id: " + id);
+    return event.id === id;
+  })
+
+  console.log("I am expecting" + expectedEvent)
+  return expectedEvent;
+
 }
 
 //posting
-export async function postEvents(event: ToDoVital): Promise<void> {
+export async function postEvents(event: ToDoEntity): Promise<void> {
   const assessmentId = event.assessmentId?.trim() || null;
 
   // restructuring
@@ -86,36 +80,6 @@ export async function postEvents(event: ToDoVital): Promise<void> {
 
   const res = await axios.post(`${baseApi}/todos`, { newToDo });
   console.log(res);
-}
-
-export async function statusInProgress(event: ToDoEntity) {
-  const updated = { ...event, status: ToDoStatus.IN_PROGRESS };
-  await axios.put(
-    `${baseApi}/todos/${event.id}`,
-    {
-      status: ToDoStatus.IN_PROGRESS,
-    },
-    {
-      headers: {
-        'user-id': userId,
-      },
-    }
-  );
-}
-
-export async function statusDone(event: ToDoEntity) {
-  const updated = { ...event, status: ToDoStatus.DONE };
-  await axios.put(
-    `${baseApi}/todos/${event.id}`,
-    {
-      status: ToDoStatus.DONE,
-    },
-    {
-      headers: {
-        'user-id': userId,
-      },
-    }
-  );
 }
 
 export async function deleteToDo(event: ToDoEntity) {
