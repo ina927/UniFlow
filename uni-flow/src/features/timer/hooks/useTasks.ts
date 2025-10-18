@@ -17,7 +17,7 @@ export const useTasks = () => {
   const { userId, setUserId } = useAuthStore();
   const { academicCourseId } = useAcademicStore();
 
-  // ✅ Get logged-in user info first
+  //  Get logged-in user info first
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -42,7 +42,7 @@ export const useTasks = () => {
     fetchUser();
   }, []);
 
-  // ✅ Fetch tasks after userId is known
+  //  Fetch tasks after userId is known
   useEffect(() => {
     if (!userId || !academicCourseId) return;
 
