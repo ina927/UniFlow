@@ -25,9 +25,15 @@ export default function TimerPage() {
     addTodo,
     newTodo,
     setNewTodo,
+    userId, 
   } = useTasks();
-  const userId = '83482f49-8367-48d1-93f0-e98f01010f0f';
+
   const [subjects, setSubjects] = useState([]);
+
+  useEffect(() => {
+    if (!userId) return; // wait for user to be available
+    fetchSubjectsForUser(userId).then(setSubjects).catch(console.error);
+  }, [userId]);
 
   const timer = useTimer({ currentTask, setCurrentTask });
 
@@ -58,10 +64,6 @@ export default function TimerPage() {
 
   const [showSettings, setShowSettings] = useState(false);
   const [showAddTodoForm, setShowAddTodoForm] = useState(false);
-
-  useEffect(() => {
-    fetchSubjectsForUser(userId).then(setSubjects).catch(console.error);
-  }, [userId]);
 
   return (
     <div className='flex flex-col min-h-screen w-screen bg-background text-foreground'>

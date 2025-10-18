@@ -134,7 +134,7 @@ export const useTasks = () => {
           'academic-course-id': academicCourseId,
         },
         credentials: 'include',
-        body: JSON.stringify({ nwToDo: todoWithDates }),
+        body: JSON.stringify({ newToDo: todoWithDates }),
       });
 
       const data = await response.json();
