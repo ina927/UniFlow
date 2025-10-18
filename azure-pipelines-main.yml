@@ -22,14 +22,6 @@ steps:
       versionSpec: '$(NODE_VERSION)'
     displayName: 'Use Node.js $(NODE_VERSION)'
 
-  - task: Cache@2
-    displayName: 'Cache npm based on package-lock.json'
-    inputs:
-      key: 'npm | "$(Agent.OS)" | "$(WORKDIR)/package-lock.json"'
-      restoreKeys: |
-        npm | "$(Agent.OS)"
-      path: ~/.npm
-
   - script: |
       npm ci
     workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
