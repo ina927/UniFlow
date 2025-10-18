@@ -2,8 +2,9 @@
  
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "@/shared/ui";
 import { AssessmentRow } from "@/features/assessments/ui";
-import { Assessment, Grade } from "@/entities/assessments";
+import { Assessment } from "@/entities/assessments/entities";
 import { overallPercent, requiredMarksPerRemaining, isGraded, neededToReach, remainingWeightSum } from "@/features/assessments/grade-logics";
+import { Grade } from "@/entities/assessments/enums";
 
 import styles from "./AssessmentTable.module.css";
 

@@ -1,0 +1,50 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:https://github.com/ina927/UniFlow/blob/features/F103-main-nav/azure-pipelines-f103-to-4.yml
+  branches:
+    include:
+      - main
+      - dev
+  paths:
+    include:
+      - 'uni-flow/**'
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  WORKDIR: 'uni-flow'
+
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    npm install
+    npm run build
+  displayName: 'npm install and build'
+  workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+
+- script: |
+    npm run test
+  displayName: 'Run vi tests'
+  workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+
+- script: |
+    npm run lint
+  displayName: 'Lint code'
+  workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: 'dist'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
+  displayName: 'Publish build artifacts'
+  

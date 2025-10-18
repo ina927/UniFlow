@@ -16,12 +16,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
+      <body className="antialiased py-[16px]" suppressHydrationWarning={true}>
         <QueryProviders>
           <Header />
           <div className="flex flex-row">
             <Navbar />
-            <main className="flex flex-col">
+            <main className="flex flex-col flex-1">
               {children}
             </main>
           </div>

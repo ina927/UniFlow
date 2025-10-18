@@ -1,6 +1,7 @@
 "use client";
 
 import { DonutGauge } from "@/shared/ui/donut-gauge";
+import styles from "./GradeSummary.module.css"
 import { Grade } from "@/entities/assessments";
 import {
   overallPercent,
@@ -11,11 +12,13 @@ import {
 } from "@/features/assessments/grade-logics";
 import type { Assessment } from "@/entities/assessments";
 
-import styles from "./GradeSummary.module.css";
+import { UpdateGoalGrade } from "./UpdateGoalGrade";
 
 type Props = {
+  subjectId: string;
   goal: Grade;          
   items: Assessment[];
+  refetch: () => void;
 };
 
 function fmtPct(p: number) {
@@ -23,7 +26,7 @@ function fmtPct(p: number) {
   return `${n}`;
 }
 
-export const GradeSummary = ({ goal, items}: Props) => {
+export const GradeSummary = ({ subjectId, goal, items, refetch }: Props) => {
   const completedPct = completedWeightedPercent(items);     
   const completedLetter = letterFromPercent(completedPct); 
 
@@ -38,6 +41,7 @@ export const GradeSummary = ({ goal, items}: Props) => {
       <div>
         <span className="text-body1-bold text-primary">Goal Grade:</span>
         <span className={`text-title2-bold primary-light ${styles.goal}`}>{goal}</span>
+        <UpdateGoalGrade subjectId={subjectId} goal={goal} refetch={refetch} />
       </div>
 
       <div className={styles.block}>

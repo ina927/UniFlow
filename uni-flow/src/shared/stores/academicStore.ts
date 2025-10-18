@@ -1,38 +1,65 @@
-// store/useStore.ts
+import { TermEntity } from '@/entities';
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-import { AcademicCourseEntity, SubjectEntity, TermEntity } from '@/entities';
-
-interface AcademicStoreState {
-  academicCourse: AcademicCourseEntity | null;
-  setAcademicCourse: (academicCourse: AcademicCourseEntity) => void;
-
-  term: TermEntity | null;
-  setTerm: (term: TermEntity) => void;
-  resetTerm: () => void;
-  
-  subjects: SubjectEntity[];
-  setSubjects: (subjects: SubjectEntity[]) => void;
-  resetSubjects: () => void;
-
-  subject: SubjectEntity | null;
-  setSubject: (subject: SubjectEntity) => void;
-  resetSubject: () => void;
+interface AcademicState {
+  academicCourseId: string | null;
+  terms: TermEntity[];
+  selectedTermId: string | null;
 }
 
-export const useAcademicStore = create<AcademicStoreState>((set) => ({
-  academicCourse: null,
-  setAcademicCourse: (academicCourse: AcademicCourseEntity) => set({ academicCourse }),
+interface AcademicActions {
+  setAcademicCourseId: (academicCourseId: string | null) => void;
+  setTerms: (terms: TermEntity[]) => void;
+  setSelectedTermId: (termId: string | null) => void;
+  clearSelectedTerm: () => void;
+  clear: () => void;
+}
 
-  term: null,
-  setTerm: (term: TermEntity) => set({ term }),
-  resetTerm: () => set({ term: null }),
+type AcademicStore = AcademicState & AcademicActions;
 
-  subjects: [],
-  setSubjects: (subjects: SubjectEntity[]) => set({ subjects }),
-  resetSubjects: () => set({ subjects: [] }),
+export const useAcademicStore = create<AcademicStore>()(
+  persist(
+    (set) => ({
+      academicCourseId: null,
+      terms: [],
+      selectedTermId: null,
 
-  subject: null,
-  setSubject: (subject: SubjectEntity) => set({ subject }),
-  resetSubject: () => set({ subject: null }),
-}));
+      setAcademicCourseId: (academicCourseId: string | null) => {
+        set({ academicCourseId });
+      },
+
+      setTerms: (terms: TermEntity[]) => {
+        set({ terms });
+      },
+
+      setSelectedTermId: (termId: string | null) => {
+        set({
+          selectedTermId: termId === 'all' ? null : termId,
+        });
+      },
+
+      clearSelectedTerm: () => {
+        set({ selectedTermId: null });
+      },
+
+      clear: () => {
+        set({ academicCourseId: null, terms: [], selectedTermId: null });
+      },
+    }),
+    {
+      name: 'academic-storage',
+      partialize: (state) => ({
+        academicCourseId: state.academicCourseId,
+        terms: state.terms,
+        selectedTermId: state.selectedTermId,
+      }),
+    }
+  )
+);
+
+export const useAcademicCourseId = () =>
+  useAcademicStore((state) => state.academicCourseId);
+export const useTerms = () => useAcademicStore((state) => state.terms);
+export const useSelectedTermId = () =>
+  useAcademicStore((state) => state.selectedTermId);

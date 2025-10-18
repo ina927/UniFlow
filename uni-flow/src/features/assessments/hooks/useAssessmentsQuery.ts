@@ -7,8 +7,8 @@ import {
   updateAssessmentApi, 
   deleteAssessmentApi 
 } from "../apis/assessment.api";
-import type { Assessment } from "@/entities/assessments";
-import { EnterScoreDto, CreateAssessmentDto } from "@/entities/assessments";
+import type { Assessment } from "@/entities/assessments/entities";
+import { EnterScoreDto, CreateAssessmentDto } from "@/entities/assessments/dto";
 
 export function useAssessmentsQuery(subjectId: string) {
   return useQuery<Assessment[]>({

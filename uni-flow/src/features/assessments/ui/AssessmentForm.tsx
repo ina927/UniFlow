@@ -2,8 +2,9 @@
 
 import * as React from "react";
 
-import { AssessmentType, Assessment } from "@/entities/assessments";
-import type { CreateAssessmentDto } from "@/entities/assessments";
+import { Assessment } from "@/entities/assessments/entities";
+import type { CreateAssessmentDto } from "@/entities/assessments/dto";
+import { AssessmentType } from "@/entities/assessments/enums";
 import { Input } from "@/shared/ui/input";
 import { Textarea } from "@/shared/ui/textarea";
 import { Label } from "@/shared/ui/label";

@@ -1,9 +1,30 @@
-.subjectInfoGroup{ 
-    width: flex; 
-    height: 75px; 
-    flex-shrink: 0;
+.subjectInfoGroup {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  height: 75px;
+  flex-shrink: 0;
 }
 
-.subjectInfoGroup p{ 
-    margin-top: 8px; 
+.textGroup p {
+  margin-top: 8px;
+}
+
+.editButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background-color: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.editButton:hover {
+  background-color: var(--muted);
+  color: var(--text-primary);
 }

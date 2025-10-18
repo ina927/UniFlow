@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { missingError, ResponseDto, serverError, updateSuccess, controller } from "@/shared";
-import { enterScore } from "@/entities/assessments/services/assessment.service";
-import type { EnterScoreDto } from "@/entities/assessments";
+import { enterScore } from "@/entities/assessments/services";
+import type { EnterScoreDto } from "@/entities/assessments/dto";
 
 /**
  * PATCH /api/assessments/score

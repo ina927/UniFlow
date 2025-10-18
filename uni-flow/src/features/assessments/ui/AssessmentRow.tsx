@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 
 import { TableRow, TableCell } from "@/shared/ui/table";
 import { Input } from "@/shared/ui/input";
-import { Assessment, Grade } from "@/entities/assessments";
+import { Assessment } from "@/entities/assessments/entities";
+import { Grade } from "@/entities/assessments/enums";
 import { isGraded, weightedContribution } from "@/features/assessments/grade-logics";
 
 import styles from "@/widgets/assessments/ui/AssessmentTable.module.css";
