@@ -12,6 +12,7 @@ import { TaskList } from '@/features/timer/ui/TaskList';
 import { TimerDisplay } from '@/features/timer/ui/TimerDisplay';
 import TimerHeader from '@/features/timer/ui/TimerHeader';
 import { isLogin } from '@/shared/lib/isLogin';
+import { SubjectEntity } from '@/entities';
 
 export default function TimerPage() {
   isLogin();
@@ -28,7 +29,7 @@ export default function TimerPage() {
     userId, 
   } = useTasks();
 
-  const [subjects, setSubjects] = useState([]);
+  const [subjects, setSubjects] = useState<SubjectEntity[]>([]);
 
   useEffect(() => {
     if (!userId) return; // wait for user to be available

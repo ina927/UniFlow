@@ -1,6 +1,6 @@
 import { TermEntity } from '@/entities';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 interface AcademicState {
   academicCourseId: string | null;
@@ -49,6 +49,10 @@ export const useAcademicStore = create<AcademicStore>()(
     }),
     {
       name: 'academic-storage',
+      storage:
+        typeof window !== 'undefined'
+          ? createJSONStorage(() => localStorage)
+          : undefined,
       partialize: (state) => ({
         academicCourseId: state.academicCourseId,
         terms: state.terms,

@@ -1,4 +1,4 @@
-type Task = {
+export type Task = {
   id: string;
   title: string;
   description?: string;
@@ -10,7 +10,7 @@ type Task = {
 
 type TaskListProps = {
   tasks: Task[];
-  setCurrentTask: (task: Task) => void;
+  setCurrentTask: React.Dispatch<React.SetStateAction<Task | null>>;
   deleteTodo: (taskId: string) => void;
   onToggleAddTodo: () => void; // <-- Add this prop
   showAddTodoForm: boolean;    // <-- Optionally, for button text

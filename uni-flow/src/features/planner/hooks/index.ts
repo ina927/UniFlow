@@ -1,2 +1,2 @@
-export { useSubjects } from "./UseSubjects";
-export { useToDos } from "./UseToDos";
+export { useSubjects } from "./useSubjects";
+export { useToDos } from "./useToDos";

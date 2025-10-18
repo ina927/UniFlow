@@ -3,6 +3,7 @@ import type { CreateAssessmentDto, EnterScoreDto, UpdateAssessmentDto } from "..
 import { prisma } from '@/shared/lib/prisma';
 import { AssessmentType } from "../enums";
 import { notFoundError } from "@/shared/consts/error-types";
+import type { $Enums } from "@/shared/generated/prisma";
 
 interface AssessmentModel extends Omit<Assessment, 'type' | 'dueDate' | 'description'> {
   type: string | undefined;
@@ -33,6 +34,24 @@ export const toAssessmentType = (type: string | AssessmentType): AssessmentType 
   }
   
   return type;
+};
+
+const toPrismaAssessmentType = (
+  t: string | AssessmentType | undefined
+): $Enums.AssessmentType | undefined => {
+  if (t == null) return undefined;
+
+  const normalized = typeof t === "string" ? toAssessmentType(t) : t;
+
+  switch (normalized) {
+    case AssessmentType.QUIZ: return "QUIZ";
+    case AssessmentType.EXAM: return "EXAM";
+    case AssessmentType.GROUP_ASSIGNMENT: return "GROUP_ASSIGNMENT";
+    case AssessmentType.INDV_ASSIGNMENT: return "INDV_ASSIGNMENT";
+    case AssessmentType.GROUP_INDV_ASSIGNMENT: return "GROUP_INDV_ASSIGNMENT";
+    case AssessmentType.OTHER: return "OTHER";
+    default: return "OTHER";
+  }
 };
 
 // Helper: convert DB row → front-end Assessment entity
@@ -88,7 +107,7 @@ export async function createAssessment(params: { dto: CreateAssessmentDto }): Pr
     data: {
       subjectId: d.subjectId,
       title: d.title,
-      type: d.type ?? undefined,
+      type: toPrismaAssessmentType(d.type) ?? 'OTHER',
       weight: d.weight,
       maxScore: d.maxScore,
       dueDate: d.dueDate ? new Date(d.dueDate) : new Date(),
@@ -137,7 +156,7 @@ export async function updateAssessment(params: { id: string; dto: UpdateAssessme
     where: { id: params.id },
     data: {
       title: d.title ?? undefined,
-      type: d.type ?? undefined,
+      type: toPrismaAssessmentType(d.type),
       weight: d.weight ?? undefined,
       maxScore: d.maxScore ?? undefined,
       dueDate: d.dueDate ? new Date(d.dueDate) : undefined,

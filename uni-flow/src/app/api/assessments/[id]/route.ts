@@ -4,7 +4,7 @@ import { prisma } from '@/shared/lib/prisma';
 // GET: Get a single assessment by ID
 export async function GET(
   request: Request,
-  { params }: { params: Record<string, string> }
+  { params }: any
 ) {
   try {
     const assessment = await prisma.assessment.findUnique({
@@ -31,7 +31,7 @@ export async function GET(
 // PATCH: Update an assessment
 export async function PATCH(
   request: Request,
-  { params }: { params: Record<string, string> }
+  { params }: any
 ) {
   try {
     const body = await request.json();
@@ -53,7 +53,7 @@ export async function PATCH(
 // DELETE: Delete an assessment
 export async function DELETE(
   request: Request,
-  { params }: { params: Record<string, string> }
+  { params }: any
 ) {
   try {
     await prisma.assessment.delete({

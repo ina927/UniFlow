@@ -1,15 +1,17 @@
 import Link from "next/link";
 
 type TimerHeaderProps = {
-  showAddTodoForm: boolean;
+  showAddTodoForm?: boolean;
   onToggleSettings: () => void;
   showSettings: boolean;
+  onToggleAddTodo?: () => void;
 };
 
 const TimerHeader = ({
   showAddTodoForm,
   onToggleSettings,
   showSettings,
+  onToggleAddTodo
 }: TimerHeaderProps) => {
   return (
     <div className="absolute top-4 right-4 flex gap-2 z-50">

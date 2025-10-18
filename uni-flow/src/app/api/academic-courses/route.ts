@@ -2,8 +2,9 @@ import { NextRequest } from "next/server";
 
 import { createAcademicCourse, getAcademicCourses } from "@/entities/academics";
 import { createSuccess, getSuccess, missingError, controller } from "@/shared";
+import type { ApiParams } from "@/shared/api/models/api-params"; 
 
-export const GET = controller(async (req: NextRequest) => {
+export const GET = controller(async (req: NextRequest, _ctx: ApiParams) => {
   const userId = req.headers.get('user-id');
 
   if (!userId) {
@@ -15,7 +16,7 @@ export const GET = controller(async (req: NextRequest) => {
   return getSuccess(academicCourses, "Academic courses");
 });
 
-export const POST = controller(async (req: NextRequest) => {
+export const POST = controller(async (req: NextRequest, _ctx: ApiParams) => {
   const userId = req.headers.get('user-id');
 
     if (!userId) {

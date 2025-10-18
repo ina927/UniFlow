@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, Suspense } from 'react';
 
 import { useSubjectDetailQuery } from '@/features/academics/hooks';
 import { letterFromPercent } from '@/features/assessments/grade-logics';
@@ -28,7 +28,16 @@ import styles from './page.module.css';
  * Main page for displaying all assessments of a subject.
  * Uses ?subjectId=... query param (no route change required)
  */
+
 export default function AssessmentsPage() {
+  return (
+    <Suspense fallback={null}>
+      <AssessmentsPageInner />
+    </Suspense>
+  );
+}
+
+function AssessmentsPageInner() {  
   isLogin();
   // Read subjectId from query string: academic/assessments?subjectId=subj-41026
   const searchParams = useSearchParams();

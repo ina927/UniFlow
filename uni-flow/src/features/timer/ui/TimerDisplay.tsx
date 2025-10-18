@@ -3,7 +3,7 @@ import TimerControls from "./TimerControls";
 type TimerDisplayProps = {
   isWorkTime: boolean;
   secondsLeft: number;
-  currentTask?: { title: string };
+  currentTask?: { title: string } | null;
   formatTime: (seconds: number) => string;
   isActive: boolean;
   toggle: () => void;

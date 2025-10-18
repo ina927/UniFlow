@@ -85,7 +85,7 @@ export default function LoginPage() {
               className='pill-btn pill-primary'
               onClick={signIn}
             >
-              <span className='play'>▶</span> Sign In
+              Sign In
             </button>
           </div>
         </div>

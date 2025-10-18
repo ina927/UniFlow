@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 
 import { useAcademicStore, useAuthStore } from '@/shared/stores';
+import type { Task } from '@/features/timer/ui/TaskList';
 
 export const useTasks = () => {
-  const [tasks, setTasks] = useState([]);
-  const [currentTask, setCurrentTask] = useState(null);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const [newTodo, setNewTodo] = useState({
     subjectId: '',
     assessmentId: '',

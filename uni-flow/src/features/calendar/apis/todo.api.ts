@@ -6,14 +6,14 @@ import { EventApi, EventClickArg, EventInput } from "@fullcalendar/core/index.js
 import axios from 'axios';
 
 const baseApi = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-const userId = localStorage.getItem('user-id')!;
+const getUserId = () =>
+  (typeof window !== 'undefined' ? localStorage.getItem('user-id') : '') ?? '';
 
 // Function reports
 export async function getToDos(): Promise<ToDoEntity[]>  {
   const allItems = await fetch(`${baseApi}/todos`, {
     headers: {
-      'user-id': userId,
+      'user-id': getUserId(),
     },
   });
 
@@ -28,7 +28,7 @@ export async function getToDosByFilter(
 ): Promise<ToDoEntity[]> {
   const allItems = await fetch(`${baseApi}/todos`, {
     headers: {
-      'user-id': userId,
+      'user-id': getUserId(),
     },
   });
 
@@ -46,7 +46,7 @@ export async function getToDosById(id: string): Promise<ToDoEntity>{
 
   const event = await fetch(`${baseApi}/todos`, {
     headers: {
-      'user-id': userId,
+      'user-id': getUserId(),
     }
   })
 
@@ -68,7 +68,7 @@ export async function postEvents(event: ToDoEntity): Promise<void> {
 
   // restructuring
   const newToDo = {
-    userId: userId,
+    userId: getUserId(),
     subjectId: event.subjectId,
     assessmentId: assessmentId,
     title: event.title,
@@ -86,7 +86,7 @@ export async function deleteToDo(event: ToDoEntity) {
   if (!event) return;
   await axios.delete(`${baseApi}/todos/${event.id}`, {
     headers: {
-      'user-id': userId,
+      'user-id': getUserId(),
     },
   });
 }
@@ -104,7 +104,7 @@ export async function updateToDo(event: ToDoEntity) {
     },
     {
       headers: {
-        'user-id': userId,
+        'user-id': getUserId(),
       },
     }
   );
