@@ -38,10 +38,10 @@ steps:
     workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
     displayName: 'Build Next.js'
 
-  - script: |
-      npm prune --production
-    workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
-    displayName: 'Prune to production deps'
+  # - script: |
+  #     npm prune --production
+  #   workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+  #   displayName: 'Prune to production deps'
 
   - task: ArchiveFiles@2
     displayName: 'Archive build output'
