@@ -1,11 +1,9 @@
-# Node.js with React
-# Build a Node.js project that uses React.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+# Next.js (SSR) → Azure App Service (Linux, Node 22 LTS)
 
 trigger:
   branches:
-    include: [ main ]
+    include:
+      - main
   paths:
     include:
       - 'uni-flow/**'
@@ -15,12 +13,22 @@ pool:
 
 variables:
   WORKDIR: 'uni-flow'
+  ARTIFACT_NAME: 'drop'
+  NODE_VERSION: '22.x'
 
 steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: '20.x'
-    displayName: 'Use Node.js 20'
+      versionSpec: '$(NODE_VERSION)'
+    displayName: 'Use Node.js $(NODE_VERSION)'
+
+  - task: Cache@2
+    displayName: 'Cache npm based on package-lock.json'
+    inputs:
+      key: 'npm | "$(Agent.OS)" | "$(WORKDIR)/package-lock.json"'
+      restoreKeys: |
+        npm | "$(Agent.OS)"
+      path: ~/.npm
 
   - script: |
       npm ci
@@ -33,11 +41,31 @@ steps:
     workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
     displayName: 'Build Next.js'
 
+  - script: |
+      npm prune --production
+    workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+    displayName: 'Prune to production deps'
 
-# Deployment 
-  # - task: AzureWebApp@1
-  #   inputs:
-  #     azureSubscription: '<Service Connection Name>'
-  #     appName: '<App Service Name>'
-  #     package: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
-  #   displayName: 'Deploy to Azure App Service'
+  - task: ArchiveFiles@2
+    displayName: 'Archive build output'
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+      includeRootFolder: false
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/$(ARTIFACT_NAME).zip'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(ARTIFACT_NAME).zip'
+      ArtifactName: '$(ARTIFACT_NAME)'
+      publishLocation: 'Container'
+
+  - task: AzureWebApp@1
+    displayName: 'Deploy to Azure App Service'
+    inputs:
+      azureSubscription: 'AppServiceConnection'
+      appType: 'webAppLinux'
+      appName: 'UniFlowASD'
+      package: '$(Build.ArtifactStagingDirectory)/$(ARTIFACT_NAME).zip'
+      runtimeStack: 'NODE|22-lts'
