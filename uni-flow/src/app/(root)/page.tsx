@@ -90,9 +90,15 @@ export default function LoginPage() {
               onChange={(e) => setPwd(e.target.value)}
             />
           </label>
+<<<<<<< HEAD
+          {msg && <p className="login-msg error">{msg}</p>}
+
+          <div className="login-actions">
+=======
           {msg && <p className='login-msg error'>{msg}</p>}
 
           <div className='login-actions'>
+>>>>>>> main
             <button
               type='button'
               className='pill-btn pill-secondary'
