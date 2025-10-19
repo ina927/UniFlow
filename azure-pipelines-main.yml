@@ -77,4 +77,4 @@ steps:
       appName: 'UniFlowASD'
       package: '$(Build.ArtifactStagingDirectory)/deploy'
       runtimeStack: 'NODE|20-lts'
-      startupCommand: 'node server.js'
+      startupCommand: 'node deploy/server.js'
