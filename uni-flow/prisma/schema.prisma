@@ -115,7 +115,7 @@ model Subject {
 model Assessment {
   id          String   @id @default(uuid())
   title       String
-  type        AssessmentType
+  type        String
   description String?
   dueDate     DateTime
   weight      Float
