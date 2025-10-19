@@ -23,7 +23,7 @@ export const useTasks = () => {
     const fetchUser = async () => {
       try {
         const res = await fetch('/api/user/me', {
-          credentials: 'include', // ensure cookies/session are sent
+          credentials: 'include', 
           cache: 'no-store',
         });
 
@@ -64,8 +64,14 @@ export const useTasks = () => {
           throw new Error('Failed to fetch tasks');
         }
 
-        const inProgressTasks = data.filter(
-          (task: any) => task.taskStatus !== 'DONE'
+        if (!Array.isArray(data)) {
+          console.error('/api/todos returned unexpected payload', data);
+          setTasks([]);
+          return;
+        }
+
+        const inProgressTasks = (data as Task[]).filter(
+          (task) => ((task as any).taskStatus ?? (task as any).status) !== 'DONE'
         );
         setTasks(inProgressTasks);
       } catch (error) {
@@ -85,14 +91,26 @@ export const useTasks = () => {
 
       if (!response.ok) throw new Error('Failed to delete task');
 
-      // Refresh task list
+
+      const refreshedHeaders = new Headers();
+      if (userId != null) refreshedHeaders.append('user-id', userId);
+      if (academicCourseId != null)
+        refreshedHeaders.append('academic-course-id', academicCourseId);
+
       const refreshed = await fetch('/api/todos', {
         credentials: 'include',
         cache: 'no-store',
+        headers: refreshedHeaders,
       });
+
       const data = await refreshed.json();
-      const inProgressTasks = data.filter(
-        (task: any) => task.taskStatus !== 'DONE'
+      if (!Array.isArray(data)) {
+        console.error('Unexpected /api/todos refresh response', data);
+        return;
+      }
+
+      const inProgressTasks = (data as Task[]).filter(
+        (task) => ((task as any).taskStatus ?? (task as any).status) !== 'DONE'
       );
       setTasks(inProgressTasks);
     } catch (error) {
@@ -117,7 +135,7 @@ export const useTasks = () => {
           : null;
 
       const todoWithDates = {
-        userId, // ✅ use the logged-in user
+        userId, 
         subjectId: safeSubjectId,
         assessmentId: newTodo.assessmentId || null,
         title: newTodo.title.trim(),
@@ -159,6 +177,6 @@ export const useTasks = () => {
     addTodo,
     newTodo,
     setNewTodo,
-    userId, // optional: expose if you need it
+    userId, 
   };
 };
