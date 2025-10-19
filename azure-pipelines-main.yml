@@ -45,8 +45,7 @@ steps:
 
       cp -R .next/standalone/* "$DEPLOY_DIR"/
 
-      cp -R .next/static "$DEPLOY_DIR/.next/"
-      cp .next/BUILD_ID "$DEPLOY_DIR/.next/BUILD_ID"
+      rsync -a --delete --exclude 'standalone' .next/ "$DEPLOY_DIR/.next/"
 
       if [ -d public ]; then
         cp -R public "$DEPLOY_DIR/public"
@@ -62,13 +61,21 @@ steps:
   - script: |
       set -e
       DEPLOY_DIR="$(Build.ArtifactStagingDirectory)/deploy"
+
       test -f "$DEPLOY_DIR/server.js" || (echo "[ERROR] server.js missing in deploy root" && exit 1)
       test -d "$DEPLOY_DIR/.next/static" || (echo "[ERROR] .next/static missing in deploy" && exit 1)
-      test -f "$DEPLOY_DIR/.next/BUILD_ID" || (echo "BUILD_ID missing in deploy/.next" && exit 1)
+      test -f "$DEPLOY_DIR/.next/BUILD_ID" || (echo "[ERROR] BUILD_ID missing in deploy/.next" && exit 1)
+
+      test -f "$DEPLOY_DIR/.next/routes-manifest.json" || (echo "[ERROR] routes-manifest.json missing in deploy/.next" && exit 1)
+      test -f "$DEPLOY_DIR/.next/build-manifest.json" || (echo "[ERROR] build-manifest.json missing in deploy/.next" && exit 1)
+
       echo "[OK] deploy dir ready"
+      echo "== Top-level =="
       ls -la "$DEPLOY_DIR" | sed -n '1,120p'
+      echo "== .next =="
       ls -la "$DEPLOY_DIR/.next" | sed -n '1,120p'
-      ls -la "$DEPLOY_DIR/.next/static" | sed -n '1,60p'
+      echo "== .next/static =="
+      ls -la "$DEPLOY_DIR/.next/static" | sed -n '1,120p'
     displayName: 'Verify deploy dir content'
 
   - task: ArchiveFiles@2
