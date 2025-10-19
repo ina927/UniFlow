@@ -2,6 +2,8 @@ import Link from 'next/link';
 
 import { Combobox } from '@/widgets/planner/SetFilterModal';
 import styles from '@/features/planner/ui/PlannerHeader.module.css'
+import { useUserId } from '@/shared/stores';
+import { useState } from 'react';
 
 // type setup
 type PlannerHeaderProps = {
@@ -18,6 +20,30 @@ export const PlannerHeader = ({
     onSubjectFilterChange(subjectId || null);
   };
 
+  const [name, setName] = useState<string>("");
+
+  const getUserDetails = async() => {
+      try {
+        const res = await fetch('/api/user/me', { cache: 'no-store' });
+        if (res.status === 401) {
+          return;
+        }
+        const data = await res.json();
+        if (data.user) {
+          setName(data.user.name || '');
+        }
+      } catch {
+
+      } finally {
+
+      }
+    }
+
+    const userId = useUserId();
+    if (userId){
+      getUserDetails();
+    }
+
   return (
     <div
       className={styles.header}
@@ -26,7 +52,7 @@ export const PlannerHeader = ({
         className='text-large-title-bold'
         style={{ width: '40vw' }}
       >
-        User&#39;s Study Planner
+        {name}&#39;s Study Planner
       </h1>
       <div className={styles.filter} style={{display: "flex", flexDirection: "row"}}>
       <Combobox

@@ -2,6 +2,8 @@ import Link from 'next/link';
 
 import { Combobox } from '@/widgets/planner/SetFilterModal';
 import styles from '@/features/calendar/ui/CalendarHeader.module.css'
+import { useUserId } from '@/shared/stores';
+import { useState } from 'react';
 
 // type setup
 type CalendarHeaderProps = {
@@ -18,6 +20,32 @@ export const CalendarHeader = ({
     onSubjectFilterChange(subjectId || null);
   };
 
+  const [name, setName] = useState<string>("");
+
+  const getUserDetails = async() => {
+      try {
+        const res = await fetch('/api/user/me', { cache: 'no-store' });
+        if (res.status === 401) {
+          return;
+        }
+        const data = await res.json();
+        if (data.user) {
+          setName(data.user.name || '');
+        }
+      } catch {
+
+      } finally {
+
+      }
+    }
+
+  const userId = useUserId();
+  if (userId){
+    getUserDetails();
+  }
+
+
+
   return (
     <div
       className={styles.header}
@@ -26,7 +54,7 @@ export const CalendarHeader = ({
         className='text-large-title-bold'
         style={{ width: '40vw' }}
       >
-        User&#39;s Study Calendar
+        {name}&#39;s Study Calendar
       </h1>
       <div className={styles.filter}>
       <Combobox
@@ -56,3 +84,7 @@ export const CalendarHeader = ({
     </div>
   );
 };
+function UseState<T>(arg0: null): { user: any; setUser: any; } {
+  throw new Error('Function not implemented.');
+}
+

@@ -16,7 +16,6 @@ import {
   statusDone,
   statusInProgress,
 } from '@/features/planner/apis/todo.api';
-import { mapToToDoEntity } from '@/entities/todos/utils';
 import { useAcademicStore, useAuthStore } from '@/shared/stores';
 import { AddToDoForm, EditToDoForm } from '@/features/planner/ui';
 
