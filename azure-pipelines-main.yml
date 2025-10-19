@@ -37,19 +37,36 @@ steps:
       npm run build
     workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
     displayName: 'Build Next.js'
+  
+  - script: |
+      set -e
+      DEPLOY_DIR="$(Build.ArtifactStagingDirectory)/deploy"
+      rm -rf "$DEPLOY_DIR"
+      mkdir -p "$DEPLOY_DIR/.next"
+
+      cp -R .next/standalone/* "$DEPLOY_DIR"/
+
+      cp -R .next/static "$DEPLOY_DIR/.next/"
+
+      if [ -d public ]; then
+        cp -R public "$DEPLOY_DIR/ public"
+      fi
+
+      cp package.json "$DEPLOY_DIR/"
+
+      echo "=== Deploy folder tree ==="
+      find "$DEPLOY_DIR" -maxdepth 3 -type d -print
+    workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+    displayName: 'Stage standalone build into deploy dir'
 
   - script: |
       set -e
-      echo "Check .next exists"
-      test -d .next || (echo ".next folder is missing" && exit 1)
-
-      echo "Check next runtime file exists"
-      test -f node_modules/next/dist/server/next.js || (echo "node_modules/next/dist/server/next.js is missing" && ls -la node_modules/next || true && exit 1)
-
-      echo "Show top-level for sanity:"
-      ls -la
-    workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
-    displayName: 'Verify runtime files (.next & next)'
+      DEPLOY_DIR="$(Build.ArtifactStagingDirectory)/deploy"
+      test -f "$DEPLOY_DIR/server.js" || (echo "server.js missing in deploy root" && exit 1)
+      test -d "$DEPLOY_DIR/.next/static" || (echo ".next/static missing in deploy" && exit 1)
+      echo "Deploy dir sanity check OK"
+      ls -la "$DEPLOY_DIR" | sed -n '1,200p'
+    displayName: 'Verify deploy dir content'
 
   - task: ArchiveFiles@2
     displayName: 'Archive standalone bundle'
@@ -58,12 +75,8 @@ steps:
       includeRootFolder: false
       archiveType: 'zip'
       archiveFile: '$(Build.ArtifactStagingDirectory)/$(ARTIFACT_NAME).zip'
-      tarPatternToExclude: |
-        **/*
-        !.next/standalone/**
-        !.next/static/**
-        !public/**
-        !package.json
+      replaceExistingArchive: true
+
         
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact'
@@ -80,4 +93,4 @@ steps:
       appName: 'UniFlowASD'
       package: '$(Build.ArtifactStagingDirectory)/$(ARTIFACT_NAME).zip'
       runtimeStack: 'NODE|20-lts'
-      startupCommand: 'node .next/standalone/server.js'
+      startupCommand: 'node server.js'
