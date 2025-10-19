@@ -46,6 +46,7 @@ steps:
       cp -R .next/standalone/* "$DEPLOY_DIR"/
 
       cp -R .next/static "$DEPLOY_DIR/.next/"
+      cp .next/BUILD_ID "$DEPLOY_DIR/.next/BUILD_ID"
 
       if [ -d public ]; then
         cp -R public "$DEPLOY_DIR/public"
@@ -63,6 +64,7 @@ steps:
       DEPLOY_DIR="$(Build.ArtifactStagingDirectory)/deploy"
       test -f "$DEPLOY_DIR/server.js" || (echo "[ERROR] server.js missing in deploy root" && exit 1)
       test -d "$DEPLOY_DIR/.next/static" || (echo "[ERROR] .next/static missing in deploy" && exit 1)
+      test -f "$DEPLOY_DIR/.next/BUILD_ID" || (echo "BUILD_ID missing in deploy/.next" && exit 1)
       echo "[OK] deploy dir ready"
       ls -la "$DEPLOY_DIR" | sed -n '1,120p'
       ls -la "$DEPLOY_DIR/.next" | sed -n '1,120p'
