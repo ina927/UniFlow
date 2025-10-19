@@ -69,29 +69,12 @@ steps:
       ls -la "$DEPLOY_DIR/.next/static" | sed -n '1,60p'
     displayName: 'Verify deploy dir content'
 
-  - task: ArchiveFiles@2
-    displayName: 'Archive standalone bundle'
-    inputs:
-      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/deploy'
-      includeRootFolder: false
-      archiveType: 'zip'
-      archiveFile: '$(Build.ArtifactStagingDirectory)/$(ARTIFACT_NAME).zip'
-      replaceExistingArchive: true
-
-        
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact'
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(ARTIFACT_NAME).zip'
-      ArtifactName: '$(ARTIFACT_NAME)'
-      publishLocation: 'Container'
-
   - task: AzureWebApp@1
     displayName: 'Deploy to Azure App Service'
     inputs:
       azureSubscription: 'AppServiceConnection'
       appType: 'webAppLinux'
       appName: 'UniFlowASD'
-      package: '$(Build.ArtifactStagingDirectory)/$(ARTIFACT_NAME).zip'
+      package: '$(Build.ArtifactStagingDirectory)/deploy'
       runtimeStack: 'NODE|20-lts'
       startupCommand: 'node server.js'
