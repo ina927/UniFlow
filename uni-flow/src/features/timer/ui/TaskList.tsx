@@ -1,9 +1,12 @@
+import React, { useState } from "react";
+import { ConfirmDialog } from "@/widgets/common/ui/ConfirmDialog";
+
 export type Task = {
   id: string;
   title: string;
   description?: string;
   subjectName?: string;
-  subjectId?: string; 
+  subjectId?: string;
   startDate?: string;
   endDate?: string;
 };
@@ -12,8 +15,8 @@ type TaskListProps = {
   tasks: Task[];
   setCurrentTask: React.Dispatch<React.SetStateAction<Task | null>>;
   deleteTodo: (taskId: string) => void;
-  onToggleAddTodo: () => void; // <-- Add this prop
-  showAddTodoForm: boolean;    // <-- Optionally, for button text
+  onToggleAddTodo: () => void;
+  showAddTodoForm: boolean;
 };
 
 export const TaskList = ({
@@ -24,6 +27,24 @@ export const TaskList = ({
   onToggleAddTodo,
   showAddTodoForm,
 }: TaskListProps & { subjects: { id: string; title: string }[] }) => {
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const handleDeleteClick = (id: string) => {
+    setSelectedId(id);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirm = async () => {
+    if (!selectedId) return;
+    try {
+      await deleteTodo(selectedId);
+    } finally {
+      setConfirmOpen(false);
+      setSelectedId(null);
+    }
+  };
+
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-4 w-full">
@@ -38,7 +59,6 @@ export const TaskList = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {tasks.length > 0 ? (
           tasks.map((task) => {
-            // Find subject title by subjectId
             const subjectTitle =
               task.subjectId && subjects.length > 0
                 ? subjects.find((s) => s.id === task.subjectId)?.title || "Other"
@@ -53,17 +73,11 @@ export const TaskList = ({
                   <p className="text-body2 text-gray-600 mb-2">
                     {task.description || "No description provided"}
                   </p>
-                  <p className="text-body2 text-gray-600 mb-2">
-                    Subject: {subjectTitle}
-                  </p>
+                  <p className="text-body2 text-gray-600 mb-2">Subject: {subjectTitle}</p>
                 </div>
                 <div className="mt-2 text-sm text-gray-700 space-y-1">
-                  {task.startDate && (
-                    <p>Start: {new Date(task.startDate).toLocaleDateString()}</p>
-                  )}
-                  {task.endDate && (
-                    <p>Due: {new Date(task.endDate).toLocaleDateString()}</p>
-                  )}
+                  {task.startDate && <p>Start: {new Date(task.startDate).toLocaleDateString()}</p>}
+                  {task.endDate && <p>Due: {new Date(task.endDate).toLocaleDateString()}</p>}
                 </div>
                 <div className="mt-4 flex justify-between items-center">
                   <button
@@ -73,7 +87,7 @@ export const TaskList = ({
                     Set as Current Task
                   </button>
                   <button
-                    onClick={() => deleteTodo(task.id)}
+                    onClick={() => handleDeleteClick(task.id)}
                     className="px-4 py-2 bg-red-500 text-white rounded shadow"
                   >
                     X
@@ -86,6 +100,21 @@ export const TaskList = ({
           <p className="text-body2 text-gray-600">No tasks available.</p>
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        onOpenChange={(v) => {
+          if (!v) {
+            setSelectedId(null);
+          }
+          setConfirmOpen(v);
+        }}
+        title="Delete task"
+        message="Are you sure you want to delete this task? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={handleConfirm}
+      />
     </div>
   );
 };
