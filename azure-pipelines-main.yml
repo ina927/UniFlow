@@ -49,7 +49,7 @@ steps:
       cp -R .next/static "$DEPLOY_DIR/.next/"
 
       if [ -d public ]; then
-        cp -R public "$DEPLOY_DIR/ public"
+        cp -R public "$DEPLOY_DIR/public"
       fi
 
       cp package.json "$DEPLOY_DIR/"
@@ -65,13 +65,15 @@ steps:
       test -f "$DEPLOY_DIR/server.js" || (echo "server.js missing in deploy root" && exit 1)
       test -d "$DEPLOY_DIR/.next/static" || (echo ".next/static missing in deploy" && exit 1)
       echo "Deploy dir sanity check OK"
-      ls -la "$DEPLOY_DIR" | sed -n '1,200p'
+      ls -la "$DEPLOY_DIR" | sed -n '1,120p'
+      ls -la "$DEPLOY_DIR/.next" | sed -n '1,120p'
+      ls -la "$DEPLOY_DIR/.next/static" | sed -n '1,120p'      
     displayName: 'Verify deploy dir content'
 
   - task: ArchiveFiles@2
     displayName: 'Archive standalone bundle'
     inputs:
-      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/deploy'
       includeRootFolder: false
       archiveType: 'zip'
       archiveFile: '$(Build.ArtifactStagingDirectory)/$(ARTIFACT_NAME).zip'
