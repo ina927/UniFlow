@@ -13,7 +13,6 @@ pool:
 
 variables:
   WORKDIR: 'uni-flow'
-  ARTIFACT_NAME: 'drop'
   NODE_VERSION: '20.x'
 
 steps:
@@ -54,7 +53,7 @@ steps:
 
       cp package.json "$DEPLOY_DIR/"
 
-      echo "=== Deploy folder tree ==="
+      echo "=== Deploy folder tree (depth 3) ==="
       find "$DEPLOY_DIR" -maxdepth 3 -type d -print
     workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
     displayName: 'Stage standalone build into deploy dir'
@@ -62,12 +61,26 @@ steps:
   - script: |
       set -e
       DEPLOY_DIR="$(Build.ArtifactStagingDirectory)/deploy"
-      test -f "$DEPLOY_DIR/server.js" || (echo "server.js missing in deploy root" && exit 1)
-      test -d "$DEPLOY_DIR/.next/static" || (echo ".next/static missing in deploy" && exit 1)
+      test -f "$DEPLOY_DIR/server.js" || (echo "[ERROR] server.js missing in deploy root" && exit 1)
+      test -d "$DEPLOY_DIR/.next/static" || (echo "[ERROR] .next/static missing in deploy" && exit 1)
+      echo "[OK] deploy dir ready"
       ls -la "$DEPLOY_DIR" | sed -n '1,120p'
       ls -la "$DEPLOY_DIR/.next" | sed -n '1,120p'
       ls -la "$DEPLOY_DIR/.next/static" | sed -n '1,60p'
     displayName: 'Verify deploy dir content'
+
+  - task: ArchiveFiles@2
+    displayName: 'Archive deploy dir (no root folder)'
+    inputs:
+      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/deploy'
+      includeRootFolder: false
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/app.zip'
+      replaceExistingArchive: true
+
+  - script: |
+      unzip -l "$(Build.ArtifactStagingDirectory)/app.zip" | sed -n '1,200p'
+    displayName: 'List zip content (sanity)'
 
   - task: AzureWebApp@1
     displayName: 'Deploy to Azure App Service'
@@ -75,6 +88,6 @@ steps:
       azureSubscription: 'AppServiceConnection'
       appType: 'webAppLinux'
       appName: 'UniFlowASD'
-      package: '$(Build.ArtifactStagingDirectory)/deploy'
+      package: '$(Build.ArtifactStagingDirectory)/app.zip'
       runtimeStack: 'NODE|20-lts'
-      startupCommand: 'node deploy/server.js'
+      startupCommand: 'node server.js'
