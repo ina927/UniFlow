@@ -28,8 +28,15 @@ export default function ProfilePage() {
   const [editing, setEditing] = useState(false);
   const [courses, setCourses] = useState<AcademicCourseEntity[]>([]);
   const [coursesMsg, setCoursesMsg] = useState<string | null>(null);
+  const [courseEditing, setCourseEditing] = useState(false);
+  const [courseEditingId, setCourseEditingId] = useState<string | null>(null);
+  const [courseDegree, setCourseDegree] = useState('');
+  const [courseCredits, setCourseCredits] = useState('');
+  const [courseStatus, setCourseStatus] = useState<string | null>(null);
   const formRef = useRef<HTMLDivElement | null>(null);
   const nameInputRef = useRef<HTMLInputElement | null>(null);
+  const courseSectionRef = useRef<HTMLElement | null>(null);
+  const courseDegreeInputRef = useRef<HTMLInputElement | null>(null);
 
   const { setUserId } = useAuthStore();
   const { clear } = useAcademicStore();
@@ -77,7 +84,7 @@ export default function ProfilePage() {
         const list =
           (data?.data?.data as AcademicCourseEntity[] | undefined) ?? [];
         setCourses(list);
-      } catch (error) {
+      } catch {
         setCoursesMsg('Failed to load academic course');
       }
     };
@@ -183,6 +190,127 @@ export default function ProfilePage() {
     setConfirmPwd('');
   };
 
+  const beginCourseEditing = () => {
+    if (courseEditing) return;
+
+    setCourseStatus(null);
+
+    const targetCourse = courses[0];
+
+    if (!targetCourse) {
+      setCourseStatus('error: No academic course to edit yet.');
+      return;
+    }
+
+    setCourseEditing(true);
+    setCourseEditingId(targetCourse.id);
+    setCourseDegree(targetCourse.degree ?? '');
+    const targetCredits = Number(targetCourse.credits);
+    setCourseCredits(
+      Number.isFinite(targetCredits) ? String(targetCredits) : ''
+    );
+
+    setTimeout(() => {
+      courseSectionRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+      courseDegreeInputRef.current?.focus({ preventScroll: true });
+    }, 0);
+  };
+
+  const cancelCourseEditing = () => {
+    const editingId = courseEditingId;
+
+    setCourseEditing(false);
+    setCourseEditingId(null);
+    setCourseStatus(null);
+
+    const original =
+      editingId && courses.find((course) => course.id === editingId);
+    const originalCredits = original ? Number(original.credits) : NaN;
+
+    setCourseDegree(original?.degree ?? '');
+    setCourseCredits(
+      Number.isFinite(originalCredits) ? String(originalCredits) : ''
+    );
+  };
+
+  const saveCourse = async () => {
+    if (!courseEditingId) return;
+    if (!user?.id) {
+      setCourseStatus('error: Unable to update academic course without a user session.');
+      return;
+    }
+
+    setCourseStatus(null);
+
+    const normalizedDegree = courseDegree.trim();
+    const parsedCredits = Number(courseCredits);
+
+    if (!normalizedDegree) {
+      setCourseStatus('error: Please provide a degree name.');
+      return;
+    }
+
+    if (!Number.isFinite(parsedCredits) || parsedCredits < 0) {
+      setCourseStatus('error: Total credits must be zero or greater.');
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/academic-courses/${courseEditingId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'user-id': user.id,
+        },
+        body: JSON.stringify({
+          degree: normalizedDegree,
+          credits: parsedCredits,
+        }),
+      });
+
+      if (res.status === 401) {
+        router.replace('/?reason=auth');
+        return;
+      }
+
+      if (!res.ok) {
+        const payload = await res.json().catch(() => null);
+        const errorMsg =
+          payload?.error || 'Failed to update academic course.';
+        setCourseStatus(`error: ${errorMsg}`);
+        return;
+      }
+
+      const payload = await res.json().catch(() => null);
+      const updatedCourse = (payload?.data?.data as
+        | AcademicCourseEntity
+        | undefined) ?? {
+        id: courseEditingId,
+        degree: normalizedDegree,
+        credits: parsedCredits,
+      };
+
+      setCourses((prev) =>
+        prev.map((course) =>
+          course.id === updatedCourse.id
+            ? { ...course, ...updatedCourse }
+            : course
+        )
+      );
+
+      setCourseDegree(normalizedDegree);
+      setCourseCredits(String(parsedCredits));
+      setCourseStatus('ok: Academic course updated.');
+      setCourseEditing(false);
+      setCourseEditingId(null);
+    } catch {
+      setCourseStatus('error: Failed to update academic course.');
+    }
+  };
+
   const displayDob = user?.dob
     ? new Date(user.dob).toLocaleDateString()
     : 'Not provided';
@@ -206,6 +334,15 @@ export default function ProfilePage() {
             >
               {editing ? 'Editing…' : 'Edit Profile'}
             </button>
+            {user?.role !== Role.ADMIN && (
+              <button
+                className='pill-btn pill-primary'
+                onClick={beginCourseEditing}
+                disabled={courseEditing || courses.length === 0}
+              >
+                {courseEditing ? 'Editing…' : 'Edit Academic Course'}
+              </button>
+            )}
             {user?.role === Role.ADMIN && (
               <button
                 className='pill-btn pill-secondary'
@@ -324,42 +461,93 @@ export default function ProfilePage() {
           </div>
         </section>
 
-        <section className='profile-card'>
-          <h2 className='profile-title'>Academic Course</h2>
-          <p className='profile-sub'>Overview of your current course.</p>
+        {user?.role !== Role.ADMIN && (
+          <section
+            className='profile-card'
+            ref={courseSectionRef}
+          >
+            <h2 className='profile-title'>Academic Course</h2>
+            <p className='profile-sub'>Overview of your current course.</p>
 
-          {coursesMsg && <p className='profile-msg error'>{coursesMsg}</p>}
+            {courseStatus && (
+              <div
+                className={`profile-msg ${
+                  courseStatus.startsWith('ok:') ? 'success' : 'error'
+                }`}
+              >
+                {courseStatus.replace(/^(ok:|error:)\s?/, '')}
+              </div>
+            )}
 
-          {courses.length === 0 && !coursesMsg && (
-            <p className='profile-empty'>No academic course on file yet.</p>
-          )}
+            {coursesMsg && <p className='profile-msg error'>{coursesMsg}</p>}
 
-          {courses.length > 0 && (
-            <ul className='profile-course-list'>
-              {courses.map((course) => (
-                <li
-                  key={course.id}
-                  className='profile-course-item'
-                >
-                  <p className='profile-detail'>
-                    <strong>Degree:</strong> {course.degree}
+            {courseEditing ? (
+              <div className='profile-form'>
+                <label>
+                  <span>Degree</span>
+                  <input
+                    ref={courseDegreeInputRef}
+                    value={courseDegree}
+                    onChange={(e) => setCourseDegree(e.target.value)}
+                    placeholder='e.g. Bachelor of IT'
+                  />
+                </label>
+                <label>
+                  <span>Total Credits</span>
+                  <input
+                    type='number'
+                    min={0}
+                    value={courseCredits}
+                    onChange={(e) => setCourseCredits(e.target.value)}
+                    placeholder='e.g. 144'
+                  />
+                </label>
+
+                <div className='profile-actions'>
+                  <button
+                    className='pill-btn pill-primary'
+                    onClick={saveCourse}
+                  >
+                    Save changes
+                  </button>
+                  <button
+                    className='pill-btn pill-secondary'
+                    type='button'
+                    onClick={cancelCourseEditing}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                {courses.length === 0 && !coursesMsg && (
+                  <p className='profile-empty'>
+                    No academic course on file yet.
                   </p>
-                  <p className='profile-detail'>
-                    <strong>Total Credits:</strong> {course.credits}
-                  </p>
-                  <p className='profile-detail'>
-                    <strong>Created:</strong>{' '}
-                    {new Date(course.createdAt).toLocaleDateString()}
-                  </p>
-                  <p className='profile-detail'>
-                    <strong>Last Updated:</strong>{' '}
-                    {new Date(course.updatedAt).toLocaleDateString()}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+                )}
+
+                {courses.length > 0 && (
+                  <ul className='profile-course-list'>
+                    {courses.map((course) => (
+                      <li
+                        key={course.id}
+                        className='profile-course-item'
+                      >
+                        <p className='profile-detail'>
+                          <strong>Degree:</strong> {course.degree}
+                        </p>
+                        <p className='profile-detail'>
+                          <strong>Total Credits:</strong> {course.credits}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </>
+            )}
+          </section>
+        )}
       </div>
     </main>
   );

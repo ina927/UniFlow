@@ -1,8 +1,10 @@
 'use client';
 
-import { useAuthStore } from '@/shared/stores';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+
+import { Role } from '@/entities/users/enums';
+import { useAuthStore } from '@/shared/stores';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -13,7 +15,10 @@ export default function LoginPage() {
 
   async function signIn() {
     setMsg(null);
-    if (!email || !pwd) return setMsg('email & password required');
+    if (!email || !pwd) {
+      setMsg('email & password required');
+      return;
+    }
 
     const res = await fetch('/api/auth/login', {
       method: 'POST',
@@ -35,12 +40,27 @@ export default function LoginPage() {
       data && typeof data === 'object' ? (data as { error?: string }) : null;
     if (!res.ok) {
       const message = payload?.error || raw || `Sign in failed (${res.status})`;
-      return setMsg(message);
+      setMsg(message);
+      return;
     }
 
-    setUserId((data as { user: { id: string } })?.user?.id);
+    const userData = (data as {
+      user?: { id: string; role?: Role };
+    })?.user;
 
-    router.push('/academic'); // match post-signup redirect
+    if (!userData?.id) {
+      setMsg('Unexpected response from server.');
+      return;
+    }
+
+    setUserId(userData.id);
+
+    if (userData.role === Role.ADMIN) {
+      router.push('/admin');
+      return;
+    }
+
+    router.push('/academic'); // match post-signup redirect for students
   }
 
   return (
