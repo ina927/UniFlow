@@ -1,6 +1,6 @@
 import { TermEntity } from '@/entities';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 interface AcademicState {
   academicCourseId: string | null;
@@ -13,6 +13,7 @@ interface AcademicActions {
   setTerms: (terms: TermEntity[]) => void;
   setSelectedTermId: (termId: string | null) => void;
   clearSelectedTerm: () => void;
+  clear: () => void;
 }
 
 type AcademicStore = AcademicState & AcademicActions;
@@ -31,19 +32,27 @@ export const useAcademicStore = create<AcademicStore>()(
       setTerms: (terms: TermEntity[]) => {
         set({ terms });
       },
-      
+
       setSelectedTermId: (termId: string | null) => {
-        set({ 
-          selectedTermId: termId === "all" ? null : termId 
+        set({
+          selectedTermId: termId === 'all' ? null : termId,
         });
       },
 
       clearSelectedTerm: () => {
         set({ selectedTermId: null });
       },
+
+      clear: () => {
+        set({ academicCourseId: null, terms: [], selectedTermId: null });
+      },
     }),
     {
       name: 'academic-storage',
+      storage:
+        typeof window !== 'undefined'
+          ? createJSONStorage(() => localStorage)
+          : undefined,
       partialize: (state) => ({
         academicCourseId: state.academicCourseId,
         terms: state.terms,
@@ -53,6 +62,8 @@ export const useAcademicStore = create<AcademicStore>()(
   )
 );
 
-export const useAcademicCourseId = () => useAcademicStore((state) => state.academicCourseId);
+export const useAcademicCourseId = () =>
+  useAcademicStore((state) => state.academicCourseId);
 export const useTerms = () => useAcademicStore((state) => state.terms);
-export const useSelectedTermId = () => useAcademicStore((state) => state.selectedTermId);
+export const useSelectedTermId = () =>
+  useAcademicStore((state) => state.selectedTermId);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { ToDoEntity } from '@/entities/todos/entities';
 import styles from './TaskLists.module.css';
@@ -16,11 +16,13 @@ import {
   statusDone,
   statusInProgress,
 } from '@/features/planner/apis/todo.api';
+import { mapToToDoEntity } from '@/entities/todos/utils';
+import { useAcademicStore, useAuthStore } from '@/shared/stores';
 import { AddToDoForm, EditToDoForm } from '@/features/planner/ui';
 
 // type setup
 type taskListsProps = {
-  academicCourseId: string;
+  academicCourseId: any;
   filterBySubjectId?: string | null;
 };
 
@@ -30,6 +32,7 @@ export const TaskLists = ({
   filterBySubjectId,
 }: taskListsProps) => {
   // list state
+  const {userId} = useAuthStore();
   const [events, setEvents] = useState<ToDoEntity[]>([]);
   const [pendings, setPendings] = useState<ToDoEntity[]>([]);
   const [inProgress, setInProgress] = useState<ToDoEntity[]>([]);
@@ -42,40 +45,53 @@ export const TaskLists = ({
   // for trigger
   const [isEditDialogue, setIsEditDialogue] = useState<boolean>(false);
   const [isAddDialogue, setIsAddDialogue] = useState<boolean>(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleRefresh = useCallback(() => {
+    setRefreshKey((prev) => prev + 1);
+    console.log('refreshKey', refreshKey);
+  }, []);
+
+  const baseApi = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 
   // use handler + refresh rate
 
-  const refresh = async () => {
-    // filter check
+  const refresh =  async () => {
+      // filter check
+  
+      let events;
+      events = await getToDos();
 
-    let events;
-    events = await getToDos();
-
-    if (filterBySubjectId?.trim() !== '' && filterBySubjectId) {
-      const subId = filterBySubjectId;
-      events = await getToDosByFilter(subId);
-    }
-
-    setEvents(events);
-
-    console.log(events);
-
-    // filtering
-    const fetchedPen = await getPendings(events);
-    if (fetchedPen) {
-      setPendings(fetchedPen);
-    }
-
-    const fetchedInProg = await getInProgress(events);
-    if (fetchedInProg) {
-      setInProgress(fetchedInProg);
-    }
-
-    const fetchedComplete = await getCompletes(events);
-    if (fetchedComplete) {
-      setCompleted(fetchedComplete);
-    }
-  };
+      if (filterBySubjectId?.trim() !== '' && filterBySubjectId) {
+        const subId = filterBySubjectId;
+        events = await getToDosByFilter(subId);
+      }
+  
+      setEvents(events);
+  
+      console.log(events);
+  
+      // filtering
+      const fetchedPen = await getPendings(events);
+      if (fetchedPen) {
+        setPendings(fetchedPen);
+      }
+  
+      const fetchedInProg = await getInProgress(events);
+      if (fetchedInProg) {
+        setInProgress(fetchedInProg);
+      }
+  
+      const fetchedComplete = await getCompletes(events);
+      if (fetchedComplete) {
+        setCompleted(fetchedComplete);
+      }
+    };
+    
+  useEffect(() => {
+    refresh();
+  }, [refreshKey]);
 
   useEffect(() => {
     const listings = async () => {
@@ -311,6 +327,7 @@ export const TaskLists = ({
           event={selectedEvent}
           isOpen={isEditDialogue}
           onClose={handleCloseEdit}
+          refresh={refresh}
         />
       )}
 
@@ -320,6 +337,7 @@ export const TaskLists = ({
           academicCourseId={academicCourseId}
           isOpen={isAddDialogue}
           onClose={handleCloseAdd}
+          refresh={refresh}
         />
       }
     </div>

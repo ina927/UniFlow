@@ -1,15 +1,24 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+type Context = { params?: Record<string, string> };
+
+export async function PATCH(req: Request, ctx: unknown) {
+  const { params } = (ctx as Context) ?? {};
+  const id = params?.id;
+
   try {
-    const { score } = await request.json();
-    
+    const { score } = await req.json();
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Missing assessment ID' },
+        { status: 400 }
+      );
+    }
+
     const updatedAssessment = await prisma.assessment.update({
-      where: { id: params.id },
+      where: { id },
       data: { score },
     });
 

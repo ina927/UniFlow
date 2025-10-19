@@ -1,35 +1,39 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from 'react';
+
+import { useAcademicStore, useAuthStore } from '@/shared/stores';
 
 export const useSubjects = () => {
   const [subjects, setSubjects] = useState<{ id: string; title: string }[]>([]);
+
+  const { userId } = useAuthStore();
+  const { academicCourseId } = useAcademicStore();
 
   // Fetch subjects from the backend
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
-        const response = await fetch("/api/subjects", {
+        const response = await fetch('/api/subjects', {
           headers: {
-            "user-id": "83482f49-8367-48d1-93f0-e98f01010f0f", // Replace with the actual user ID
+            'user-id': userId || '',
+            'academic-course-id': academicCourseId || '',
           },
         });
         const data = await response.json();
 
-        console.log("Fetched Subjects:", data); // Debugging log
+        console.log('Fetched Subjects:', data); // Debugging log
 
         if (!response.ok) {
-          throw new Error(data.message || "Failed to fetch subjects");
+          throw new Error(data.message || 'Failed to fetch subjects');
         }
 
         setSubjects(data.data); // Assuming `data.data` contains the list of subjects
       } catch (error) {
-        console.error("Error fetching subjects:", error);
+        console.error('Error fetching subjects:', error);
       }
     };
 
     fetchSubjects();
-  }, []);
-
-
+  }, [userId, academicCourseId]);
 
   return { subjects };
 };

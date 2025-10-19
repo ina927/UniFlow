@@ -6,7 +6,8 @@ import { deleteSubject, getSubject, updateSubject } from "@/entities/academics/s
 import { ApiParams, controller } from "@/shared/api";
 import { deleteSuccess, getSuccess, missingError, updateSuccess } from "@/shared";
 
-export const GET = controller(async (req: NextRequest, { params }: ApiParams) => {
+export const GET = controller<{ id: string }>(
+  async (req: NextRequest, { params }: ApiParams<{ id: string }>) => {
     const userId = req.headers.get('user-id');
 
     if (!userId) {
@@ -18,7 +19,8 @@ export const GET = controller(async (req: NextRequest, { params }: ApiParams) =>
     return getSuccess(subject, "Subject");
 });
 
-export const PATCH = controller(async (req: NextRequest, { params } : ApiParams) => {
+export const PATCH = controller<{ id: string }>(
+  async (req: NextRequest, { params }: ApiParams<{ id: string }>) => {  
   const userId = req.headers.get('user-id');
 
   if (!userId) {
@@ -31,7 +33,8 @@ export const PATCH = controller(async (req: NextRequest, { params } : ApiParams)
   return updateSuccess(subject, "Subject");
 });
 
-export const DELETE = controller(async (req: NextRequest, { params }: ApiParams) => {
+export const DELETE = controller<{ id: string }>(
+  async (req: NextRequest, { params }: ApiParams<{ id: string }>) => {
   const userId = req.headers.get('user-id');
 
   if (!userId) {

@@ -4,8 +4,9 @@ import { ResponseDto, controller } from "@/shared/api";
 import { UpdateAcademicCourseDto } from "@/entities";
 import { deleteAcademicCourse, getAcademicCourse, updateAcademicCourse } from "@/entities/academics/services";
 import { deleteSuccess, getSuccess, missingError, notFoundError, serverError, updateSuccess } from "@/shared";
+import type { ApiParams } from "@/shared/api/models/api-params"; 
 
-export const GET = controller(async (req: NextRequest) => {
+export const GET = controller<{ id: string }>(async (req: NextRequest, _ctx: ApiParams<{ id: string }>) => {
   try {
     const userId: string = req.headers.get('user-id') as string;
 
@@ -31,7 +32,7 @@ export const GET = controller(async (req: NextRequest) => {
   }
 });
 
-export const PATCH = controller(async (req: NextRequest) => {
+export const PATCH = controller<{ id: string }>(async (req: NextRequest, _ctx: ApiParams<{ id: string }>) => {
   try {
     const userId: string = req.headers.get('user-id') as string;
 
@@ -54,7 +55,7 @@ export const PATCH = controller(async (req: NextRequest) => {
   }
 });
 
-export const DELETE = controller(async (req: NextRequest) => {
+export const DELETE = controller<{ id: string }>(async (req: NextRequest, _ctx: ApiParams<{ id: string }>) => {
   try {
     const userId: string = req.headers.get('user-id') as string;
 

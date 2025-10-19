@@ -22,7 +22,7 @@ export const Combobox = ({
   academicCourseId,
   onSubjectChange,
 }: {
-  academicCourseId: string;
+  academicCourseId: string | null;
   onSubjectChange: (subjectId: string) => void;
 }) => {
   const [open, setOpen] = useState(false);
@@ -30,8 +30,9 @@ export const Combobox = ({
 
   const { data } = useQuery({
     queryKey: ['subjects', academicCourseId],
-    queryFn: () => getSubjects(academicCourseId),
+    queryFn: () => getSubjects(academicCourseId as string),
     staleTime: 5 * 60 * 1000,
+    enabled: typeof academicCourseId === 'string' && academicCourseId.length > 0,
   });
 
   const subjects = data?.data?.data || [];

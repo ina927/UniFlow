@@ -14,7 +14,7 @@ import styles from './AddToDoForm.module.css';
 
 // type setup
 type addToDoFormProps = {
-  academicCourseId: string;
+  academicCourseId: any;
   isOpen: boolean;
   onClose: () => void;
   refresh: () => void;
@@ -48,7 +48,7 @@ export const AddToDoForm = ({
   }, [isOpen]);
 
   // event handler
-  const validateSave = (e: React.FormEvent) => {
+  const validateSave = async (e: React.FormEvent) => {
     // Title validator
     if (eventTitle.trim() === '' || !eventTitle) {
       setError('Empty title is detected');
@@ -82,17 +82,21 @@ export const AddToDoForm = ({
     }
 
     // for end date
-    if (endDate) {
+    if (endDate && startDate) {
+      const startDateFormat = new Date(startDate);
       const endDateFormat = new Date(endDate);
       if (isNaN(endDateFormat.getTime())) {
         setError('End date is not detected');
         return;
       }
       endDateFormat.setHours(0, 0, 0, 0);
-      if (endDateFormat < now) {
+      if (endDateFormat < now || endDateFormat < startDateFormat) {
         setError('Please choose the later day');
         return;
       }
+    } else {
+      setError('Choose a day to start and finish');
+      return;
     }
 
     setError(null);
@@ -108,17 +112,18 @@ export const AddToDoForm = ({
         status: ToDoStatus.PENDING, // default settings
       };
 
-      postEvents(newToDo);
+      await postEvents(newToDo);
+
+      refresh();
+      onClose();
+      setDescription('');
+      setEventTitle('');
+      setStartDate(null);
+      setEndDate(null);
+      setSubjectId('');
     } else {
       console.log('Error in posting');
     }
-    onClose();
-    setDescription('');
-    setEventTitle('');
-    setStartDate(null);
-    setEndDate(null);
-    setSubjectId('');
-    refresh();
   };
 
   return (

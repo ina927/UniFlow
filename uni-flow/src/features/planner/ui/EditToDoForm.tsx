@@ -17,7 +17,7 @@ import styles from './AddToDoForm.module.css';
 
 // type setup
 type editToDoFormProps = {
-  academicCourseId: string;
+  academicCourseId: any;
   event: ToDoEntity;
   isOpen: boolean; // Add this
   onClose: () => void; // Add this
@@ -61,7 +61,7 @@ export const EditToDoForm = ({
   }, [event]); // Add dependency array
 
   // event handler
-  const validateSave = () => {
+  const validateSave = async () => {
     if (!event) {
       console.log('Error fetching data');
       return;
@@ -99,16 +99,21 @@ export const EditToDoForm = ({
     }
 
     // for end date
-    if (endDate) {
+    if (endDate && startDate) {
+      const startDateFormat = new Date(startDate);
       const endDateFormat = new Date(endDate);
       if (isNaN(endDateFormat.getTime())) {
         setError('End date is not detected');
         return;
       }
-      if (endDateFormat < now) {
+      endDateFormat.setHours(0, 0, 0, 0);
+      if (endDateFormat < now || endDateFormat < startDateFormat) {
         setError('Please choose the later day');
         return;
       }
+    } else {
+      setError('Choose a day to start and finish');
+      return;
     }
 
     setError(null);
@@ -125,18 +130,18 @@ export const EditToDoForm = ({
         status: ToDoStatus.PENDING, // default settings
       };
 
-      updateToDo(newToDo);
+      await updateToDo(newToDo);
+      console.log('Updated event:', newToDo);
+      refresh();
+      onClose(); // Use the onClose prop
+      setDescription('');
+      setEventTitle('');
+      setStartDate(null);
+      setEndDate(null);
+      setSubjectId('');
     } else {
       console.log('Error in posting');
     }
-
-    onClose(); // Use the onClose prop
-    setDescription('');
-    setEventTitle('');
-    setStartDate(null);
-    setEndDate(null);
-    setSubjectId('');
-    refresh();
   };
 
   return (

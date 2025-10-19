@@ -3,6 +3,7 @@ import type { CreateAssessmentDto, EnterScoreDto, UpdateAssessmentDto } from "..
 import { prisma } from '@/shared/lib/prisma';
 import { AssessmentType } from "../enums";
 import { notFoundError } from "@/shared/consts/error-types";
+import type { $Enums } from "@/shared/generated/prisma";
 
 interface AssessmentModel extends Omit<Assessment, 'type' | 'dueDate' | 'description'> {
   type: string | undefined;
@@ -12,27 +13,50 @@ interface AssessmentModel extends Omit<Assessment, 'type' | 'dueDate' | 'descrip
 
 // const API_BASE_URL = '/api/assessments';
 
-export const toAssessmentType = (type: string | AssessmentType): AssessmentType => {
-  if (typeof type === 'string') {
-    switch (type) {
-      case 'Quiz':
-        return AssessmentType.QUIZ;
-      case 'Exam':
-        return AssessmentType.EXAM;
-      case 'Group Assignment':
-        return AssessmentType.GROUP_ASSIGNMENT;
-      case 'Individual Assignment':
-        return AssessmentType.INDV_ASSIGNMENT;
-      case 'Group, Individual Assignment':
-        return AssessmentType.GROUP_INDV_ASSIGNMENT;
-      case 'Other':
-        return AssessmentType.OTHER;
-      default: 
-        return AssessmentType.OTHER;
-    }
+export const toAssessmentType = (
+  type: string | AssessmentType | $Enums.AssessmentType | undefined
+): AssessmentType => {
+  if (type == null) return AssessmentType.OTHER;
+
+  if (typeof type !== 'string') {
+    return type as AssessmentType;
   }
-  
-  return type;
+
+  const U = type.trim().toUpperCase().replace(/[,\s]+/g, "_");
+  switch (U) {
+    case "QUIZ": return AssessmentType.QUIZ;
+    case "EXAM": return AssessmentType.EXAM;
+    case "GROUP_ASSIGNMENT": return AssessmentType.GROUP_ASSIGNMENT;
+    case "INDV_ASSIGNMENT": return AssessmentType.INDV_ASSIGNMENT;
+    case "GROUP_INDV_ASSIGNMENT": return AssessmentType.GROUP_INDV_ASSIGNMENT;
+  }
+
+  switch (type) {
+    case "Quiz": return AssessmentType.QUIZ;
+    case "Exam": return AssessmentType.EXAM;
+    case "Group Assignment": return AssessmentType.GROUP_ASSIGNMENT;
+    case "Individual Assignment": return AssessmentType.INDV_ASSIGNMENT;
+    case "Group, Individual Assignment": return AssessmentType.GROUP_INDV_ASSIGNMENT;
+    case "Other": return AssessmentType.OTHER;
+    default: return AssessmentType.OTHER;
+  }
+};
+
+const fromEnumToDbLabel = (v: AssessmentType): string => {
+  switch (v) {
+    case AssessmentType.QUIZ: return "Quiz";
+    case AssessmentType.EXAM: return "Exam";
+    case AssessmentType.GROUP_ASSIGNMENT: return "Group Assignment";
+    case AssessmentType.INDV_ASSIGNMENT: return "Individual Assignment";
+    case AssessmentType.GROUP_INDV_ASSIGNMENT: return "Group, Individual Assignment";
+    default: return "Other";
+  }
+};
+
+export const toDbAssessmentType = (t: string | AssessmentType | undefined): string | undefined => {
+  if (t == null) return undefined;
+  const asEnum = typeof t === "string" ? toAssessmentType(t) : t;
+  return fromEnumToDbLabel(asEnum);
 };
 
 // Helper: convert DB row → front-end Assessment entity
@@ -88,7 +112,7 @@ export async function createAssessment(params: { dto: CreateAssessmentDto }): Pr
     data: {
       subjectId: d.subjectId,
       title: d.title,
-      type: d.type ?? undefined,
+      type: toDbAssessmentType(d.type) ?? 'OTHER',
       weight: d.weight,
       maxScore: d.maxScore,
       dueDate: d.dueDate ? new Date(d.dueDate) : new Date(),
@@ -137,7 +161,7 @@ export async function updateAssessment(params: { id: string; dto: UpdateAssessme
     where: { id: params.id },
     data: {
       title: d.title ?? undefined,
-      type: d.type ?? undefined,
+      type: toDbAssessmentType(d.type),
       weight: d.weight ?? undefined,
       maxScore: d.maxScore ?? undefined,
       dueDate: d.dueDate ? new Date(d.dueDate) : undefined,

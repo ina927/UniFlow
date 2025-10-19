@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/shared/lib/prisma";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+type Context = { params?: Record<string, string> };
+
+export async function GET(req: NextRequest, ctx: unknown) {
+  const { params } = (ctx as Context) ?? {};
+  const id = params?.id;
+
   try {
     const session = await prisma.timerSession.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!session) {
@@ -27,14 +29,14 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(req: NextRequest, ctx: unknown) {
+  const { params } = (ctx as Context) ?? {};
+  const id = params?.id;
+
   try {
     const body = await req.json();
     const updated = await prisma.timerSession.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         startTime: body.startTime ? new Date(body.startTime) : undefined,
         endTime: body.endTime ? new Date(body.endTime) : undefined,
@@ -52,13 +54,13 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest, ctx: unknown) {
+  const { params } = (ctx as Context) ?? {};
+  const id = params?.id;
+
   try {
     const session = await prisma.timerSession.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ success: true, session });

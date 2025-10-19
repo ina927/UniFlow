@@ -1,14 +1,20 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
+import { toDbAssessmentType } from '@/entities/assessments/services/assessment.service';
+
+type RouteCtx = { params: Promise<{ id: string }> };
+
 
 // GET: Get a single assessment by ID
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  ctx: RouteCtx 
 ) {
   try {
+    const { id } = await ctx.params;
+
     const assessment = await prisma.assessment.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!assessment) {
@@ -31,13 +37,16 @@ export async function GET(
 // PATCH: Update an assessment
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  ctx: RouteCtx 
 ) {
   try {
+    const { id } = await ctx.params;
     const body = await request.json();
+    const data = { ...body, type: toDbAssessmentType(body.type) };
+
     const updatedAssessment = await prisma.assessment.update({
-      where: { id: params.id },
-      data: body,
+      where: { id },
+      data,
     });
 
     return NextResponse.json(updatedAssessment);
@@ -53,11 +62,12 @@ export async function PATCH(
 // DELETE: Delete an assessment
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  ctx: RouteCtx
 ) {
   try {
+    const { id } = await ctx.params;
     await prisma.assessment.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return new Response(null, { status: 204 });

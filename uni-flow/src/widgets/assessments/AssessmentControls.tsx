@@ -1,10 +1,10 @@
 "use client"
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/shared/ui/button"
 import styles from "./AssessmentControls.module.css"
-import AssessmentModeToggle from "@/features/assessments/ui/AssessmentModeToggle";
-import RequiredMarkToggle from "@/features/assessments/ui/RequiredMarkToggle";
+import { AssessmentModeToggle } from "@/features/assessments/ui/AssessmentModeToggle";
+import { RequiredMarkToggle } from "@/features/assessments/ui/RequiredMarkToggle";
 
 type Props = {
   onAddAssessment?: () => void;

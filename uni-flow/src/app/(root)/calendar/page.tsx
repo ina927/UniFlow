@@ -1,5 +1,20 @@
 'use client';
 
+import {
+  DateSelectArg,
+  EventApi,
+  EventClickArg,
+  EventInput,
+  formatDate,
+} from '@fullcalendar/core/index.js';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import FullCalendar from '@fullcalendar/react';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import Axios from 'axios';
+import Link from 'next/link';
+import { useEffect, useRef, useState } from 'react';
+
 // React import
 import {
   Dialog,
@@ -7,25 +22,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/ui/dialog';
-import {
-  DateSelectArg,
-  EventApi,
-  EventClickArg,
-  EventInput,
-  formatDate,
-} from '@fullcalendar/core';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction';
-import FullCalendar from '@fullcalendar/react';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
 
 // database import
-import { ToDoEntity } from '@/entities/todos/entities/todo.entity';
+import { ToDoEntity } from '@/entities/todos/entities';
 import { ToDoStatus } from '@/entities/todos/enums';
+import { useAcademicStore, useAuthStore } from '@/shared/stores';
 import { Combobox } from '@/widgets/planner/SetFilterModal';
-import Axios from 'axios';
 
 export default function Calendar() {
   // for event control
@@ -44,23 +46,23 @@ export default function Calendar() {
   const [selectedEvent, setSelectedEvent] = useState<EventApi>();
   const [selectedEventId, setSelectedEventId] = useState<string>();
   const [selectedEventArg, setSelectedEventArg] = useState<EventClickArg>();
-  const [academicCourseId, setAcademicCourseId] = useState<string>('');
-  // const [taskStatus, setTaskStatus] = useState<string>("");
 
   const [filteredEvent, setFilteredEvent] = useState<EventApi[]>([]);
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>(''); // filter
-  const [subId, setSubId] = useState<string>('');
 
   // data dummy for now
-  const userId = '68ad41c7486238ade8bb2f2d';
   const calendarRef = useRef<FullCalendar | null>(null);
+
+  const { userId } = useAuthStore();
+  const { academicCourseId } = useAcademicStore();
 
   // click handler
   useEffect(() => {
     const fetchToDo = async () => {
       const response = await fetch('http://localhost:3000/api/todos', {
         headers: {
-          userId: userId,
+          'user-id': userId || '',
+          'academic-course-id': academicCourseId || '',
         },
       });
 
@@ -103,7 +105,8 @@ export default function Calendar() {
     const fetchToDo = async () => {
       const response = await fetch('http://localhost:3000/api/todos', {
         headers: {
-          userId: userId,
+          'user-id': userId || '',
+          'academic-course-id': academicCourseId || '',
         },
       });
 
@@ -295,7 +298,8 @@ export default function Calendar() {
 
     const response = await fetch('http://localhost:3000/api/todos', {
       headers: {
-        userId: userId,
+        'user-id': userId || '',
+        'academic-course-id': academicCourseId || '',
       },
     });
 
@@ -367,7 +371,7 @@ export default function Calendar() {
   return (
     <div
       className='studyPlanner'
-      style={{ marginTop: '3rem', marginLeft: '4rem', overflow: 'hidden' }}
+      style={{ marginTop: '3rem', marginLeft: '5rem', overflowX: 'hidden' }}
     >
       <div
         className='title'
@@ -674,6 +678,5 @@ export default function Calendar() {
         </Dialog>
       </>
     </div>
-    // https://www.youtube.com/watch?v=3CMgznBdl-M
   );
 }

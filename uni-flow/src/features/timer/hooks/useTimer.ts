@@ -28,11 +28,18 @@ export const useTimer = ({
   const [userId, setUserId] = useState<string | null>(null);
   const { subjects } = useSubjects();
 
+  // Ensure subjects is an array (handles undefined or map responses)
+  const subjectsArray: any[] = Array.isArray(subjects)
+    ? subjects
+    : subjects && typeof subjects === "object"
+    ? Object.values(subjects)
+    : [];
+
   const [showNotification, setShowNotification] = useState(false);
   const alarmRef = useRef<HTMLAudioElement | null>(null);
   const hasStarted = useRef(false);
 
-  // ✅ Fetch logged-in user once
+  //  Fetch logged-in user once
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -69,7 +76,7 @@ export const useTimer = ({
     setShowNotification(true);
     if (alarmRef.current) alarmRef.current.play();
 
-    // ✅ Save session only if logged in and it's a work session
+    //  Save session only if logged in and it's a work session
     if (isWorkTime && userId) {
       const endTime = new Date().toISOString();
       const startTime = new Date(Date.now() - workTime * 1000).toISOString();
@@ -85,10 +92,9 @@ export const useTimer = ({
           todoId: currentTask?.id || null,
           taskName: currentTask?.id ? currentTask.title : 'Study Session',
           subjectName: currentTask?.id
-            ? (subjects ?? []).find(
-                (subject) => subject.id === currentTask?.subjectId
-              )?.title || 'Other'
-            : 'Other',
+            ? subjectsArray.find((subject) => subject.id === currentTask?.subjectId)
+                ?.title || "Other"
+            : "Other",
         }),
       })
         .then((res) => {

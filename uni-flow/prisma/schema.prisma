@@ -5,7 +5,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // Enums
@@ -114,7 +115,7 @@ model Subject {
 model Assessment {
   id          String   @id @default(uuid())
   title       String
-  type        AssessmentType
+  type        String
   description String?
   dueDate     DateTime
   weight      Float

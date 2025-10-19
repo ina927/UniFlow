@@ -44,7 +44,20 @@ export async function GET(req: NextRequest) {
   try {
     const userId = req.headers.get('user-id');
 
-    const toDos = await prisma.toDo.findMany(); //{where:{userId: {not: null}}}
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'User ID is required' },
+        { status: 400 }
+      );
+    }
+
+    const toDos = await prisma.toDo.findMany({
+      where: {
+        user: {
+          id: userId,
+        },
+      },
+    }); //{where:{userId: {not: null}}}
 
     return NextResponse.json(toDos, { status: 200 });
   } catch (error) {
