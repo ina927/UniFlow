@@ -3,7 +3,7 @@ import { apiClient } from "@/shared/api";
 import { getUserIdFromStorage } from "@/shared/lib/safe-storage";
 
 export const getAcademicCourses = () => {
-    return apiClient.get(ACADEMIC_COURSES_API, {
+    return apiClient.get(`${ACADEMIC_COURSES_API}`, {
         headers: {
             "user-id": getUserIdFromStorage(),
         }

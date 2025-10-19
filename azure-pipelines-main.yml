@@ -13,8 +13,7 @@ pool:
 
 variables:
   WORKDIR: 'uni-flow'
-  ARTIFACT_NAME: 'drop'
-  NODE_VERSION: '22.x'
+  NODE_VERSION: '20.x'
 
 steps:
   - task: NodeTool@0
@@ -28,30 +27,69 @@ steps:
     displayName: 'Install deps (npm ci)'
 
   - script: |
+      npx prisma generate
+    workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+    displayName: 'Prisma generate'
+
+  - script: |
       export NEXT_TELEMETRY_DISABLED=1
       npm run build
     workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
     displayName: 'Build Next.js'
+  
+  - script: |
+      set -e
+      DEPLOY_DIR="$(Build.ArtifactStagingDirectory)/deploy"
+      rm -rf "$DEPLOY_DIR"
+      mkdir -p "$DEPLOY_DIR/.next"
+
+      cp -R .next/standalone/* "$DEPLOY_DIR"/
+
+      rsync -a --delete --exclude 'standalone' .next/ "$DEPLOY_DIR/.next/"
+
+      if [ -d public ]; then
+        cp -R public "$DEPLOY_DIR/public"
+      fi
+
+      cp package.json "$DEPLOY_DIR/"
+
+      echo "=== Deploy folder tree (depth 3) ==="
+      find "$DEPLOY_DIR" -maxdepth 3 -type d -print
+    workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+    displayName: 'Stage standalone build into deploy dir'
 
   - script: |
-      npm prune --production
-    workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
-    displayName: 'Prune to production deps'
+      set -e
+      DEPLOY_DIR="$(Build.ArtifactStagingDirectory)/deploy"
+
+      test -f "$DEPLOY_DIR/server.js" || (echo "[ERROR] server.js missing in deploy root" && exit 1)
+      test -d "$DEPLOY_DIR/.next/static" || (echo "[ERROR] .next/static missing in deploy" && exit 1)
+      test -f "$DEPLOY_DIR/.next/BUILD_ID" || (echo "[ERROR] BUILD_ID missing in deploy/.next" && exit 1)
+
+      test -f "$DEPLOY_DIR/.next/routes-manifest.json" || (echo "[ERROR] routes-manifest.json missing in deploy/.next" && exit 1)
+      test -f "$DEPLOY_DIR/.next/build-manifest.json" || (echo "[ERROR] build-manifest.json missing in deploy/.next" && exit 1)
+
+      echo "[OK] deploy dir ready"
+      echo "== Top-level =="
+      ls -la "$DEPLOY_DIR" | sed -n '1,120p'
+      echo "== .next =="
+      ls -la "$DEPLOY_DIR/.next" | sed -n '1,120p'
+      echo "== .next/static =="
+      ls -la "$DEPLOY_DIR/.next/static" | sed -n '1,120p'
+    displayName: 'Verify deploy dir content'
 
   - task: ArchiveFiles@2
-    displayName: 'Archive build output'
+    displayName: 'Archive deploy dir (no root folder)'
     inputs:
-      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/deploy'
       includeRootFolder: false
       archiveType: 'zip'
-      archiveFile: '$(Build.ArtifactStagingDirectory)/$(ARTIFACT_NAME).zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/app.zip'
+      replaceExistingArchive: true
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact'
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(ARTIFACT_NAME).zip'
-      ArtifactName: '$(ARTIFACT_NAME)'
-      publishLocation: 'Container'
+  - script: |
+      unzip -l "$(Build.ArtifactStagingDirectory)/app.zip" | sed -n '1,200p'
+    displayName: 'List zip content (sanity)'
 
   - task: AzureWebApp@1
     displayName: 'Deploy to Azure App Service'
@@ -59,5 +97,6 @@ steps:
       azureSubscription: 'AppServiceConnection'
       appType: 'webAppLinux'
       appName: 'UniFlowASD'
-      package: '$(Build.ArtifactStagingDirectory)/$(ARTIFACT_NAME).zip'
-      runtimeStack: 'NODE|22-lts'
+      package: '$(Build.ArtifactStagingDirectory)/app.zip'
+      runtimeStack: 'NODE|20-lts'
+      startupCommand: 'node server.js'
