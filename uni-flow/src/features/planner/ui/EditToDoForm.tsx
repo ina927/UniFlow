@@ -19,8 +19,8 @@ import styles from './AddToDoForm.module.css';
 type editToDoFormProps = {
   academicCourseId: any;
   event: ToDoEntity;
-  isOpen: boolean; // Add this
-  onClose: () => void; // Add this
+  isOpen: boolean; 
+  onClose: () => void; 
   refresh: () => void;
 };
 
@@ -32,7 +32,6 @@ export const EditToDoForm = ({
   onClose,
   refresh,
 }: editToDoFormProps) => {
-  // if (!event) return null;
 
   // form state
   const [eventTitle, setEventTitle] = useState<string>(event?.title || '');
@@ -46,9 +45,6 @@ export const EditToDoForm = ({
   const [subjectId, setSubjectId] = useState<string>(event?.subjectId || '');
   const [error, setError] = useState<string | null>(null);
 
-  // // user data
-  // const userId = useUserId();
-
   // use handler
   useEffect(() => {
     if (event) {
@@ -58,7 +54,7 @@ export const EditToDoForm = ({
       setEndDate(event.endDate);
       setSubjectId(event.subjectId);
     }
-  }, [event]); // Add dependency array
+  }, [event]);
 
   // event handler
   const validateSave = async () => {
