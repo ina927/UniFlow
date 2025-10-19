@@ -38,10 +38,23 @@ steps:
     workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
     displayName: 'Build Next.js'
 
-  # - script: |
-  #     npm prune --production
-  #   workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
-  #   displayName: 'Prune to production deps'
+  - script: |
+      npm prune --omit=dev
+    workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+    displayName: 'Prune to production deps'
+  
+  - script: |
+      set -e
+      echo "Check .next exists"
+      test -d .next || (echo ".next folder is missing" && exit 1)
+
+      echo "Check next runtime file exists"
+      test -f node_modules/next/dist/server/next.js || (echo "node_modules/next/dist/server/next.js is missing" && ls -la node_modules/next || true && exit 1)
+
+      echo "Show top-level for sanity:"
+      ls -la
+    workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
+    displayName: 'Verify runtime files (.next & next)'
 
   - task: ArchiveFiles@2
     displayName: 'Archive build output'
