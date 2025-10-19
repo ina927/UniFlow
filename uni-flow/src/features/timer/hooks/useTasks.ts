@@ -71,7 +71,7 @@ export const useTasks = () => {
         }
 
         const inProgressTasks = (data as Task[]).filter(
-          (task) => task.taskStatus !== 'DONE'
+          (task) => ((task as any).taskStatus ?? (task as any).status) !== 'DONE'
         );
         setTasks(inProgressTasks);
       } catch (error) {
@@ -110,7 +110,7 @@ export const useTasks = () => {
       }
 
       const inProgressTasks = (data as Task[]).filter(
-        (task) => task.taskStatus !== 'DONE'
+        (task) => ((task as any).taskStatus ?? (task as any).status) !== 'DONE'
       );
       setTasks(inProgressTasks);
     } catch (error) {
