@@ -9,10 +9,18 @@
   padding-top: 2vw;
 }
 
+@media  screen and (max-width: 784px) {
+  .planner{
+    padding-left: 40px;
+    padding-top: 20px;
+  }
+}
+
 /* STUDY PLANNER SETTINGS */
 .todoList {
   display: flex;
   flex-direction: row;
+  
 }
 
 .list {
@@ -123,4 +131,10 @@
   height: 1.7vw;
   margin-top: -0.5vh;
   margin-right: 0.4vw;
+}
+
+@media screen and (min-width: 2250px){
+  .todoList{
+    flex-direction: column;
+  }
 }

@@ -114,7 +114,7 @@ export const CalendarComp = ({
 
   useEffect(() => {
     refresh();
-  }, [events, filterBySubjectId]);
+  }, [filterBySubjectId]);
 
   const handleDateClick = (selected: DateSelectArg) => {
     setSelectedDate(selected);

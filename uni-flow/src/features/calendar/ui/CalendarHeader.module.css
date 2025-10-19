@@ -1,0 +1,21 @@
+.header{
+    display: flex;
+    flex-direction: row;
+}
+
+.filter{
+    display: flex;
+    flex-direction: row;
+    margin-left: 90px;
+}
+
+@media  screen and (max-width: 784px) {
+    .header{
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .filter{
+        margin-left: -20px;
+    }
+}

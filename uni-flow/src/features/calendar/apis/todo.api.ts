@@ -5,7 +5,7 @@ import { EventApi, EventClickArg, EventInput } from "@fullcalendar/core/index.js
 
 import axios from 'axios';
 
-const baseApi = process.env.NEXT_PUBLIC_API_BASE_URL;
+const baseApi = '/api';
 const getUserId = () =>
   (typeof window !== 'undefined' ? localStorage.getItem('user-id') : '') ?? '';
 

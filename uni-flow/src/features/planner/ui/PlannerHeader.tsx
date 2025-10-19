@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { Combobox } from '@/widgets/planner/SetFilterModal';
+import styles from '@/features/planner/ui/PlannerHeader.module.css'
 
 // type setup
 type PlannerHeaderProps = {
@@ -19,8 +20,7 @@ export const PlannerHeader = ({
 
   return (
     <div
-      className='title'
-      style={{ display: 'flex', flexDirection: 'row' }}
+      className={styles.header}
     >
       <h1
         className='text-large-title-bold'
@@ -28,6 +28,7 @@ export const PlannerHeader = ({
       >
         User&#39;s Study Planner
       </h1>
+      <div className={styles.filter} style={{display: "flex", flexDirection: "row"}}>
       <Combobox
         academicCourseId={academicCourseId}
         onSubjectChange={handleSubjectFilterChange}
@@ -35,7 +36,7 @@ export const PlannerHeader = ({
       <Link
         href='../calendar'
         style={{
-          float: 'right',
+          // float: 'right',
           marginLeft: '0.5vw',
           background: 'var(--background-prime)',
           color: 'var(--background)',
@@ -51,6 +52,7 @@ export const PlannerHeader = ({
       >
         📆
       </Link>
+      </div>
     </div>
   );
 };

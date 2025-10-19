@@ -103,7 +103,7 @@ export const TaskLists = ({
 
   useEffect(() => {
     refresh();
-  }, [events, filterBySubjectId]);
+  }, [filterBySubjectId]);
 
   const handleEditButton = async (event: ToDoEntity) => {
     setSelectedEvent(event);
@@ -209,7 +209,6 @@ export const TaskLists = ({
       <div
         className={styles.list}
         id='in-progress'
-        style={{ marginLeft: '3vw' }}
       >
         <div className={styles.listHeader}>
           <div className={styles.logo}>
@@ -269,7 +268,6 @@ export const TaskLists = ({
       <div
         className={styles.list}
         id='completed'
-        style={{ marginLeft: '3vw' }}
       >
         <div className={styles.listHeader}>
           <div className={styles.logo}>

@@ -12,7 +12,7 @@ import {
   DialogTitle,
 } from '@/shared/ui/dialog';
 import { ComboboxForm } from '@/widgets/planner/SetSubjectModalForm';
-import { updateToDo } from '../apis/todo.api';
+import { deleteToDo, updateToDo } from '../apis/todo.api';
 import styles from './AddToDoForm.module.css';
 
 // type setup
@@ -86,6 +86,7 @@ export const EditToDoForm = ({
 
     // for start date
     const now = new Date();
+    now.setHours(0,0,0,0);
     if (startDate) {
       const startDateFormat = new Date(startDate);
       if (isNaN(startDateFormat.getTime())) {
@@ -143,6 +144,12 @@ export const EditToDoForm = ({
       console.log('Error in posting');
     }
   };
+
+  const deleteEvent = async() => {
+    const response = await deleteToDo(event);
+    console.log("Deleted");
+    onClose();
+  }
 
   return (
     <Dialog
@@ -241,9 +248,9 @@ export const EditToDoForm = ({
           <button
             type='button'
             className={styles.handler}
-            onClick={() => onClose()}
+            onClick={deleteEvent}
           >
-            Cancel
+            Delete
           </button>
         </form>
       </DialogContent>

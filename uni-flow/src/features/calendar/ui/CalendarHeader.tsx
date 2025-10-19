@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { Combobox } from '@/widgets/planner/SetFilterModal';
+import styles from '@/features/calendar/ui/CalendarHeader.module.css'
 
 // type setup
 type CalendarHeaderProps = {
@@ -19,8 +20,7 @@ export const CalendarHeader = ({
 
   return (
     <div
-      className='title'
-      style={{ display: 'flex', flexDirection: 'row' }}
+      className={styles.header}
     >
       <h1
         className='text-large-title-bold'
@@ -28,6 +28,7 @@ export const CalendarHeader = ({
       >
         User&#39;s Study Calendar
       </h1>
+      <div className={styles.filter}>
       <Combobox
         academicCourseId={academicCourseId}
         onSubjectChange={handleSubjectFilterChange}
@@ -51,6 +52,7 @@ export const CalendarHeader = ({
       >
         📋
       </Link>
+      </div>
     </div>
   );
 };
