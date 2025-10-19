@@ -64,10 +64,9 @@ steps:
       DEPLOY_DIR="$(Build.ArtifactStagingDirectory)/deploy"
       test -f "$DEPLOY_DIR/server.js" || (echo "server.js missing in deploy root" && exit 1)
       test -d "$DEPLOY_DIR/.next/static" || (echo ".next/static missing in deploy" && exit 1)
-      echo "Deploy dir sanity check OK"
       ls -la "$DEPLOY_DIR" | sed -n '1,120p'
       ls -la "$DEPLOY_DIR/.next" | sed -n '1,120p'
-      ls -la "$DEPLOY_DIR/.next/static" | sed -n '1,120p'      
+      ls -la "$DEPLOY_DIR/.next/static" | sed -n '1,60p'
     displayName: 'Verify deploy dir content'
 
   - task: ArchiveFiles@2
