@@ -72,7 +72,6 @@ export const useHistory = (userId: string) => {
       if (!response.ok)
         throw new Error(data.error || 'Failed to clear history');
       setHistory([]);
-      alert('History cleared successfully!');
     } catch (error) {
       console.error('Error clearing history:', error as string);
       alert('Failed to clear history. Please try again.');
