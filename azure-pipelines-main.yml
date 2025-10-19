@@ -39,11 +39,6 @@ steps:
     displayName: 'Build Next.js'
 
   - script: |
-      npm prune --omit=dev
-    workingDirectory: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
-    displayName: 'Prune to production deps'
-  
-  - script: |
       set -e
       echo "Check .next exists"
       test -d .next || (echo ".next folder is missing" && exit 1)
@@ -57,13 +52,19 @@ steps:
     displayName: 'Verify runtime files (.next & next)'
 
   - task: ArchiveFiles@2
-    displayName: 'Archive build output'
+    displayName: 'Archive standalone bundle'
     inputs:
       rootFolderOrFile: '$(System.DefaultWorkingDirectory)/$(WORKDIR)'
       includeRootFolder: false
       archiveType: 'zip'
       archiveFile: '$(Build.ArtifactStagingDirectory)/$(ARTIFACT_NAME).zip'
-
+      tarPatternToExclude: |
+        **/*
+        !.next/standalone/**
+        !.next/static/**
+        !public/**
+        !package.json
+        
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact'
     inputs:
@@ -79,4 +80,4 @@ steps:
       appName: 'UniFlowASD'
       package: '$(Build.ArtifactStagingDirectory)/$(ARTIFACT_NAME).zip'
       runtimeStack: 'NODE|20-lts'
-      startupCommand: 'npm start'
+      startupCommand: 'node .next/standalone/server.js'
