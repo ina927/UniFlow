@@ -13,45 +13,50 @@ interface AssessmentModel extends Omit<Assessment, 'type' | 'dueDate' | 'descrip
 
 // const API_BASE_URL = '/api/assessments';
 
-export const toAssessmentType = (type: string | AssessmentType): AssessmentType => {
-  if (typeof type === 'string') {
-    switch (type) {
-      case 'Quiz':
-        return AssessmentType.QUIZ;
-      case 'Exam':
-        return AssessmentType.EXAM;
-      case 'Group Assignment':
-        return AssessmentType.GROUP_ASSIGNMENT;
-      case 'Individual Assignment':
-        return AssessmentType.INDV_ASSIGNMENT;
-      case 'Group, Individual Assignment':
-        return AssessmentType.GROUP_INDV_ASSIGNMENT;
-      case 'Other':
-        return AssessmentType.OTHER;
-      default: 
-        return AssessmentType.OTHER;
-    }
+export const toAssessmentType = (
+  type: string | AssessmentType | $Enums.AssessmentType | undefined
+): AssessmentType => {
+  if (type == null) return AssessmentType.OTHER;
+
+  if (typeof type !== 'string') {
+    return type as AssessmentType;
   }
-  
-  return type;
+
+  const U = type.trim().toUpperCase().replace(/[,\s]+/g, "_");
+  switch (U) {
+    case "QUIZ": return AssessmentType.QUIZ;
+    case "EXAM": return AssessmentType.EXAM;
+    case "GROUP_ASSIGNMENT": return AssessmentType.GROUP_ASSIGNMENT;
+    case "INDV_ASSIGNMENT": return AssessmentType.INDV_ASSIGNMENT;
+    case "GROUP_INDV_ASSIGNMENT": return AssessmentType.GROUP_INDV_ASSIGNMENT;
+  }
+
+  switch (type) {
+    case "Quiz": return AssessmentType.QUIZ;
+    case "Exam": return AssessmentType.EXAM;
+    case "Group Assignment": return AssessmentType.GROUP_ASSIGNMENT;
+    case "Individual Assignment": return AssessmentType.INDV_ASSIGNMENT;
+    case "Group, Individual Assignment": return AssessmentType.GROUP_INDV_ASSIGNMENT;
+    case "Other": return AssessmentType.OTHER;
+    default: return AssessmentType.OTHER;
+  }
 };
 
-const toPrismaAssessmentType = (
-  t: string | AssessmentType | undefined
-): $Enums.AssessmentType | undefined => {
-  if (t == null) return undefined;
-
-  const normalized = typeof t === "string" ? toAssessmentType(t) : t;
-
-  switch (normalized) {
-    case AssessmentType.QUIZ: return "QUIZ";
-    case AssessmentType.EXAM: return "EXAM";
-    case AssessmentType.GROUP_ASSIGNMENT: return "GROUP_ASSIGNMENT";
-    case AssessmentType.INDV_ASSIGNMENT: return "INDV_ASSIGNMENT";
-    case AssessmentType.GROUP_INDV_ASSIGNMENT: return "GROUP_INDV_ASSIGNMENT";
-    case AssessmentType.OTHER: return "OTHER";
-    default: return "OTHER";
+const fromEnumToDbLabel = (v: AssessmentType): string => {
+  switch (v) {
+    case AssessmentType.QUIZ: return "Quiz";
+    case AssessmentType.EXAM: return "Exam";
+    case AssessmentType.GROUP_ASSIGNMENT: return "Group Assignment";
+    case AssessmentType.INDV_ASSIGNMENT: return "Individual Assignment";
+    case AssessmentType.GROUP_INDV_ASSIGNMENT: return "Group, Individual Assignment";
+    default: return "Other";
   }
+};
+
+export const toDbAssessmentType = (t: string | AssessmentType | undefined): string | undefined => {
+  if (t == null) return undefined;
+  const asEnum = typeof t === "string" ? toAssessmentType(t) : t;
+  return fromEnumToDbLabel(asEnum);
 };
 
 // Helper: convert DB row → front-end Assessment entity
@@ -107,7 +112,7 @@ export async function createAssessment(params: { dto: CreateAssessmentDto }): Pr
     data: {
       subjectId: d.subjectId,
       title: d.title,
-      type: toPrismaAssessmentType(d.type) ?? 'OTHER',
+      type: toDbAssessmentType(d.type) ?? 'OTHER',
       weight: d.weight,
       maxScore: d.maxScore,
       dueDate: d.dueDate ? new Date(d.dueDate) : new Date(),
@@ -156,7 +161,7 @@ export async function updateAssessment(params: { id: string; dto: UpdateAssessme
     where: { id: params.id },
     data: {
       title: d.title ?? undefined,
-      type: toPrismaAssessmentType(d.type),
+      type: toDbAssessmentType(d.type),
       weight: d.weight ?? undefined,
       maxScore: d.maxScore ?? undefined,
       dueDate: d.dueDate ? new Date(d.dueDate) : undefined,
