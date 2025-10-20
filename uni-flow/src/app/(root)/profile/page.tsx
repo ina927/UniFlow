@@ -226,8 +226,9 @@ export default function ProfilePage() {
     setCourseEditingId(null);
     setCourseStatus(null);
 
-    const original =
-      editingId && courses.find((course) => course.id === editingId);
+    const original: AcademicCourseEntity | undefined =
+      editingId ? courses.find((course) => course.id === editingId) : undefined;
+
     const originalCredits = original ? Number(original.credits) : NaN;
 
     setCourseDegree(original?.degree ?? '');
