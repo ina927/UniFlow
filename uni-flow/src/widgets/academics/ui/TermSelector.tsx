@@ -87,7 +87,7 @@ export const TermSelector = (props: TermSelectorProps) => {
               key={term.id}
               value={term.id}
             >
-              {term.title}
+              {term.title} {term.academicYear}
             </SelectItem>
           ))}
         </SelectContent>
