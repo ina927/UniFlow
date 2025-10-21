@@ -139,7 +139,15 @@
 .text-title2 {
   font-family: var(--font-pretendard);
   font-weight: 400;
-  font-size: 20px;
+  font-size: 18px;
+  line-height: 25px;
+  letter-spacing: 1.25%;
+}
+
+.text-title2-semibold {
+  font-family: var(--font-pretendard);
+  font-weight: 600;
+  font-size: 18px;
   line-height: 25px;
   letter-spacing: 1.25%;
 }
@@ -147,7 +155,7 @@
 .text-title2-bold {
   font-family: var(--font-pretendard);
   font-weight: 700;
-  font-size: 20px;
+  font-size: 18px;
   line-height: 25px;
   letter-spacing: 1.25%;
 }

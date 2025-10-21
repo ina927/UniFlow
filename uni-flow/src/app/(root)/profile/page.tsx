@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AcademicCourseEntity } from '@/entities/academics';
 import { Role } from '@/entities/users/enums';
 import { useAcademicStore, useAuthStore } from '@/shared/stores';
+import { useLogout } from '@/shared/hooks/useLogout';
 
 type User = {
   id: string;
@@ -160,12 +161,7 @@ export default function ProfilePage() {
     }
   }
 
-  async function logout() {
-    await fetch('/api/auth/logout', { method: 'POST' });
-    setUserId('');
-    clear();
-    router.push('/');
-  }
+  const { logout } = useLogout();
 
   if (loading) return <div className='profile-wrap'>Loading…</div>;
 
