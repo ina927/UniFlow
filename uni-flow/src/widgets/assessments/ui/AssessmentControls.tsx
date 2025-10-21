@@ -2,7 +2,7 @@
 
 import { Button } from "@/shared/ui/button"
 import { AssessmentModeToggle, RequiredMarkToggle } from "@/features/assessments/ui";
-
+import { Plus } from "lucide-react";
 import styles from "./AssessmentControls.module.css"
 
 type Props = {
@@ -31,7 +31,7 @@ export const AssessmentControls = ({
                     onToggle={onToggleRequired ?? (() => {})}
                 />
                 <Button className={styles.addButton} onClick={onAddAssessment}>
-                    + Add Assessment</Button>
+                    <Plus size={16}/> Add Assessment</Button>
             </div>
             {mode === "whatif" && (
                 <span className={styles.simNotice}>

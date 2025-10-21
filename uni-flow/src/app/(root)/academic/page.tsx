@@ -54,7 +54,7 @@ export default function AcademicPage() {
     );
 
   return (
-    <section className='p-4 max-w-[calc(100vw-94px)]'>
+    <section className={'flex flex-col w-[90%] my-[44px] mx-auto'}>
       <AcademicHeader academicCourse={academicCourse} />
       <TermSelector />
       <SubjectTable />

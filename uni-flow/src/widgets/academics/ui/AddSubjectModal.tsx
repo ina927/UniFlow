@@ -17,6 +17,7 @@ import { Label } from "@/shared/ui/label";
 import { useAcademicStore } from "@/shared/stores";
 import { createSubject } from "@/features/academics";
 import { CreateSubjectDto } from "@/entities";
+import { Plus } from "lucide-react";
 
 interface Props {
   className?: string;
@@ -47,7 +48,9 @@ export function AddSubjectModal(props: Props) {
 
   return (
     <>
-      <Button variant="outline" onClick={() => setOpen(true)}>+ Add Subject</Button>
+      <Button onClick={() => setOpen(true)}>
+        <Plus size={16}/> Add Subject
+      </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-3xl" aria-describedby="Add subject details">

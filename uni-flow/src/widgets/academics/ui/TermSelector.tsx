@@ -2,7 +2,8 @@
 
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
+import { sortTerm } from '@/widgets/academics/lib/sortTerm';
 
 import { getTerms } from '@/features/academics';
 import { useAcademicStore } from '@/shared/stores';
@@ -47,8 +48,9 @@ export const TermSelector = (props: TermSelectorProps) => {
   useEffect(() => {
     if (data?.data?.data) {
       setTerms(data.data.data);
+      setSelectedTermId('all');
     }
-  }, [data?.data?.data, setTerms]);
+  }, [data?.data?.data, setTerms, setSelectedTermId])
 
   useEffect(() => {
     if (isLoading) {
@@ -64,16 +66,21 @@ export const TermSelector = (props: TermSelectorProps) => {
     }
   }, [terms, isError, isLoading, setSelectedTermId]);
 
+  const sortedTerms = useMemo(
+    () => (terms ? [...terms].sort(sortTerm) : []),
+    [terms]
+  );
+
   return (
-    <div className={clsx(props.className, 'flex items-center gap-2')}>
-      <label className='text-title3'>Term</label>
+    <div className={clsx(props.className, 'flex items-center gap-2 mt-4')}>
+      <label className='text-title3-bold pl-2 mr-9'>Term</label>
       <Select
         onValueChange={setSelectedTermId}
-        value={selectedTermId || undefined}
+        value={selectedTermId ?? 'all'}
         disabled={isLoading || isError || !terms || terms.length === 0}
       >
-        <SelectTrigger className='w-[180px]'>
-          <SelectValue placeholder={placeholderText} />
+        <SelectTrigger className='w-[220px] h-10'>
+          <SelectValue className='text-body-bold' placeholder={placeholderText} />
         </SelectTrigger>
         <SelectContent>
           <SelectItem
@@ -82,7 +89,7 @@ export const TermSelector = (props: TermSelectorProps) => {
           >
             {'All Terms'}
           </SelectItem>
-          {terms?.map((term) => (
+          {sortedTerms.map((term) => (
             <SelectItem
               key={term.id}
               value={term.id}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
@@ -18,6 +18,11 @@ import { AddSubjectModal } from "./AddSubjectModal";
 import { EditSubjectModal } from "./EditSubjectModal";
 import { useAcademicStore } from "@/shared/stores";
 import { CreditViewer } from "@/features/academics/ui/CreditViewer";
+import { ChevronLeft, ChevronRight, MoreVertical } from "lucide-react";
+import { Input } from "@/shared/ui/input";
+import { Search } from "lucide-react";
+import assessStyles from "@/widgets/assessments/ui/AssessmentTable.module.css";
+import styles from "./SubjectTable.module.css";
 
 interface Props {
   className?: string;
@@ -27,6 +32,8 @@ export const SubjectTable = (props: Props) => {
   const router = useRouter();
 
   const [page, setPage] = useState(1);
+  const [q, setQ] = useState("");
+  const PAGE_SIZE = 10;
   const { academicCourseId, selectedTermId } = useAcademicStore();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
@@ -38,6 +45,49 @@ export const SubjectTable = (props: Props) => {
   });
 
   const subjects: SubjectRow[] = data?.data?.data || [];
+
+  const norm = (s?: string) => (s ?? "").toLowerCase().trim();
+
+  const filtered = useMemo(() => {
+    if (!subjects.length) return [];
+    const needle = norm(q);
+    if (!needle) return subjects;
+    return subjects.filter((s) => {
+      const code = norm(s.code);
+      const title = norm(s.title);
+      const termTitle = norm(s.term?.title);
+      return code.includes(needle) || title.includes(needle) || termTitle.includes(needle);
+    });
+  }, [subjects, q]);
+
+  const filteredSorted = useMemo(() => {
+    return [...filtered].sort((a, b) => {
+      const yearA = a.term?.academicYear ?? 0;
+      const yearB = b.term?.academicYear ?? 0;
+
+      if (yearA !== yearB) return yearB - yearA;
+
+      const titleA = a.term?.title?.toLowerCase() ?? "";
+      const titleB = b.term?.title?.toLowerCase() ?? "";
+      return titleA.localeCompare(titleB);
+    });
+  }, [filtered]);
+
+  const totalPages = useMemo(() => {
+    if (!filteredSorted.length) return 1;
+    return Math.max(1, Math.ceil(filteredSorted.length / PAGE_SIZE));
+  }, [filteredSorted, PAGE_SIZE]);
+
+  const pagedSubjects = useMemo(() => {
+    if (!filteredSorted.length) return [];
+    const start = (page - 1) * PAGE_SIZE;
+    return filteredSorted.slice(start, start + PAGE_SIZE);
+  }, [filteredSorted, page, PAGE_SIZE]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [q]);
+
 
   if (isLoading) return <div>Loading...</div>
   if (isError) return <div>Error!</div>
@@ -58,38 +108,60 @@ export const SubjectTable = (props: Props) => {
   };
 
   return (
-    <div className="w-full mt-4">
-      <div className="flex items-center justify-between">
-        <label className="text-title3">Subject</label>
-        <AddSubjectModal refetch={refetch} />
-      </div>
+    <div className="w-[80%]">
+      
 
-      <div className="rounded-md border mt-2 mb-2">
-        <Table>
+      <div className={assessStyles.wrapper}>
+        <div className="flex items-center justify-between gap-3 pt-3 mb-4">
+          <div className="flex items-center gap-2">
+            <label className='text-title3-bold pl-2 mr-4'>Subject</label>
+            <div className="relative w-full max-w-[320px]">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[--muted]" />
+              <Input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Search subjects..."
+                className="pl-10 h-10 w-[220px]"
+              />
+          </div>
+          </div>
+          <div className="flex justify-end">
+            <AddSubjectModal refetch={refetch} />
+          </div>
+        </div>
+        <Table className='mt-6'>
           <TableHeader>
-            <TableRow>
-              <TableHead className="text-left px-4 py-3">Code</TableHead>
-              <TableHead className="text-left">Title</TableHead>
-              <TableHead className="text-left">Credit</TableHead>
-              <TableHead className="text-left">Term</TableHead>
+            <TableRow className={assessStyles.headerRow}>
+              <TableHead className={styles.colCode}>Code</TableHead>
+              <TableHead className={styles.colTitle}>Subject</TableHead>
+              <TableHead className={styles.colCredit}>Credit</TableHead>
+              <TableHead className={styles.colTerm}>Term</TableHead>
               <TableHead />
             </TableRow>
           </TableHeader>
-          <TableBody className="px-4">
-            {subjects.length === 0 ? (
+          <TableBody>
+            {pagedSubjects.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-12 text-center">
                   No subjects found
                 </TableCell>
               </TableRow>
             ) : (
-              subjects.sort((a, b) => a.code.localeCompare(b.code)).map((subject) => (
-                <TableRow key={subject.id}>
-                  <TableCell onClick={() => gotoAssessments(subject.id)} className="font-bold px-4 py-3 cursor-pointer">{subject.code}</TableCell>
-                  <TableCell onClick={() => gotoAssessments(subject.id)} className="cursor-pointer">{subject.title}</TableCell>
-                  <TableCell onClick={() => gotoAssessments(subject.id)} className="cursor-pointer">{subject.credits}</TableCell>
-                <TableCell onClick={() => gotoAssessments(subject.id)} className="cursor-pointer">{subject.term.title}</TableCell>
-                <TableCell className="text-right px-4 py-3">
+              pagedSubjects.map((subject) => (
+              <TableRow key={subject.id} className={assessStyles.row}>
+                <TableCell onClick={() => gotoAssessments(subject.id)} className={`${styles.colCode} cursor-pointer`}>
+                  {subject.code}
+                </TableCell>
+                <TableCell onClick={() => gotoAssessments(subject.id)} className={`${styles.colTitle} cursor-pointer`}>
+                  {subject.title}
+                </TableCell>
+                <TableCell onClick={() => gotoAssessments(subject.id)} className={`${styles.colCredit} cursor-pointer`}>
+                  {subject.credits}
+                </TableCell>
+                <TableCell onClick={() => gotoAssessments(subject.id)} className={`${styles.colTerm} cursor-pointer`}>
+                  {subject.term.title}  {subject.term.academicYear }
+                </TableCell>
+                <TableCell className={styles.colAction}>
                   <Button 
                     variant="ghost" 
                     size="sm" 
@@ -99,13 +171,14 @@ export const SubjectTable = (props: Props) => {
                     }}
                     className="hover:bg-transparent hover:text-primary p-1 h-auto cursor-pointer"
                   >
-                    ⋮
+                    <MoreVertical size={16} />
                   </Button>
                 </TableCell>
               </TableRow>
             )))}
           </TableBody>
         </Table>
+        <div className="border-t-2 border-[--border] mb-2" />
       </div>
 
       <div className="flex items-center justify-between text-sm">
@@ -114,28 +187,23 @@ export const SubjectTable = (props: Props) => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setPage((page) => Math.max(1, page - 1))}
-            disabled={page === 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page <= 1}
           >
-            Prev
+            <ChevronLeft size={16} />
           </Button>
-          <span>Page {page} of 1</span>
+          <span>Page {page} of {totalPages}</span>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setPage((page) => page + 1)}
-            disabled={page === 1}
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages}
           >
-            Next
+            <ChevronRight size={16} />
           </Button>
         </div>
       </div>
       
-      {/* 
-        Note: The EditSubjectModal component doesn't exist yet.
-        You'll need to create it similar to AddSubjectModal but for editing.
-        For now, we'll just show a placeholder.
-      */}
       {selectedSubjectId && (
         <div className={`fixed inset-0 bg-black/50 flex items-center justify-center ${isEditModalOpen ? 'block' : 'hidden'}`}>
           <EditSubjectModal 

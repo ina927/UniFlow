@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Image from "next/image";
 
 import {
@@ -15,6 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useAcademicStore } from "@/shared/stores";
 import { AddTermModal } from "./AddTermModal";
 import { EditTermModal } from "./EditTermModal";
+import { sortTerm } from '@/widgets/academics/lib/sortTerm';
 
 interface ManageTermModalProps {
   className?: string;
@@ -38,6 +39,11 @@ export const ManageTermModal = (props: ManageTermModalProps) => {
     setSelectedTermId(null);
   }
 
+  const sortedTerms = useMemo(
+    () => (terms ? [...terms].sort(sortTerm) : []),
+    [terms]
+  );
+  
   return (
     <>
       <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
