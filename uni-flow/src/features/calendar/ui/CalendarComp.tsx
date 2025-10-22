@@ -148,11 +148,11 @@ export const CalendarComp = ({
   return (
     <div
       className={
-        'flex px-10 justify-start items-start gap-8' + ' ' + styles.container
+        'flex px-12 justify-start items-start gap-8' + ' ' + styles.container
       }
     >
       <div className={'w-3/12' + ' ' + styles.divListContainer}>
-        <div className='text-title1-bold'>Upcoming Events</div>
+        <div className='text-title1 justify-center'>Upcoming Events</div>
         <br />
         <br />
         <div className={styles.divList}>
@@ -184,8 +184,8 @@ export const CalendarComp = ({
       </div>
       {/* calendar part */}
       <div
-        className='w-9/12 mt-8'
-        style={{ width: '55vw' }}
+        className={'w-9/12 ml-2 ' + styles.fcScope}
+        style={{ width: '54vw' }}
       >
         <FullCalendar
           height={'75vh'}
@@ -193,7 +193,7 @@ export const CalendarComp = ({
           headerToolbar={{
             left: 'prev,next today',
             center: 'title',
-            right: 'dayGridMonth, timeGridWeek, timeGridDay',
+            right: 'dayGridMonth, timeGridWeek',
           }}
           initialView='dayGridMonth'
           selectable={true}
@@ -204,6 +204,7 @@ export const CalendarComp = ({
           eventClick={handleEventClick}
           // eventsSet={(events) => setEvents(events)}
           events={selectedEventInput}
+          eventColor="#606acb"
         />
       </div>
       {/* Edit component */}

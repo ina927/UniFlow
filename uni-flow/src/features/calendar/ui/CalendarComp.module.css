@@ -22,5 +22,64 @@
         flex-direction: column;
         margin-left: -30px;
     }
-
 }
+.fcScope {}
+
+.fcScope :global(.fc .fc-toolbar) {
+  align-items: center;
+  gap: 8px;
+}
+.fcScope :global(.fc .fc-button-group) {
+  gap: 0;                     /* 버튼 사이 간격 없애기 */
+}
+
+.fcScope :global(.fc .fc-button) {
+  background: var(--background, #fff);
+  color: var(--foreground, #0f172a);
+  border: 0px solid rgba(15, 23, 42, 0.12);
+  border-radius: 8px;
+  padding: 6px 10px;
+  line-height: 1;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
+.fcScope :global(.fc .fc-button:hover),
+.fcScope :global(.fc .fc-button:focus-visible) {
+  color: #25437C;
+  outline: none;
+}
+
+.fcScope :global(.fc .fc-button:disabled) {
+  color: var(--text-tertiary);
+  cursor: not-allowed;
+}
+
+.fcScope :global(.fc .fc-prev-button),
+.fcScope :global(.fc .fc-next-button),
+.fcScope :global(.fc .fc-today-button) {
+  min-width: 40px;
+}
+
+.fcScope :global(.fc .fc-button-group .fc-button.fc-button-active),
+.fcScope :global(.fc .fc-button.fc-button-primary) {
+  background: var(--components-fill);
+  color: var(--text-primary);
+}
+
+.fcScope :global(.fc .fc-button-group .fc-button.fc-button-active:hover),
+.fcScope :global(.fc .fc-button.fc-button-primary:hover) {
+  filter: brightness(0.95);
+}
+
+.fcScope :global(.fc .fc-button .fc-icon) {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.fcScope :global(.fc .fc-toolbar-chunk) {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
