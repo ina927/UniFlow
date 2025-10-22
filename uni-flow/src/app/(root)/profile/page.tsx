@@ -152,6 +152,7 @@ export default function ProfilePage() {
       setMsg('ok: Profile updated');
       setPwd('');
       setConfirmPwd('');
+      setTimeout(() => setMsg(null), 1500);
     } catch {
       setMsg('error: network error');
     }
@@ -321,7 +322,6 @@ export default function ProfilePage() {
 
       setCourseDegree(normalizedDegree);
       setCourseCredits(String(parsedCredits));
-      setCourseStatus('ok: Academic course updated.');
       setCourseEditing(false);
       setCourseEditingId(null);
     } catch {
@@ -349,28 +349,31 @@ export default function ProfilePage() {
             Welcome{user?.name ? `, ${user.name}` : ''} 👋
           </h2>
 
-          <div className='profile-actions' style={{ marginBottom: 12 }}>
-            <button
-              className='pill-btn pill-primary'
-              onClick={beginEditing}
-              disabled={editing}
-            >
-              {editing ? 'Editing…' : 'Edit Profile'}
-            </button>
-            {user?.role === Role.ADMIN && (
-              <button
-                className='pill-btn pill-secondary'
-                onClick={() => router.push('/admin')}
-              >
-                Admin Dashboard
-              </button>
+          <div className='profile-actions'>
+            {!editing && (
+              <>
+                <button
+                  className='pill-btn pill-primary'
+                  onClick={beginEditing}
+                >
+                  Edit Profile
+                </button>
+                {user?.role === Role.ADMIN && (
+                  <button
+                    className='pill-btn pill-secondary'
+                    onClick={() => router.push('/admin')}
+                  >
+                    Admin Dashboard
+                  </button>
+                )}
+                <button
+                  className='pill-btn pill-outline'
+                  onClick={() => { void logout(); }}
+                >
+                  Logout
+                </button>
+              </>
             )}
-            <button
-              className='pill-btn pill-outline'
-              onClick={() => { void logout(); }}
-            >
-              Logout
-            </button>
           </div>
 
           {msg && (
@@ -485,7 +488,7 @@ export default function ProfilePage() {
                     Save changes
                   </button>
                   <button
-                    className='pill-btn pill-secondary'
+                    className='pill-btn pill-outline'
                     type='button'
                     onClick={cancelEditing}
                   >

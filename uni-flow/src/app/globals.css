@@ -755,6 +755,8 @@
 .profile-form {
   display: grid;
   gap: 14px;
+  margin-top: 20px;
+  margin-bottom: 10px;
 }
 
 .profile-form label {
