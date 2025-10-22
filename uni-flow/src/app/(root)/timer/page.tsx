@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { fetchSubjectsForUser } from '@/features/timer/api/subjects';
 import { useTasks } from '@/features/timer/hooks/useTasks';
 import { useTimer } from '@/features/timer/hooks/useTimer';
-import { AddTodoForm } from '@/features/timer/ui/AddTodoForm';
 import NotificationPopup from '@/features/timer/ui/NotificationPopup';
 import SettingsModel from '@/features/timer/ui/SettingsModel';
 import { TaskList } from '@/features/timer/ui/TaskList';
@@ -13,6 +12,10 @@ import { TimerDisplay } from '@/features/timer/ui/TimerDisplay';
 import TimerHeader from '@/features/timer/ui/TimerHeader';
 import { isLogin } from '@/shared/lib/isLogin';
 import { SubjectEntity } from '@/entities';
+
+import { AddToDoForm as PlannerAddToDoForm } from '@/features/planner/ui/AddToDoForm';
+import { getToDos } from '@/features/planner/apis/todo.api';
+import { useAcademicStore } from '@/shared/stores';
 
 export default function TimerPage() {
   isLogin();
@@ -26,8 +29,10 @@ export default function TimerPage() {
     addTodo,
     newTodo,
     setNewTodo,
-    userId, 
+    userId,
   } = useTasks();
+
+  const { academicCourseId } = useAcademicStore();
 
   const [subjects, setSubjects] = useState<SubjectEntity[]>([]);
 
@@ -65,6 +70,24 @@ export default function TimerPage() {
 
   const [showSettings, setShowSettings] = useState(false);
   const [showAddTodoForm, setShowAddTodoForm] = useState(false);
+
+  const refreshTasksFromServer = async () => {
+    try {
+      const todos = await getToDos(); // ToDoEntity[]
+      const mapped = todos.map((t: any) => ({
+        id: String(t.id),
+        title: t.title,
+        startDate: new Date(t.startDate).toISOString(),
+        endDate: t.endDate ? new Date(t.endDate).toISOString() : null,
+        description: t.description ?? '',
+        subjectId: t.subjectId ?? '',
+        completed: t.status ? String(t.status).toUpperCase() === 'DONE' : false,
+      }));
+      setTasks(mapped as any);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <div className='flex flex-col min-h-screen w-screen bg-background text-foreground'>
@@ -114,20 +137,12 @@ export default function TimerPage() {
         </div>
       </main>
 
-      {/* Add ToDo Form */}
-      {showAddTodoForm && (
-        <div className='fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50'>
-          <div className='bg-white p-6 rounded-lg shadow-lg max-w-md w-full'>
-            <AddTodoForm
-              newTodo={newTodo}
-              setNewTodo={setNewTodo}
-              subjects={subjects}
-              addTodo={addTodo}
-              onCancel={() => setShowAddTodoForm(false)}
-            />
-          </div>
-        </div>
-      )}
+      <PlannerAddToDoForm
+        academicCourseId={academicCourseId}
+        isOpen={showAddTodoForm}
+        onClose={() => setShowAddTodoForm(false)}
+        refresh={refreshTasksFromServer}
+      />
 
       {/* Settings Modal */}
       {showSettings && (
@@ -163,11 +178,7 @@ export default function TimerPage() {
       )}
 
       {/* Alarm Sound */}
-      <audio
-        ref={alarmRef}
-        src='/alarm.mp3'
-        preload='auto'
-      />
+      <audio ref={alarmRef} src='/alarm.mp3' preload='auto' />
     </div>
   );
 }

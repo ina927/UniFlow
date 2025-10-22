@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { ConfirmDialog } from "@/widgets/common/ui/ConfirmDialog";
+import { Plus } from "lucide-react";
+import { Button } from "@/shared/ui";
 
 export type Task = {
   id: string;
@@ -51,9 +53,9 @@ export const TaskList = ({
         <h1 className="text-title2-bold text-primary text-left">Tasks</h1>
         <button
           onClick={onToggleAddTodo}
-          className="px-6 py-4 bg-white text-black rounded text-2xl font-bold"
+          className="pr-2 py-4 bg-white text-black rounded text-2xl font-bold"
         >
-          {showAddTodoForm ? "Close ToDo" : "+"}
+          <Plus size={22}/>
         </button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -1,3 +1,9 @@
+"use client";
+
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
+import { Button } from "@/shared/ui/button";
+
 type SettingsModelProps = {
   workTime: number;
   setWorkTime: (value: number) => void;
@@ -30,95 +36,129 @@ const SettingsModel = ({
   closeSettings,
 }: SettingsModelProps) => {
   return (
-    <div className="p-4 bg-white rounded-lg shadow-md mt-4 max-w-md w-full">
-      <h3 className="text-title3-bold mb-4">Timer Settings</h3>
-      <div className="flex flex-col gap-4">
-        <label>
-          Work Time (minutes):
-          <input
+    <div className="w-full max-w-xl rounded-2xl bg-white px-4">
+      <h3 className="text-title2-bold mt-6 mb-1">Timer Settings</h3>
+      <p className="text-sm text-[var(--muted-foreground)] mb-8">
+        Adjust your focus and break preferences.
+      </p>
+
+      <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+        {/* Work Time */}
+        <div className="flex flex-col gap-2">
+          <Label className="font-semibold text-[var(--primary)]">
+            Work Time (minutes)
+          </Label>
+          <Input
             type="number"
+            inputMode="numeric"
+            min={1}
             value={workTime / 60}
             onChange={(e) => {
-              const value = Math.max(1, Number(e.target.value)); // Prevent values less than 1
-              console.log("Work Time Updated:", value);
+              const value = Math.max(1, Number(e.target.value));
               setWorkTime(value * 60);
             }}
-            className="ml-2 px-2 py-1 rounded border border-primary-light w-full"
+            placeholder="e.g. 25"
+            className="h-10"
           />
-        </label>
-        <label>
-          Short Break Time (minutes):
-          <input
+        </div>
+
+        {/* Short Break */}
+        <div className="flex flex-col gap-2">
+          <Label className="font-semibold text-[var(--primary)]">
+            Short Break (minutes)
+          </Label>
+          <Input
             type="number"
+            inputMode="numeric"
+            min={1}
             value={shortBreakTime / 60}
             onChange={(e) => {
               const value = Math.max(1, Number(e.target.value));
-              console.log("Short Break Time Updated:", value);
               setShortBreakTime(value * 60);
             }}
-            className="ml-2 px-2 py-1 rounded border border-primary-light w-full"
+            placeholder="e.g. 5"
+            className="h-10"
           />
-        </label>
-        <label>
-          Long Break Time (minutes):
-          <input
+        </div>
+
+        {/* Long Break */}
+        <div className="flex flex-col gap-2">
+          <Label className="font-semibold text-[var(--primary)]">
+            Long Break (minutes)
+          </Label>
+          <Input
             type="number"
+            inputMode="numeric"
+            min={1}
             value={longBreakTime / 60}
             onChange={(e) => {
               const value = Math.max(1, Number(e.target.value));
-              console.log("Long Break Time Updated:", value);
               setLongBreakTime(value * 60);
             }}
-            className="ml-2 px-2 py-1 rounded border border-primary-light w-full"
+            placeholder="e.g. 15"
+            className="h-10"
           />
-        </label>
-        <label>
-          Long Break Interval (Pomodoros):
-          <input
+        </div>
+
+        {/* Long Break Interval */}
+        <div className="flex flex-col gap-2">
+          <Label className="font-semibold text-[var(--primary)]">
+            Long Break Interval (Pomodoros)
+          </Label>
+          <Input
             type="number"
+            inputMode="numeric"
+            min={1}
             value={longBreakInterval}
             onChange={(e) => {
               const value = Math.max(1, Number(e.target.value));
-              console.log("Long Break Interval Updated:", value);
               setLongBreakInterval(value);
             }}
-            className="ml-2 px-2 py-1 rounded border border-primary-light w-full"
+            placeholder="e.g. 4"
+            className="h-10"
           />
-        </label>
-        <label>
-          Auto-Start Breaks:
-          <input
-            type="checkbox"
-            checked={autoStartBreaks}
-            onChange={(e) => {
-              console.log("Auto-Start Breaks Updated:", e.target.checked);
-              setAutoStartBreaks(e.target.checked);
-            }}
-            className="ml-2"
-          />
-        </label>
-        <label>
-          Auto-Start Pomodoros:
-          <input
-            type="checkbox"
-            checked={autoStartPomodoro}
-            onChange={(e) => {
-              console.log("Auto-Start Pomodoros Updated:", e.target.checked);
-              setAutoStartPomodoro(e.target.checked);
-            }}
-            className="ml-2"
-          />
-        </label>
-      </div>
-      <button
-        onClick={() => {
-          console.log("Closing Settings");
-          closeSettings();
-        }}
-        className="px-4 py-2 bg-red-500 text-white rounded shadow mt-4"
-      >
-        Close
-      </button>
+        </div>
+
+        {/* Toggles */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <input
+              id="autoBreaks"
+              type="checkbox"
+              checked={autoStartBreaks}
+              onChange={(e) => setAutoStartBreaks(e.target.checked)}
+              className="h-4 w-4 accent-[var(--primary)]"
+            />
+            <Label htmlFor="autoBreaks" className="text-sm">
+              Auto-Start Breaks
+            </Label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              id="autoPomo"
+              type="checkbox"
+              checked={autoStartPomodoro}
+              onChange={(e) => setAutoStartPomodoro(e.target.checked)}
+              className="h-4 w-4 accent-[var(--primary)]"
+            />
+            <Label htmlFor="autoPomo" className="text-sm">
+              Auto-Start Pomodoros
+            </Label>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="pt-2 flex justify-end gap-8">
+          <Button
+            type="button"
+            onClick={closeSettings}
+            className="h-10 px-5"
+          >
+            Save
+          </Button>
+        </div>
+      </form>
     </div>
   );
 };
