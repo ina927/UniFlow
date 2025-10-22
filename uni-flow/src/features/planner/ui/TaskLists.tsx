@@ -18,6 +18,7 @@ import {
 } from '@/features/planner/apis/todo.api';
 import { useAcademicStore, useAuthStore } from '@/shared/stores';
 import { AddToDoForm, EditToDoForm } from '@/features/planner/ui';
+import { CalendarClock, Hourglass, CheckCircle2 } from 'lucide-react';
 
 // type setup
 type taskListsProps = {
@@ -132,7 +133,7 @@ export const TaskLists = ({
       >
         <div className={styles.listHeader}>
           <div className={styles.logo}>
-            <h1 className={styles.symbol}>!</h1>
+            <CalendarClock className={styles.symbolIcon} aria-hidden="true" />
           </div>
           <h1 className={'text-large-title-bold ' + ' ' + styles.todoListTitle}>
             Planned
@@ -149,12 +150,9 @@ export const TaskLists = ({
         </div>
 
         <div
-          className={styles.todoList2}
-          style={{ marginTop: '-5vw', height: '49vh' }}
-        >
+          className={styles.todoList2}>
           <ul
             className={styles.lists}
-            style={{ marginTop: '0vh' }}
           >
             {pendings.length <= 0 && (
               <div
@@ -211,7 +209,7 @@ export const TaskLists = ({
       >
         <div className={styles.listHeader}>
           <div className={styles.logo}>
-            <h1 className={styles.symbol}>!</h1>
+            <Hourglass className={styles.symbolIcon} aria-hidden="true" />
           </div>
           <h1 className={'text-large-title-bold ' + ' ' + styles.todoListTitle}>
             In-progress
@@ -270,7 +268,7 @@ export const TaskLists = ({
       >
         <div className={styles.listHeader}>
           <div className={styles.logo}>
-            <h1 className={styles.symbol}>!</h1>
+            <CheckCircle2 className={styles.symbolIcon} aria-hidden="true" />
           </div>
           <h1 className={'text-large-title-bold ' + ' ' + styles.todoListTitle}>
             Completed
