@@ -1,31 +1,20 @@
 import React from 'react';
 import type { Metadata } from "next";
 import "./globals.css";
-import { Header, Navbar, Footer } from "@/widgets/common";
 import { QueryProviders } from '@/shared/providers';
+import AppShell from './AppShell';
 
 export const metadata: Metadata = {
   title: "UniFlow",
   description: "University Course Management System",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="antialiased py-[16px]" suppressHydrationWarning={true}>
+      <body className="antialiased" suppressHydrationWarning={true}>
         <QueryProviders>
-          <Header />
-          <div className="flex flex-row">
-            <Navbar />
-            <main className="flex flex-col flex-1">
-              {children}
-            </main>
-          </div>
-          <Footer />
+          <AppShell>{children}</AppShell>
         </QueryProviders>
       </body>
     </html>

@@ -25,7 +25,7 @@ export const NavItem = (props: Props) => {
       key={index} 
       className={clsx(
         "flex items-center justify-center w-full py-3",
-        isActive && "bg-primary-dark"
+        isActive ? "bg-white" : "bg-primary",
       )}
     >
       <Link 
@@ -39,12 +39,16 @@ export const NavItem = (props: Props) => {
             width={24} 
             height={24} 
             className={clsx(
-              "w-full h-full filter brightness-0 invert",
+              "w-full h-full transition-all",
+              isActive
+                ? "filter-none"
+                : "filter brightness-0 invert"
             )}
           />
         </div>
         <p className={clsx(
-          "text-center text-body2-bold text-white text-[14px]",
+          "text-center text-body2-bold text-[14px]",
+          isActive ? "text-[color: var(--primary-light)]" : "text-white"
         )}>
           {item.label}
         </p>

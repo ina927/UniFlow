@@ -1,0 +1,62 @@
+.wrap {
+  margin-top: 70px;
+  min-height: calc(100dvh - 60px);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background:
+    url('/landing-bg.png') no-repeat center;
+  background-size: 100%;
+  padding: clamp(16px, 4vw, 32px);
+}
+
+.card {
+  width: 100%;
+  max-width: 490px;
+  min-height: 540px;
+  background:white;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 34px 36px;
+  margin-left: 16%;
+  margin-top: -40px;
+  display: flex;
+  flex-direction: column;
+}
+.sub {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--muted-foreground);
+}
+
+.link {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: 600;
+}
+
+.form {
+  display: grid;
+  gap: 14px;
+}
+
+.formItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 70px;
+}
+
+.label {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.error {
+  color: var(--destructive);
+  font-size: 14px;
+  margin-top: 2px;
+}

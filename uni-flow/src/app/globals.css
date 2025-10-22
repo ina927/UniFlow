@@ -325,59 +325,6 @@
   }
 }
 
-/* ========= Login page ========= */
-.login-wrap {
-  /* Ensure the auth pages never exceed the viewport when combined with the header */
-  min-height: calc(100vh - var(--header-h));
-  display: grid;
-  place-items: center;
-  background: #fff;
-}
-
-.login-card {
-  width: 100%;
-  max-width: 420px;
-  padding: 8px 8px 24px 8px;
-}
-
-.login-title {
-  margin: 24px 0;
-  font-size: 40px;
-  line-height: 1.1;
-  font-weight: 800;
-  color: #0b0b0b;
-}
-
-.login-form {
-  display: grid;
-  gap: 14px;
-}
-
-.login-label {
-  display: grid;
-  gap: 6px;
-  color: #111827;
-  font-size: 14px;
-}
-
-.login-input {
-  padding: 12px 14px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  background: #fff;
-  font-size: 14px;
-}
-
-.login-input::placeholder {
-  color: #9ca3af;
-}
-
-.login-actions {
-  display: flex;
-  gap: 16px;
-  margin-top: 6px;
-}
-
 /* Shared pill button */
 .pill-btn {
   border: 0;

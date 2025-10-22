@@ -6,7 +6,7 @@ export interface IImage {
 }
 
 export const LOGO: IImage = {
-  src: '/logo.svg',
+  src: '/logo.png',
   alt: 'UniFlow Logo',
 };
 

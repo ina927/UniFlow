@@ -44,45 +44,53 @@ export const Header = (props: HeaderProps) => {
 
     const { logout } = useLogout();
   return (
-    <header className={clsx(props.className, "flex flex-row w-full max-h-[60px] items-center px-[16px]")}>
-      <div className="flex items-center mr-[8px]">
-        <Link href="/academic">
-          <Image 
-            className="mb-2"
-            src={LOGO.src}
-            alt={LOGO.alt}
-            width={68}
-            height={68}
-            priority
-          />
-        </Link>
-      </div>
-      <div className="flex items-center justify-between ml-[8px] w-full h-[60px] border-b border-b-[#E5E7EB]">
-        <HeaderTitle />
-        <div className="flex items-center gap-3 mr-4">
-          {isLoggedIn ? (
-            <>
-              <span>
-                Welcome, &nbsp;
-                  <span className="font-medium text-[--text]">{name}</span> 
-              </span>
-              <Button size="sm" variant="bordered" className="rounded-full px-5 mx-2" onClick={logout}>
-                Log out
-              </Button>
-            </>
-          ) : (
-            <>
-              <Link
-                href="/signup"
-                className="text-sm underline underline-offset-4 hover:text-[--primary]"
-              >
-                Sign up
-              </Link>
-              <Link href="/login">
-                <Button size="sm" className="rounded-full px-5">Log in</Button>
-              </Link>
-            </>
-          )}
+    <header
+      className={clsx(
+        props.className,
+        "fixed top-0 left-0 w-full z-50 bg-background border-b border-b-[#E5E7EB] shadow-sm h-[70px]"
+      )}
+    >
+      <div className="flex flex-row items-center justify-between px-[16px]">
+        <div className="flex items-center mr-[8px] h-full mt-2">
+          <Link href="/academic" aria-label="Go to Academic">
+            <Image
+              src={LOGO.src}
+              alt={LOGO.alt}
+              width={90}
+              height={60}
+              priority
+            />
+          </Link>
+        </div>
+
+        <div className="flex items-center justify-between w-full">
+          <HeaderTitle />
+          <div className="flex items-center gap-3 mr-4">
+            {isLoggedIn ? (
+              <>
+                <span>
+                  Welcome,&nbsp;
+                  <span className="font-medium text-[--text]">{name}</span>
+                </span>
+                <Button
+                  size="sm"
+                  variant="bordered"
+                  className="rounded-full px-5 mx-2"
+                  onClick={logout}
+                >
+                  Log out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href="/register">
+                  <Button size="sm" className="rounded-full px-5">
+                    Register
+                  </Button>
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </header>

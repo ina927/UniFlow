@@ -26,28 +26,22 @@ export const HeaderTitle = () => {
 
   return (
     <div className="ml-6 mb-2">
-      {segments.length === 0 ? (
-        <h1 className={clsx('text-center text-title2-semibold text-primary')}>
-          UniFlow
-        </h1>
-      ) : (
-        <nav className="flex items-center gap-2 text-title2-semibold text-primary">
-          {trails.map((t, idx) => (
-            <Fragment key={t.href}>
-              {t.isLast ? (
-                <span className="truncate">{t.label}</span>
-              ) : (
-                <Link href={t.href} className="truncate hover:underline">
-                  {t.label}
-                </Link>
-              )}
-              {idx < trails.length - 1 && (
-                <ChevronRight className="w-4 h-4 text-[--muted]" strokeWidth={2} />
-              )}
-            </Fragment>
-          ))}
-        </nav>
-      )}
+      <nav className="flex items-center gap-2 text-title2-semibold text-primary">
+        {trails.map((t, idx) => (
+          <Fragment key={t.href}>
+            {t.isLast ? (
+              <span className="truncate">{t.label}</span>
+            ) : (
+              <Link href={t.href} className="truncate hover:underline">
+                {t.label}
+              </Link>
+            )}
+            {idx < trails.length - 1 && (
+              <ChevronRight className="w-4 h-4 text-[--muted]" strokeWidth={2} />
+            )}
+          </Fragment>
+        ))}
+      </nav>
     </div>
   );
 };
