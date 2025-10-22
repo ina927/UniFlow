@@ -10,19 +10,22 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const hideNav = pathname === '/' || pathname.startsWith('/register');
 
   return (
-     <>
+    <>
       <Header />
 
-      {!hideNav && (
-        <div className="flex flex-row">
-          <Navbar />
-          <main className="flex flex-col flex-1">{children}</main>
+      {hideNav ? (
+        <main className="pt-[70px] min-h-[calc(115vh-70px)] flex flex-col">
+          {children}
+        </main>
+      ) : (
+        <div className="pt-[70px] flex flex-col min-h-[calc(115vh-70px)]">
+          <div className="flex flex-row flex-1">
+            <Navbar />
+            <main className="flex-1">{children}</main>
+          </div>
+          <Footer />
         </div>
       )}
-
-      {hideNav && <main>{children}</main>}
-
-      <Footer />
     </>
   );
 }

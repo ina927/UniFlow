@@ -24,6 +24,9 @@ export const Header = (props: HeaderProps) => {
   const isRegisterPage = pathname?.startsWith('/register');
   const [name, setName] = useState<string>("");
 
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => { setHydrated(true); }, []);
+
   const getUserDetails = async() => {
       try {
         const res = await fetch('/api/user/me', { cache: 'no-store' });
@@ -69,37 +72,26 @@ export const Header = (props: HeaderProps) => {
         <div className="flex items-center justify-between w-full mt-3">
           <HeaderTitle />
           <div className="flex items-center gap-3 mr-4">
-            {isLoggedIn ? (
-              <>
-                <span>
-                  Welcome,&nbsp;
-                  <span className="font-medium text-[--text]">{name}</span>
-                </span>
-                <Button
-                  size="sm"
-                  variant="bordered"
-                  className="rounded-full px-5 mx-2"
-                  onClick={logout}
-                >
-                  Log out
-                </Button>
-              </>
-            ) : (
-              <>
-                {isRegisterPage ? (
-                  <Link href="/">
-                    <Button size="sm" className="rounded-full px-5">
-                      Log in
-                    </Button>
-                  </Link>
-                ) : (
-                  <Link href="/register">
-                    <Button size="sm" className="rounded-full px-5">
-                      Register
-                    </Button>
-                  </Link>
-                )}
-              </>
+            {!hydrated ? null : (
+              isLoggedIn ? (
+                <>
+                  <span>
+                    Welcome,&nbsp;
+                    <span className="font-medium text-[--text]">{name}</span>
+                  </span>
+                  <Button size="sm" variant="bordered" className="rounded-full px-5 mx-2" onClick={() => { void logout(); }}>
+                    Log out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  {isRegisterPage ? (
+                    <Link href="/"><Button size="sm" className="rounded-full px-5">Log in</Button></Link>
+                  ) : (
+                    <Link href="/register"><Button size="sm" className="rounded-full px-5">Register</Button></Link>
+                  )}
+                </>
+              )
             )}
           </div>
         </div>

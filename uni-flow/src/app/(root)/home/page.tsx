@@ -5,6 +5,7 @@ export const fetchCache = 'force-no-store';
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useLogout } from '@/shared/hooks/useLogout';
 
 import { Role } from '@/entities/users/enums';
 import { useAcademicStore, useAuthStore } from '@/shared/stores';
@@ -29,16 +30,7 @@ export default function HomePage() {
     })();
   }, [router]);
 
-  async function logout() {
-    try {
-      await fetch('/api/auth/logout', { method: 'POST' });
-      setUserId('');
-      clear();
-      router.push('/');
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  }
+  const { logout } = useLogout();
 
   return (
     <main className='profile-wrap'>
@@ -67,7 +59,7 @@ export default function HomePage() {
           )}
           <button
             className='pill-btn pill-secondary'
-            onClick={logout}
+            onClick={() => { void logout(); }}
           >
             Logout
           </button>

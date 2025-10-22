@@ -1,5 +1,4 @@
 .wrap {
-  margin-top: 70px;
   min-height: calc(100dvh - 60px);
   display: flex;
   align-items: center;
@@ -12,8 +11,8 @@
 
 .card {
   width: 100%;
-  max-width: 490px;
-  min-height: 540px;
+  max-width: 510px;
+  min-height: 580px;
   background:white;
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.3);

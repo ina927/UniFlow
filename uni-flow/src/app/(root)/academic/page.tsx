@@ -1,8 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
-
+import { useMemo, useEffect } from 'react';
 import { AcademicCourseEntity } from '@/entities/academics/entities';
 import { getAcademicCourses } from '@/features/academics';
 import { isLogin } from '@/shared/lib/isLogin';
@@ -24,24 +23,22 @@ export default function AcademicPage() {
   });
 
   const academicCourses = useMemo(() => data?.data?.data || [], [data]);
-
-  console.log('academicCourses', academicCourses);
   const hasCourses = academicCourses.length > 0;
-
-  if (isLoading || (!hasCourses && !academicCourseId)) {
+  
+  useEffect(() => {
+    if (!academicCourseId && hasCourses) {
+      const firstId = academicCourses[0]?.id as string | undefined;
+      if (firstId) setAcademicCourseId(firstId);
+    }
+  }, [academicCourseId, hasCourses, academicCourses, setAcademicCourseId]);
+  
+  if (isLoading || (hasCourses && !academicCourseId)) {
     return <div>Loading...</div>;
   }
 
   if (isError) {
     return <div>Error loading academic courses</div>;
   }
-
-  if (hasCourses && !academicCourseId) {
-    setAcademicCourseId(academicCourses[0].id);
-
-    console.log('academicCourseId', academicCourseId);
-  }
-
   const academicCourse = academicCourses.find(
     (course: AcademicCourseEntity) => course.id === academicCourseId
   );

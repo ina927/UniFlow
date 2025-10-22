@@ -32,7 +32,7 @@ export const NavItem = (props: Props) => {
         href={item.href} 
         className="flex flex-col gap-1 items-center w-full"
       >
-        <div className="relative w-7 h-7">
+        <div className="relative w-8 h-8">
           <Image 
             src={item.icon.src} 
             alt={item.icon.alt} 
@@ -47,8 +47,8 @@ export const NavItem = (props: Props) => {
           />
         </div>
         <p className={clsx(
-          "text-center text-body2-bold text-[14px]",
-          isActive ? "text-[color: var(--primary-light)]" : "text-white"
+          "text-center text-body1 text-[14px]",
+          isActive ? "text-[color: var(--primary-light)] text-body1-semibold" : "text-white"
         )}>
           {item.label}
         </p>
