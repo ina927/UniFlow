@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/shared/ui/button";
 import { useAuthStore } from '@/shared/stores';
 import { useLogout } from '@/shared/hooks/useLogout';
+import { usePathname } from 'next/navigation';
 
 interface HeaderProps {
   className?: string;
@@ -17,8 +18,10 @@ interface HeaderProps {
 
 export const Header = (props: HeaderProps) => {
   const { userId } = useAuthStore();
+  const pathname = usePathname();
 
   const isLoggedIn = !!userId;
+  const isRegisterPage = pathname?.startsWith('/register');
   const [name, setName] = useState<string>("");
 
   const getUserDetails = async() => {
@@ -63,7 +66,7 @@ export const Header = (props: HeaderProps) => {
           </Link>
         </div>
 
-        <div className="flex items-center justify-between w-full">
+        <div className="flex items-center justify-between w-full mt-3">
           <HeaderTitle />
           <div className="flex items-center gap-3 mr-4">
             {isLoggedIn ? (
@@ -83,11 +86,19 @@ export const Header = (props: HeaderProps) => {
               </>
             ) : (
               <>
-                <Link href="/register">
-                  <Button size="sm" className="rounded-full px-5">
-                    Register
-                  </Button>
-                </Link>
+                {isRegisterPage ? (
+                  <Link href="/">
+                    <Button size="sm" className="rounded-full px-5">
+                      Log in
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link href="/register">
+                    <Button size="sm" className="rounded-full px-5">
+                      Register
+                    </Button>
+                  </Link>
+                )}
               </>
             )}
           </div>
