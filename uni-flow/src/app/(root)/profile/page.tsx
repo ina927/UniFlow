@@ -350,7 +350,7 @@ export default function ProfilePage() {
             )}
             <button
               className='pill-btn pill-secondary'
-              onClick={logout}
+              onClick={() => { void logout(); }}
             >
               Logout
             </button>
