@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ConfirmDialog } from "@/widgets/common/ui/ConfirmDialog";
+import { Button } from "@/shared/ui/button";
 
 type HistoryHeaderProps = {
   onClearHistory: () => void;
@@ -12,19 +13,21 @@ const HistoryHeader = ({ onClearHistory }: HistoryHeaderProps) => {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   return (
-    <div className="fixed right-4 top-[80px] z-40 flex items-center gap-2">
-      <Link href="/timer">
-        <button className="px-4 py-2 bg-primary-light text-white rounded-full shadow text-body1-bold hover:bg-button-hover-light">
-          Timer
-        </button>
-      </Link>
-      <button
-        onClick={() => setConfirmOpen(true)}
-        className="px-4 py-2 bg-button-deactive-light text-white rounded-full shadow text-body1-bold hover:bg-button-hover-light"
-      >
-        Clear History
-      </button>
-
+    <div className="fixed mt-6 right-4 top-[80px] z-40 flex items-center gap-2">
+      <div className="flex flex-col gap-2">
+        <Link href="/timer">
+          <Button className="w-40 bg-[var(--primary-dark)]">
+            Timer
+          </Button>
+        </Link>
+        <Button
+          onClick={() => setConfirmOpen(true)}
+          variant="bordered" className="w-40 border-[var(--primary-dark)] text-[var(--primary-dark)] hover:bg-[var(--primary-dark)]"
+        >
+          Clear History
+        </Button>
+      </div>
+    
       <ConfirmDialog
         open={confirmOpen}
         onOpenChange={(v) => setConfirmOpen(v)}

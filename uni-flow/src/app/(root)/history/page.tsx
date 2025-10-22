@@ -17,8 +17,8 @@ export default function HistoryPage() {
   );
 
   return (
-    <div className='w-screen min-h-screen flex flex-col items-center justify-center bg-components-fill'>
-      <div className='w-full max-w-screen-lg mx-auto px-4 py-8 flex flex-col items-center'>
+    <div className='w-screen min-h-screen flex flex-col ml-80 mt-14'>
+      <div className='w-full max-w-screen-lg px-4 py-0 flex flex-col'>
         {/* Header with navigation and clear history button */}
         <HistoryHeader onClearHistory={clearHistory} />
 
