@@ -6,17 +6,19 @@
 }
 
 .list {
-  width: 400px;
+  width: 410px;
   min-height: 600px;
   background: var(--primary-light);
   border-radius: 1vw;
   padding-top: 6px;
+  margin-top: -10px;
+  position: relative;
 }
 
 .listHeader {
   display: flex;
   flex-direction: row;
-  margin-left: 20px;
+  margin-left: 30px;
 }
 
 .logo {
@@ -60,9 +62,8 @@
 }
 
 .lists {
-  margin-left: 1rem;
-  margin-top: 3rem;
   position: relative;
+  margin-top: 8px;
 }
 
 /* planning list -> margin top 1.5erem */
@@ -105,16 +106,17 @@
 }
 
 #addToDo {
-  float: right;
+  position: absolute;
+  top: 30px;
+  right: 34px;
   background: var(--button-active-dark);
   color: var(--background);
   border-radius: 1rem;
-  margin-right: 20px;
   width: 75px;
   height: 30px;
-  margin-top: 25px;
+  line-height: 30px;
+  text-align: center;
 }
-
 .edit {
   float: right;
   background: var(--button-active-dark);

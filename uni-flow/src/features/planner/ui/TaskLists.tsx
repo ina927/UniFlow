@@ -16,9 +16,10 @@ import {
   statusDone,
   statusInProgress,
 } from '@/features/planner/apis/todo.api';
-import { useAcademicStore, useAuthStore } from '@/shared/stores';
+import { useAuthStore } from '@/shared/stores';
 import { AddToDoForm, EditToDoForm } from '@/features/planner/ui';
 import { CalendarClock, Hourglass, CheckCircle2 } from 'lucide-react';
+import { ConfirmDialog } from '@/widgets/common/ui/ConfirmDialog';
 
 // type setup
 type taskListsProps = {
@@ -38,7 +39,8 @@ export const TaskLists = ({
   const [inProgress, setInProgress] = useState<ToDoEntity[]>([]);
   const [completed, setCompleted] = useState<ToDoEntity[]>([]);
   const [currentFilter, setCurrentFilter] = useState<string>('');
-
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [toDelete, setToDelete] = useState<ToDoEntity | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<ToDoEntity>();
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
 
@@ -135,7 +137,7 @@ export const TaskLists = ({
           <div className={styles.logo}>
             <CalendarClock className={styles.symbolIcon} aria-hidden="true" />
           </div>
-          <h1 className={'text-large-title-bold ' + ' ' + styles.todoListTitle}>
+          <h1 className={'text-large-title-bold mb-5 ' + ' ' + styles.todoListTitle}>
             Planned
           </h1>
         </div>
@@ -157,7 +159,7 @@ export const TaskLists = ({
             {pendings.length <= 0 && (
               <div
                 className='italic text-center text-gray-400'
-                style={{ marginTop: '2vh' }}
+                style={{ marginTop: '4vh' }}
               >
                 Nothing in Here Yet..
               </div>
@@ -302,7 +304,7 @@ export const TaskLists = ({
                     </h3>
                     <div>
                       <button
-                        onClick={() => deleteToDo(event)}
+                        onClick={() => { setToDelete(event); setConfirmOpen(true); }}
                         className={'text-body1' + ' ' + styles.status}
                       >
                         Delete
@@ -314,6 +316,26 @@ export const TaskLists = ({
           </ul>
         </div>
       </div>
+      <ConfirmDialog
+        open={confirmOpen}
+        onOpenChange={(open) => {
+          setConfirmOpen(open);
+          if (!open) setToDelete(null);
+        }}
+        title="Delete this task?"
+        message={toDelete ? `“${toDelete.title}” will be permanently removed.` : 'This action cannot be undone.'}
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={() => {
+          (async () => {
+            if (!toDelete) return;
+            await deleteToDo(toDelete);
+            setConfirmOpen(false);
+            setToDelete(null);
+            refresh();
+          })();
+        }}
+      />
 
       {/* Edit component */}
       {selectedEvent && (

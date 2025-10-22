@@ -18,7 +18,9 @@ export const NavItem = (props: Props) => {
   const { item, index } = props;
   const pathname = usePathname() || '/';
 
-  const isActive = pathname === item.href;
+  const isActive =
+    (item.href === '/planner' && /^\/(planner|calendar)(\/|$)/.test(pathname)) ||
+    pathname === item.href;
 
   return (
     <div 

@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, Button, Progress } from "@/shared/ui";
+import { Pencil, Trash } from 'lucide-react';
 
 type Props = {
   title: string;
@@ -38,8 +39,12 @@ export const AssessmentDetailCard = ({
             {"  "}{"  "}{title}
           </h1>
           <div className="flex items-center gap-2">
-            <Button onClick={onEdit}>Edit</Button>
+            <Button onClick={onEdit} variant="bordered">
+              <Pencil className="w-4 h-4" />
+              Edit
+            </Button>
             <Button variant="destructive" onClick={onDelete}>
+              <Trash className="w-4 h-4" />
               Delete
             </Button>
           </div>

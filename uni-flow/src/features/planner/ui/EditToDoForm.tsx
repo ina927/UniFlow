@@ -17,6 +17,7 @@ import { Textarea } from '@/shared/ui/textarea';
 import { Button } from '@/shared/ui/button';
 import { ComboboxForm } from '@/widgets/planner/SetSubjectModalForm';
 import { deleteToDo, updateToDo } from '../apis/todo.api';
+import { ConfirmDialog } from '@/widgets/common/ui/ConfirmDialog';
 import styles from './AddToDoForm.module.css';
 
 type editToDoFormProps = {
@@ -41,6 +42,7 @@ export const EditToDoForm = ({
   const [endDate, setEndDate] = useState<Date | null>(event?.endDate || null);
   const [subjectId, setSubjectId] = useState<string>(event?.subjectId || '');
   const [error, setError] = useState<string | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   // sync when event changes
   useEffect(() => {
@@ -215,7 +217,7 @@ export const EditToDoForm = ({
 
           {/* Footer buttons (right aligned) */}
           <div className={styles.footer}>
-            <Button type="button" variant="outline" onClick={deleteEvent}>
+            <Button type="button" variant="outline" onClick={() => setConfirmOpen(true)}>
               Delete
             </Button>
             <Button type="button" onClick={validateSave}>
@@ -224,6 +226,20 @@ export const EditToDoForm = ({
           </div>
         </form>
       </DialogContent>
+      <ConfirmDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title="Delete task?"
+        message="This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={() => {
+          (async () => {
+            await deleteEvent();
+            setConfirmOpen(false);
+          })();
+        }}
+      />
     </Dialog>
   );
 };

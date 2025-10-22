@@ -91,7 +91,7 @@ export const AddToDoForm = ({
         return;
       }
       endDateFormat.setHours(0, 0, 0, 0);
-      if (endDateFormat < now || endDateFormat < startDateFormat) {
+      if (endDateFormat < now || endDateFormat <= startDateFormat) {
         setError('Please choose the later day');
         return;
       }
