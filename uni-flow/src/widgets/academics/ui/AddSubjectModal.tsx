@@ -70,7 +70,7 @@ export function AddSubjectModal(props: Props) {
                   <SelectContent>
                     {terms?.map((term) => (
                       <SelectItem key={term.id} value={term.id}>
-                        {term.title}
+                        {term.title} {term.academicYear}
                       </SelectItem>
                     ))}
                   </SelectContent>
