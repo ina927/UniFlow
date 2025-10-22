@@ -11,6 +11,7 @@ import {
 import { ComboboxForm } from '@/widgets/planner/SetSubjectModalForm';
 import { postEvents } from '../apis/todo.api';
 import styles from './AddToDoForm.module.css';
+import { Label, Input, Button, Textarea } from '@/shared/ui';
 
 // type setup
 type addToDoFormProps = {
@@ -131,101 +132,86 @@ export const AddToDoForm = ({
       open={isOpen}
       onOpenChange={onClose}
     >
-      <DialogContent aria-describedby={'addToDoForm'}>
-        <br />
+      <DialogContent aria-describedby={'addToDoForm'} className={styles.modal}>
         <DialogHeader>
           <DialogTitle className='text-title3-bold'>Add New Task</DialogTitle>
         </DialogHeader>
         <form
-          className={styles.toDoForm}
+          className={styles.formGrid}
           onSubmit={(e) => e.preventDefault()}
         >
-          {error && <div className='text-red-500 text-sm mb-2'>{error}</div>}
-
+        {error && (
+          <div className={styles.formItemFull}>
+            <div className="text-red-500 text-sm">{error}</div>
+          </div>
+        )}
           {/* title input */}
-          <input
-            className={styles.titleInput}
-            type='text'
-            placeholder='New Task'
-            value={eventTitle}
-            onChange={(event) => setEventTitle(event.target.value)}
-            required
-          />
-
-          {/* Description input */}
-          <textarea
-            className={styles.descriptionInput}
-            placeholder='Description (optional) (150 characters max)'
-            value={description}
-            maxLength={150}
-            onChange={(event) => {
-              setDescription(event.target.value);
-            }}
-          ></textarea>
-
-          {/* Start Date Input */}
-          <div className={styles.rowContainer}>
-            <label className={styles.labels}>Start Date: </label>
-            <input
-              type='date'
-              value={startDate ? startDate.toISOString().split('T')[0] : ''}
-              onChange={(event) => {
-                const date = event.target.value;
-                const newDate = new Date(date);
-                setStartDate(newDate);
-              }}
+          <div className={styles.formItemFull}>
+            <Label htmlFor="todo-edit-title">Title *</Label>
+            <Input
+              id="todo-edit-title"
+              type="text"
+              placeholder="Enter task title"
+              value={eventTitle}
+              onChange={(e) => setEventTitle(e.target.value)}
               required
             />
           </div>
 
-          {/* End Date Input */}
-          <div className={styles.rowContainer}>
-            <label className={styles.labels}>Deadline: </label>
-            <input
-              type='date'
-              value={endDate ? endDate.toISOString().split('T')[0] : ''}
-              onChange={(event) => {
-                const date = event.target.value;
-                const newDate = new Date(date);
-                setEndDate(newDate);
-              }}
-              required
+          {/* Description input */}
+          <div className={styles.formItemFull}>
+            <Label htmlFor="todo-edit-desc">Description / memo</Label>
+            <Textarea
+              id="todo-edit-desc"
+              placeholder="Add description (optional)"
+              value={description}
+              maxLength={150}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={5}
             />
+          </div>
+
+          {/* Start/End Date Input */}
+          <div className={styles.formRow}>
+            <div className={styles.formItem}>
+              <Label htmlFor="todo-edit-start">Start date *</Label>
+              <Input
+                id="todo-edit-start"
+                type="date"
+                value={startDate ? startDate.toISOString().split('T')[0] : ''}
+                onChange={(e) => setStartDate(new Date(e.target.value))}
+                required
+              />
+            </div>
+            <div className={styles.formItem}>
+              <Label htmlFor="todo-edit-deadline">Deadline *</Label>
+              <Input
+                id="todo-edit-deadline"
+                type="date"
+                value={endDate ? endDate.toISOString().split('T')[0] : ''}
+                onChange={(e) => setEndDate(new Date(e.target.value))}
+                required
+              />
+            </div>
           </div>
 
           {/* SubjectId Input */}
-          <div className={styles.rowContainer}>
-            <label className={styles.labels}>Subject: </label>
+          <div className={styles.formItemFull}>
+            <Label htmlFor="todo-edit-subject">Subject *</Label>
             <ComboboxForm
               academicCourseId={academicCourseId}
               subjectId={subjectId}
-              onSubjectChange={(subjectId: string) => {
-                if (subjectId) {
-                  setSubjectId(subjectId);
-                }
-              }}
+              onSubjectChange={(sid: string) => sid && setSubjectId(sid)}
             />
           </div>
 
           <hr />
 
           {/* Save Button */}
-          <button
-            type='button'
-            className={styles.handler}
-            onClick={validateSave}
-          >
-            Create
-          </button>
-
-          {/* Cancel Button */}
-          <button
-            type='button'
-            className={styles.handler}
-            onClick={() => onClose()}
-          >
-            Cancel
-          </button>
+          <div className={styles.footer}>
+            <Button type="button" variant="outline" onClick={() => onClose()}>Cancel</Button>
+            <Button type="button" onClick={validateSave}>Create</Button>
+          </div>
         </form>
       </DialogContent>
     </Dialog>

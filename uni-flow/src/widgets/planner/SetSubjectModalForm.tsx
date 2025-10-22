@@ -60,7 +60,7 @@ export const ComboboxForm = ({
             variant='outline'
             role='combobox'
             aria-expanded={open}
-            className='w-[250px] justify-between'
+            className='w-[264px] mt-3 justify-between'
           >
             {value
               ? subjects.find((subject: SubjectEntity) => subject.id === value)
@@ -69,7 +69,7 @@ export const ComboboxForm = ({
             <ChevronsUpDown className='opacity-50' />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className='w-[200px] p-0'>
+        <PopoverContent className='w-[264px] p-0'>
           <Command>
             <CommandInput
               placeholder='Search subject...'
