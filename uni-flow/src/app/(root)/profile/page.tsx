@@ -24,7 +24,7 @@ export default function ProfilePage() {
   const [dobInput, setDobInput] = useState('');
   const [pwd, setPwd] = useState('');
   const [confirmPwd, setConfirmPwd] = useState('');
-  const [msg, setMsg] = useState<string | null>(null); // "ok: ..." | "error: ..."
+  const [msg, setMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [courses, setCourses] = useState<AcademicCourseEntity[]>([]);
@@ -33,7 +33,7 @@ export default function ProfilePage() {
   const [courseEditingId, setCourseEditingId] = useState<string | null>(null);
   const [courseDegree, setCourseDegree] = useState('');
   const [courseCredits, setCourseCredits] = useState('');
-  const [courseStatus, setCourseStatus] = useState<string | null>(null);
+  const [courseStatus, setCourseStatus] = useState<string>('');
   const formRef = useRef<HTMLDivElement | null>(null);
   const nameInputRef = useRef<HTMLInputElement | null>(null);
   const courseSectionRef = useRef<HTMLElement | null>(null);
@@ -42,13 +42,11 @@ export default function ProfilePage() {
   const { setUserId } = useAuthStore();
   const { clear } = useAcademicStore();
 
-  // Prefill from /api/user/me, redirect to login on 401
   useEffect(() => {
     (async () => {
       try {
         const res = await fetch('/api/user/me', { cache: 'no-store' });
         if (res.status === 401) {
-          // session expired / not logged in
           router.replace('/?reason=auth');
           return;
         }
@@ -97,7 +95,6 @@ export default function ProfilePage() {
     }
   }, [user?.id]);
 
-  // Save profile; on 401, redirect back to login
   async function save() {
     if (!editing) return;
     setMsg(null);
@@ -155,7 +152,6 @@ export default function ProfilePage() {
       setMsg('ok: Profile updated');
       setPwd('');
       setConfirmPwd('');
-      setEditing(false);
     } catch {
       setMsg('error: network error');
     }
@@ -168,6 +164,21 @@ export default function ProfilePage() {
   const beginEditing = () => {
     setEditing(true);
     setMsg(null);
+
+    if (user?.role !== Role.ADMIN) {
+      const targetCourse = courses[0];
+      if (targetCourse) {
+        setCourseEditingId(targetCourse.id);
+        setCourseDegree(targetCourse.degree ?? '');
+        const c = Number(targetCourse.credits);
+        setCourseCredits(Number.isFinite(c) ? String(c) : '');
+      } else {
+        setCourseEditingId(null);
+        setCourseDegree('');
+        setCourseCredits('');
+      }
+    }
+
     setTimeout(() => {
       if (formRef.current) {
         formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -184,12 +195,22 @@ export default function ProfilePage() {
     setDobInput(user?.dob ? user.dob.slice(0, 10) : '');
     setPwd('');
     setConfirmPwd('');
+
+    if (user?.role !== Role.ADMIN) {
+      const target =
+        (courseEditingId && courses.find(c => c.id === courseEditingId)) || courses[0];
+      const originalCredits = target ? Number(target.credits) : NaN;
+      setCourseDegree(target?.degree ?? '');
+      setCourseCredits(Number.isFinite(originalCredits) ? String(originalCredits) : '');
+      setCourseEditingId(null);
+      setCourseStatus('');
+    }
   };
 
   const beginCourseEditing = () => {
     if (courseEditing) return;
 
-    setCourseStatus(null);
+    setCourseStatus('');
 
     const targetCourse = courses[0];
 
@@ -220,7 +241,7 @@ export default function ProfilePage() {
 
     setCourseEditing(false);
     setCourseEditingId(null);
-    setCourseStatus(null);
+    setCourseStatus('');
 
     const original: AcademicCourseEntity | undefined =
       editingId ? courses.find((course) => course.id === editingId) : undefined;
@@ -240,7 +261,7 @@ export default function ProfilePage() {
       return;
     }
 
-    setCourseStatus(null);
+    setCourseStatus('');
 
     const normalizedDegree = courseDegree.trim();
     const parsedCredits = Number(courseCredits);
@@ -308,6 +329,14 @@ export default function ProfilePage() {
     }
   };
 
+  const saveAll = async () => {
+    await save();
+    if (user?.role !== Role.ADMIN && courseEditingId) {
+      await saveCourse();
+    }
+    setEditing(false);
+  };
+
   const displayDob = user?.dob
     ? new Date(user.dob).toLocaleDateString()
     : 'Not provided';
@@ -315,15 +344,12 @@ export default function ProfilePage() {
   return (
     <main className='profile-wrap'>
       <div className='profile-grid'>
-        <section className='profile-card'>
-          <h2 className='profile-title'>
+        <section className='profile-card' ref={formRef}>
+          <h2 className='text-large-title-bold mb-4'>
             Welcome{user?.name ? `, ${user.name}` : ''} 👋
           </h2>
-          <p className='profile-sub'>
-            Signed in as <b>{user?.email}</b>
-          </p>
 
-          <div className='profile-actions'>
+          <div className='profile-actions' style={{ marginBottom: 12 }}>
             <button
               className='pill-btn pill-primary'
               onClick={beginEditing}
@@ -331,15 +357,6 @@ export default function ProfilePage() {
             >
               {editing ? 'Editing…' : 'Edit Profile'}
             </button>
-            {user?.role !== Role.ADMIN && (
-              <button
-                className='pill-btn pill-primary'
-                onClick={beginCourseEditing}
-                disabled={courseEditing || courses.length === 0}
-              >
-                {courseEditing ? 'Editing…' : 'Edit Academic Course'}
-              </button>
-            )}
             {user?.role === Role.ADMIN && (
               <button
                 className='pill-btn pill-secondary'
@@ -349,20 +366,12 @@ export default function ProfilePage() {
               </button>
             )}
             <button
-              className='pill-btn pill-secondary'
+              className='pill-btn pill-outline'
               onClick={() => { void logout(); }}
             >
               Logout
             </button>
           </div>
-        </section>
-
-        <section
-          className='profile-card'
-          ref={formRef}
-        >
-          <h2 className='profile-title'>Profile Details</h2>
-          <p className='profile-sub'>Update your personal information.</p>
 
           {msg && (
             <div
@@ -374,7 +383,14 @@ export default function ProfilePage() {
             </div>
           )}
 
-          <div className='profile-form'>
+          <div
+            className='profile-form'
+            style={
+              editing
+                ? { display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0,1fr))', gap: 12 }
+                : undefined
+            }
+          >
             {editing ? (
               <>
                 <label>
@@ -416,6 +432,7 @@ export default function ProfilePage() {
                     placeholder='Set a new password'
                   />
                 </label>
+
                 <label>
                   <span>Confirm Password</span>
                   <input
@@ -426,10 +443,44 @@ export default function ProfilePage() {
                   />
                 </label>
 
-                <div className='profile-actions'>
+                {user?.role !== Role.ADMIN && (
+                  <>
+                    <label>
+                      <span>Degree</span>
+                      <input
+                        ref={courseDegreeInputRef}
+                        value={courseDegree}
+                        onChange={(e) => setCourseDegree(e.target.value)}
+                        placeholder='e.g. Bachelor of IT'
+                      />
+                    </label>
+                    <label>
+                      <span>Total Credits</span>
+                      <input
+                        type='number'
+                        min={0}
+                        value={courseCredits}
+                        onChange={(e) => setCourseCredits(e.target.value)}
+                        placeholder='e.g. 144'
+                      />
+                    </label>
+                    {courseStatus && (
+                      <div
+                        className={`profile-msg ${
+                          courseStatus.startsWith('ok:') ? 'success' : 'error'
+                        }`}
+                        style={{ gridColumn: '1 / -1' }}
+                      >
+                        {courseStatus.replace(/^(ok:|error:)\s?/, '')}
+                      </div>
+                    )}
+                  </>
+                )}
+
+                <div className='profile-actions' style={{ gridColumn: '1 / -1' }}>
                   <button
                     className='pill-btn pill-primary'
-                    onClick={save}
+                    onClick={saveAll}
                   >
                     Save changes
                   </button>
@@ -453,12 +504,31 @@ export default function ProfilePage() {
                 <p className='profile-detail'>
                   <strong>Date of Birth:</strong> {displayDob}
                 </p>
+
+                {user?.role !== Role.ADMIN && (
+                  <>
+                    <hr className='profile-divider' />
+                    {coursesMsg && <p className='profile-msg error'>{coursesMsg}</p>}
+                    {courses.length > 0 ? (
+                      <>
+                        <p className='profile-detail'>
+                          <strong>Degree:</strong> {courses[0].degree}
+                        </p>
+                        <p className='profile-detail'>
+                          <strong>Total Credits:</strong> {courses[0].credits}
+                        </p>
+                      </>
+                    ) : (
+                      !coursesMsg && <p className='profile-empty'>No academic course on file yet.</p>
+                    )}
+                  </>
+                )}
               </div>
             )}
           </div>
         </section>
 
-        {user?.role !== Role.ADMIN && (
+        {false && user?.role !== Role.ADMIN && (
           <section
             className='profile-card'
             ref={courseSectionRef}
@@ -477,72 +547,6 @@ export default function ProfilePage() {
             )}
 
             {coursesMsg && <p className='profile-msg error'>{coursesMsg}</p>}
-
-            {courseEditing ? (
-              <div className='profile-form'>
-                <label>
-                  <span>Degree</span>
-                  <input
-                    ref={courseDegreeInputRef}
-                    value={courseDegree}
-                    onChange={(e) => setCourseDegree(e.target.value)}
-                    placeholder='e.g. Bachelor of IT'
-                  />
-                </label>
-                <label>
-                  <span>Total Credits</span>
-                  <input
-                    type='number'
-                    min={0}
-                    value={courseCredits}
-                    onChange={(e) => setCourseCredits(e.target.value)}
-                    placeholder='e.g. 144'
-                  />
-                </label>
-
-                <div className='profile-actions'>
-                  <button
-                    className='pill-btn pill-primary'
-                    onClick={saveCourse}
-                  >
-                    Save changes
-                  </button>
-                  <button
-                    className='pill-btn pill-secondary'
-                    type='button'
-                    onClick={cancelCourseEditing}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <>
-                {courses.length === 0 && !coursesMsg && (
-                  <p className='profile-empty'>
-                    No academic course on file yet.
-                  </p>
-                )}
-
-                {courses.length > 0 && (
-                  <ul className='profile-course-list'>
-                    {courses.map((course) => (
-                      <li
-                        key={course.id}
-                        className='profile-course-item'
-                      >
-                        <p className='profile-detail'>
-                          <strong>Degree:</strong> {course.degree}
-                        </p>
-                        <p className='profile-detail'>
-                          <strong>Total Credits:</strong> {course.credits}
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </>
-            )}
           </section>
         )}
       </div>
