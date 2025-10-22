@@ -12,15 +12,15 @@ const HistoryHeader = ({ onClearHistory }: HistoryHeaderProps) => {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   return (
-    <div className="absolute top-4 right-4 flex gap-2">
+    <div className="fixed right-4 top-[80px] z-40 flex items-center gap-2">
       <Link href="/timer">
-        <button className="px-4 py-2 bg-primary-light text-white rounded shadow text-body1-bold hover:bg-button-hover-light">
+        <button className="px-4 py-2 bg-primary-light text-white rounded-full shadow text-body1-bold hover:bg-button-hover-light">
           Timer
         </button>
       </Link>
       <button
         onClick={() => setConfirmOpen(true)}
-        className="px-4 py-2 bg-button-deactive-light text-white rounded shadow text-body1-bold hover:bg-button-hover-light"
+        className="px-4 py-2 bg-button-deactive-light text-white rounded-full shadow text-body1-bold hover:bg-button-hover-light"
       >
         Clear History
       </button>
