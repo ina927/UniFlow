@@ -17,7 +17,7 @@
 
   /* Color */
   --components-fill: #f0efef;
-  --text-primary: #24242600;
+  --text-primary: #242426;
   --text-secondary: #6c6c70;
   --text-tertiary: #949494;
   --text-light: #d9d9d9;
@@ -364,7 +364,6 @@
   color: white;
 }
 
-
 .pill-danger {
   background: #dc2626;
 }
@@ -503,8 +502,6 @@
 .profile-form {
   display: grid;
   gap: 14px;
-  margin-top: 20px;
-  margin-bottom: 10px;
 }
 
 .profile-form label {
