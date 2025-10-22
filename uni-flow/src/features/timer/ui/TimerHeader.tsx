@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "@/shared/ui/button";
 
 type TimerHeaderProps = {
   showAddTodoForm?: boolean;
@@ -14,21 +15,18 @@ const TimerHeader = ({
   onToggleAddTodo
 }: TimerHeaderProps) => {
   return (
-    <div className="fixed right-4 top-[80px] z-40 flex items-center gap-2">
+    <div className="fixed mt-6 right-4 top-[80px] z-40 flex flex-col items-center gap-2">
       {/* History Page */}
       <Link href="/history">
-        <button className="px-4 py-2 bg-primary-light text-white rounded-full shadow text-body1-bold hover:bg-button-hover-light">
-          History
-        </button>
+        <Button className="w-40 bg-[var(--primary-dark)]">
+          View History
+        </Button>
       </Link>
 
       {/* Settings Toggle */}
-      <button
-        onClick={onToggleSettings}
-        className="px-4 py-2 bg-button-deactive-light text-white rounded-full shadow text-body1-bold hover:bg-button-hover-light"
-      >
+      <Button onClick={onToggleSettings} variant="bordered" className="w-40 border-[var(--primary-dark)] text-[var(--primary-dark)] hover:bg-[var(--primary-dark)]">
         {showSettings ? "Close Settings" : "Settings"}
-      </button>
+      </Button>
     </div>
   );
 };

@@ -78,7 +78,7 @@ export default function TimerPage() {
 
       {/* Main Content - takes remaining height and scrolls if needed */}
       <main className='flex-1 overflow-y-auto px-4 py-8'>
-        <div className='max-w-screen-xl mx-auto flex flex-col items-center gap-6'>
+        <div className='max-w-screen-xl ml-60 flex flex-col items-center gap-6'>
           <TimerDisplay
             isWorkTime={isWorkTime}
             secondsLeft={secondsLeft}
