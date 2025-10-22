@@ -4,6 +4,7 @@ export const fetchCache = 'force-no-store';
 
 import { UserStatus, Role } from "@/entities/users";
 import { useEffect, useMemo, useState } from "react";
+import styles from "./page.module.css";
 
 const statusLabels: Record<UserStatus, string> = {
   [UserStatus.ACTIVE]: "Active",
@@ -76,7 +77,6 @@ function formatDate(value: string | null) {
 export default function AdminDashboardPage() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [audits, setAudits] = useState<AuditEntry[]>([]);
-  const [loading, setLoading] = useState(true);
   const [banner, setBanner] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<{ name: string; role: Role; status: UserStatus } | null>(null);
@@ -84,7 +84,6 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     (async () => {
       try {
-        setLoading(true);
         const res = await fetch("/api/admin/dashboard", { cache: "no-store" });
         if (!res.ok) {
           const errorBody = await res.json().catch(() => null);
@@ -103,7 +102,6 @@ export default function AdminDashboardPage() {
         setAudits([]);
         setBanner(`Unable to load admin dashboard. ${details}`);
       } finally {
-        setLoading(false);
       }
     })();
   }, []);
@@ -201,31 +199,23 @@ export default function AdminDashboardPage() {
     }
   }
 
-  if (loading) {
-    return (
-      <main className="admin-wrap">
-        <div className="admin-card">Loading admin dashboard…</div>
-      </main>
-    );
-  }
-
   return (
-    <main className="admin-wrap">
-      <div className="admin-layout">
-        <section className="admin-main">
-          <header className="admin-header">
+    <main className={styles.adminWrap}>
+      <div className={styles.adminLayout}>
+        <section className={styles.adminMain}>
+          <header className={styles.adminHeader}>
             <h1 className="text-large-title-bold">Admin Dashboard</h1>
             <p className="text-body1 text-secondary">
               Monitor all user accounts, adjust access, and review system activity.
             </p>
           </header>
 
-          {banner && <div className="admin-banner">{banner}</div>}
+          {banner && <div className={styles.adminBanner}>{banner}</div>}
 
-          <section className="admin-card">
+          <section className={styles.adminCard}>
             <h2 className="text-title2-bold">User List</h2>
-            <div className="admin-table-wrap">
-              <table className="admin-table">
+            <div className={styles.adminTableWrap}>
+              <table className={styles.adminTable}>
                 <thead>
                   <tr>
                     <th>ID</th>
@@ -238,24 +228,27 @@ export default function AdminDashboardPage() {
                     <th>Created</th>
                     <th>Updated</th>
                     <th>Version</th>
-                    <th className="actions">Actions</th>
+                    <th className={styles.actions}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {users.map((user) => {
                     const isEditing = editingId === user.id;
                     return (
-                      <tr key={user.id} className={user.status !== UserStatus.ACTIVE ? "inactive" : undefined}>
+                      <tr
+                        key={user.id}
+                        className={user.status !== UserStatus.ACTIVE ? styles.inactive : undefined}
+                      >
                         <td className="mono">{user.id}</td>
                         <td>
-                          <a href={`mailto:${user.email}`} className="admin-link">
+                          <a href={`mailto:${user.email}`} className={styles.adminLink}>
                             {user.email}
                           </a>
                         </td>
                         <td>
                           {isEditing ? (
                             <input
-                              className="admin-input"
+                              className={styles.adminInput}
                               value={editForm?.name ?? ""}
                               onChange={(e) =>
                                 setEditForm((prev) =>
@@ -270,7 +263,7 @@ export default function AdminDashboardPage() {
                         <td>
                           {isEditing ? (
                             <select
-                              className="admin-input"
+                              className={styles.adminInput}
                               value={editForm?.role ?? user.role}
                               onChange={(e) =>
                                 setEditForm((prev) =>
@@ -295,7 +288,7 @@ export default function AdminDashboardPage() {
                         <td>
                           {isEditing ? (
                             <select
-                              className="admin-input"
+                              className={styles.adminInput}
                               value={editForm?.status ?? user.status}
                               onChange={(e) =>
                                 setEditForm((prev) =>
@@ -315,7 +308,11 @@ export default function AdminDashboardPage() {
                               ))}
                             </select>
                           ) : (
-                            <span className={`status-pill ${user.status.toLowerCase()}`}>
+                            <span
+                              className={`${styles.statusPill} ${
+                                styles[user.status.toLowerCase() as "active" | "inactive" | "suspended"]
+                              }`}
+                            >
                               {statusLabels[user.status]}
                             </span>
                           )}
@@ -329,9 +326,9 @@ export default function AdminDashboardPage() {
                         <td>{formatTimestamp(user.createdAt)}</td>
                         <td>{formatTimestamp(user.updatedAt)}</td>
                         <td className="mono">{user.version}</td>
-                        <td className="actions">
+                        <td className={styles.actions}>
                           {isEditing ? (
-                            <div className="admin-actions">
+                            <div className={styles.adminActions}>
                               <button
                                 className="pill-btn pill-primary"
                                 onClick={() => saveEdit(user)}
@@ -346,7 +343,7 @@ export default function AdminDashboardPage() {
                               </button>
                             </div>
                           ) : (
-                            <div className="admin-actions">
+                            <div className={styles.adminActions}>
                               <button
                                 className="pill-btn pill-primary"
                                 onClick={() => startEdit(user)}
@@ -354,7 +351,13 @@ export default function AdminDashboardPage() {
                                 Edit
                               </button>
                               <button
-                                className="pill-btn pill-secondary"
+                                className="pill-btn pill-outline"
+                                onClick={() => resetUser(user)}
+                              >
+                                Reset
+                              </button>
+                              <button
+                                className="pill-btn pill-danger"
                                 onClick={() =>
                                   changeStatus(
                                     user,
@@ -365,12 +368,6 @@ export default function AdminDashboardPage() {
                                 }
                               >
                                 {user.status === UserStatus.ACTIVE ? "Deactivate" : "Reactivate"}
-                              </button>
-                              <button
-                                className="pill-btn pill-danger"
-                                onClick={() => resetUser(user)}
-                              >
-                                Reset
                               </button>
                             </div>
                           )}
@@ -383,12 +380,12 @@ export default function AdminDashboardPage() {
             </div>
           </section>
 
-          <section className="admin-card">
+          <section className={styles.adminCard}>
             <h2 className="text-title2-bold">Audit Log</h2>
-            <div className="audit-log">
+            <div className={styles.auditLog}>
               {auditLogRows.map((entry) => (
-                <div key={entry.id} className="audit-row">
-                  <span className="timestamp">{formatTimestamp(entry.createdAt)}</span>
+                <div key={entry.id} className={styles.auditRow}>
+                  <span className={styles.timestamp}>{formatTimestamp(entry.createdAt)}</span>
                   <span className="actor">{entry.actor}</span>
                   <span className="action">{entry.action.replace("USER_", "")}</span>
                   <span className="details">{entry.details ?? "No details recorded."}</span>
@@ -399,10 +396,10 @@ export default function AdminDashboardPage() {
           </section>
         </section>
 
-        <aside className="admin-sidebar">
-          <section className="admin-card">
+        <aside className={styles.adminSidebar}>
+          <section className={styles.adminCard}>
             <h2 className="text-title2-bold">Recent Activity</h2>
-            <ul className="recent-activity">
+            <ul className={styles.recentActivity}>
               {recentActivity.map((entry) => (
                 <li key={entry.id}>
                   <span className="icon">{actionIcons[entry.action]}</span>

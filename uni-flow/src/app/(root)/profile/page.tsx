@@ -358,14 +358,6 @@ export default function ProfilePage() {
                 >
                   Edit Profile
                 </button>
-                {user?.role === Role.ADMIN && (
-                  <button
-                    className='pill-btn pill-secondary'
-                    onClick={() => router.push('/admin')}
-                  >
-                    Admin Dashboard
-                  </button>
-                )}
                 <button
                   className='pill-btn pill-outline'
                   onClick={() => { void logout(); }}
