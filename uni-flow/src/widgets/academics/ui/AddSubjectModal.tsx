@@ -18,6 +18,7 @@ import { useAcademicStore } from "@/shared/stores";
 import { createSubject } from "@/features/academics";
 import { CreateSubjectDto } from "@/entities";
 import { Plus } from "lucide-react";
+import { sortTerm } from '@/widgets/academics/lib/sortTerm';
 
 interface Props {
   className?: string;
@@ -26,6 +27,7 @@ interface Props {
 
 export function AddSubjectModal(props: Props) {
   const { terms } = useAcademicStore();
+  const sortedTerms = terms ? [...terms].sort(sortTerm) : [];
   const { refetch } = props;
 
   const [open, setOpen] = useState(false);
@@ -68,7 +70,7 @@ export function AddSubjectModal(props: Props) {
                     <SelectValue placeholder="Select term" />
                   </SelectTrigger>
                   <SelectContent>
-                    {terms?.map((term) => (
+                    {sortedTerms?.map((term) => (
                       <SelectItem key={term.id} value={term.id}>
                         {term.title} {term.academicYear}
                       </SelectItem>

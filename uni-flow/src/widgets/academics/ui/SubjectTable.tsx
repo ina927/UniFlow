@@ -33,7 +33,7 @@ export const SubjectTable = (props: Props) => {
 
   const [page, setPage] = useState(1);
   const [q, setQ] = useState("");
-  const PAGE_SIZE = 10;
+  const PAGE_SIZE = 8;
   const { academicCourseId, selectedTermId } = useAcademicStore();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
@@ -69,7 +69,7 @@ export const SubjectTable = (props: Props) => {
 
       const titleA = a.term?.title?.toLowerCase() ?? "";
       const titleB = b.term?.title?.toLowerCase() ?? "";
-      return titleA.localeCompare(titleB);
+      return titleB.localeCompare(titleA);
     });
   }, [filtered]);
 

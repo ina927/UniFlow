@@ -51,7 +51,7 @@ export const AssessmentDetailCard = ({
         </div>
       </CardHeader>
 
-      <CardContent className="p-6 pt-3 space-y-8 mt-6 ml-6">
+      <CardContent className="p-6 pt-3 space-y-8 mt-6 ml-6 mr-12">
         <div className="grid grid-cols-[140px_1fr] gap-y-5 gap-x-24">
           <p className="text-body1-semibold text-tertiary">Type</p>
           <p className="text-body1 text-primary">{typeLabel}</p>
@@ -65,7 +65,7 @@ export const AssessmentDetailCard = ({
           <p className="text-body1-semibold text-tertiary">Due Date</p>
           <p className="text-body1 text-primary">{dueDateLabel}</p>
           <p className="text-body1-semibold text-tertiary">Description / memo</p>
-          <p className="text-body1 text-primary">{description || "-"}</p>
+          <p className="text-body1 text-primary text-justify mb-6">{description || "-"}</p>
         </div>
 
         <div className="border-y border-border py-4 w-150">

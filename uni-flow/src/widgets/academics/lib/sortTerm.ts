@@ -6,10 +6,10 @@ export const sortTerm = <
 ) => {
   const yA = a.academicYear ?? 0;
   const yB = b.academicYear ?? 0;
-  if (yA !== yB) return yA - yB;
+  if (yA !== yB) return yB - yA;
 
   const tA = (a.title ?? "").toLocaleLowerCase();
   const tB = (b.title ?? "").toLocaleLowerCase();
-  return tA.localeCompare(tB);
+  return tB.localeCompare(tA);
 };
 

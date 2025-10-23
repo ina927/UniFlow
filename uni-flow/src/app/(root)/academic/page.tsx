@@ -32,13 +32,7 @@ export default function AcademicPage() {
     }
   }, [academicCourseId, hasCourses, academicCourses, setAcademicCourseId]);
   
-  if (isLoading || (hasCourses && !academicCourseId)) {
-    return <div>Loading...</div>;
-  }
-
-  if (isError) {
-    return <div>Error loading academic courses</div>;
-  }
+  
   const academicCourse = academicCourses.find(
     (course: AcademicCourseEntity) => course.id === academicCourseId
   );
@@ -51,7 +45,7 @@ export default function AcademicPage() {
     );
 
   return (
-    <section className={'flex flex-col w-[90%] my-[44px] mx-auto'}>
+    <section className={'flex flex-col w-[90%] mt-[58px] mx-auto'}>
       <AcademicHeader academicCourse={academicCourse} />
       <TermSelector />
       <SubjectTable />

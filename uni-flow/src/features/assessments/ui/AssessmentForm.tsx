@@ -54,8 +54,8 @@ export const AssessmentForm = React.forwardRef<AssessmentFormHandle, Props>(
     return (
       title.trim().length > 0 &&
       !!typeKey &&
-      Number.isFinite(w) && w > 0 &&
-      Number.isFinite(m) && m > 0 &&
+      Number.isFinite(w) && w >= 0 &&
+      Number.isFinite(m) && m >= 0 &&
       !!dueLocal
     );
   }, [title, typeKey, weight, maxScore, dueLocal]);

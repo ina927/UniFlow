@@ -1,7 +1,7 @@
 .container {
     display: flex;
     width: 90%;  
-    margin: 44px auto;
+    margin: 58px auto;
     gap: 8%;
     grid-template-columns: 55% 32%;
     box-sizing: border-box;
@@ -12,7 +12,7 @@
    flex-direction: column;
    gap: 32px;
    width: min(85.1vw);
-   margin: 44px 90px;
+   margin: 58px auto;
    align-self: stretch;
    min-width: 0;
 }

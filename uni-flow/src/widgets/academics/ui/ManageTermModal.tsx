@@ -84,7 +84,7 @@ export const ManageTermModal = (props: ManageTermModalProps) => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  terms?.sort((a, b) => a.title.localeCompare(b.title)).map((term) => (
+                  sortedTerms.map((term) => (
                   <TableRow key={term.id}>
                     <TableCell className="font-bold px-4 py-3">{term.title}</TableCell>
                     <TableCell>{term.academicYear}</TableCell>
