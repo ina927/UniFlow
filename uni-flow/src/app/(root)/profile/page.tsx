@@ -7,6 +7,8 @@ import { AcademicCourseEntity } from '@/entities/academics';
 import { Role } from '@/entities/users/enums';
 import { useAcademicStore, useAuthStore } from '@/shared/stores';
 import { useLogout } from '@/shared/hooks/useLogout';
+import { is } from 'date-fns/locale';
+import { isLogin } from '@/shared/lib/isLogin';
 
 type User = {
   id: string;
@@ -17,6 +19,7 @@ type User = {
 };
 
 export default function ProfilePage() {
+  isLogin();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [name, setName] = useState('');
@@ -38,7 +41,6 @@ export default function ProfilePage() {
   const nameInputRef = useRef<HTMLInputElement | null>(null);
   const courseSectionRef = useRef<HTMLElement | null>(null);
   const courseDegreeInputRef = useRef<HTMLInputElement | null>(null);
-
   const { setUserId } = useAuthStore();
   const { clear } = useAcademicStore();
 

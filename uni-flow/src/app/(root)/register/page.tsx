@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Label, Input, Button } from '@/shared/ui';
 import { useAcademicStore, useAuthStore } from '@/shared/stores';
 import styles from './page.module.css';
+import { Role } from '@/entities/users/enums';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -37,6 +38,7 @@ export default function RegisterPage() {
     }
 
     setLoading(true);
+
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
@@ -71,10 +73,48 @@ export default function RegisterPage() {
         return;
       }
 
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: pwd }),
+      });
+  
+      const raw = await response.text();
+      let signInData: unknown = null;
+      if (raw) {
+        try {
+          signInData = JSON.parse(raw);
+        } catch (err) {
+          console.warn('login response not JSON', err);
+        }
+      }
+  
+      const payload =
+        signInData && typeof signInData === 'object' ? (signInData as { error?: string }) : null;
+      if (!response.ok) {
+        const message = payload?.error || raw || `Sign in failed (${res.status})`;
+        setMsg(message);
+        return;
+      }
+  
+      const userData = (signInData as {
+        user?: { id: string; role?: Role };
+      })?.user;
+  
+      if (!userData?.id) {
+        setMsg('Unexpected response from server.');
+        return;
+      }
+      
       setUserId(createdUser.id);
       const courseId = (await courseRes.json())?.data?.data?.id;
       setAcademicCourseId(courseId);
-
+      
+      if (userData.role === Role.ADMIN) {
+        router.push('/admin');
+        return;
+      }
+      
       router.push('/academic');
     } finally {
       setLoading(false);
