@@ -12,7 +12,7 @@ interface AssessmentModel extends Omit<Assessment, 'type' | 'dueDate' | 'descrip
 }
 
 // const API_BASE_URL = '/api/assessments';
-
+// Converts various type formats (enum, label, or raw string) into a unified enum value
 export const toAssessmentType = (
   type: string | AssessmentType | $Enums.AssessmentType | undefined
 ): AssessmentType => {
@@ -42,6 +42,7 @@ export const toAssessmentType = (
   }
 };
 
+// Converts enum to a string label for storing in DB
 const fromEnumToDbLabel = (v: AssessmentType): string => {
   switch (v) {
     case AssessmentType.QUIZ: return "Quiz";
@@ -53,6 +54,7 @@ const fromEnumToDbLabel = (v: AssessmentType): string => {
   }
 };
 
+// Converts any input type to the consistent DB label form
 export const toDbAssessmentType = (t: string | AssessmentType | undefined): string | undefined => {
   if (t == null) return undefined;
   const asEnum = typeof t === "string" ? toAssessmentType(t) : t;
@@ -86,18 +88,6 @@ export async function listAssessments(params: { subjectId: string }): Promise<As
 
 // GET: get an assessment by ID
 export async function getAssessment(id: string) {
-  // try {
-  //   const response = await fetch(`${API_BASE_URL}/${id}`);
-  //   if (!response.ok) {
-  //     throw new Error('Failed to fetch assessment');
-  //   }
-  //   const data = await response.json();
-  //   return toEntity(data);
-  // } catch (error) {
-  //   console.error('Error fetching assessment:', error);
-  //   throw error;
-  // }
-
   const assessment = await prisma.assessment.findUnique({ where: { id } });
   if (!assessment) {
     throw notFoundError("Assessment");
@@ -124,27 +114,6 @@ export async function createAssessment(params: { dto: CreateAssessmentDto }): Pr
 
 // PATCH: enter/update score
 export async function enterScore(params: { dto: EnterScoreDto }) {
-  // try {
-  //   const { assessmentId, score } = params.dto;
-  //   const response = await fetch(`${API_BASE_URL}/${assessmentId}/score`, {
-  //     method: 'PATCH',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({ score }),
-  //   });
-
-  //   if (!response.ok) {
-  //     throw new Error('Failed to update score');
-  //   }
-
-  //   const data = await response.json();
-  //   return toEntity(data);
-  // } catch (error) {
-  //   console.error('Error updating score:', error);
-  //   throw error;
-  // }
-
   const updated = await prisma.assessment.update({
     where: { id: params.dto.assessmentId },
     data: {
@@ -173,19 +142,6 @@ export async function updateAssessment(params: { id: string; dto: UpdateAssessme
 
 // DELETE: Delete assessment
 export async function deleteAssessment(id: string) {
-  // try {
-  //   const response = await fetch(`${API_BASE_URL}/${id}`, {
-  //     method: 'DELETE',
-  //   });
-
-  //   if (!response.ok) {
-  //     throw new Error('Failed to delete assessment');
-  //   }
-  // } catch (error) {
-  //   console.error('Error deleting assessment:', error);
-  //   throw error;
-  // }
-
   const deleted = await prisma.assessment.delete({ where: { id } });
   return toEntity(deleted);
 }

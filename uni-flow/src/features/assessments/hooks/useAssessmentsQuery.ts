@@ -10,6 +10,7 @@ import {
 import type { Assessment } from "@/entities/assessments/entities";
 import { EnterScoreDto, CreateAssessmentDto } from "@/entities/assessments/dto";
 
+// Fetches the list of assessments for a specific subject
 export function useAssessmentsQuery(subjectId: string) {
   return useQuery<Assessment[]>({
     queryKey: ["assessments", subjectId],
@@ -22,6 +23,7 @@ export function useAssessmentsQuery(subjectId: string) {
   });
 }
 
+// Creates a new assessment and invalidates the related cache entry
 export function useCreateAssessment(subjectId: string) {
   const qc = useQueryClient();
   return useMutation({
@@ -30,6 +32,7 @@ export function useCreateAssessment(subjectId: string) {
   });
 }
 
+// Submits a score entry for a specific assessment
 export function useEnterScore(subjectId: string) {
   const qc = useQueryClient();
   return useMutation({
@@ -38,6 +41,7 @@ export function useEnterScore(subjectId: string) {
   });
 }
 
+// Retrieves detailed information for a single assessment
 export function useAssessmentDetailQuery(id: string) {
   return useQuery({
     queryKey: ["assessment", id],
@@ -46,6 +50,7 @@ export function useAssessmentDetailQuery(id: string) {
   });
 }
 
+// Updates an existing assessment record
 export function useUpdateAssessment(subjectId: string) {
   const qc = useQueryClient();
   return useMutation({
@@ -58,6 +63,7 @@ export function useUpdateAssessment(subjectId: string) {
   });
 }
 
+// Deletes an assessment by ID
 export function useDeleteAssessment(subjectId: string) {
   const qc = useQueryClient();
   return useMutation({
